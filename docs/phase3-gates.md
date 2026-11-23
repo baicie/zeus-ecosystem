@@ -2,20 +2,25 @@
 
 | Gate | Requirement | Current state |
 | --- | --- | --- |
-| G3a | Public repository, main, pinned read-only policy CI, working test suite | Code prepared; require green CI |
-| G3b | Immutable version policy, compatibility matrix, app inventory, permission review | Code prepared; review and merge required |
-| G3c-core | Install registry-published Core packages in isolated consumer; exercise signal and cleanup | Automated smoke; evaluate actual CI results |
-| G3c-ui | Registry-published compatible UI + Core, no peer mismatch or double engine, browser E2E | BLOCKED pending verified UI release |
-| G4 | AI Workbench + AI Host application migration | NOT STARTED |
-| G5 | image, SBOM, size, public build-info and deployment evidence | NOT STARTED |
-| G6 | Admin production cutover with rollback | NOT STARTED |
+| G3a | Repository, main, pinned read-only CI, working test suite | PASS (main CI) |
+| G3b | Dependency policy, evidence matrix, app catalog, permissions review | PASS (main CI, documentation) |
+| G3c-core | Published Core registry install and signal lifecycle | PASS (Node 22/24 Core smoke) |
+| G3c-pair-install | Published Core + UI strict-peer install, npm/pnpm, lockfiles, realpath | Manual workflow prepared; NOT YET PASSED |
+| G3c-browser | Core + UI browser runtime identity, event and cleanup E2E | BLOCKED pending compatible UI release |
+| G4 | AI Workbench + Host migrated and accepted | NOT STARTED |
+| G5 | Image/SBOM/size/deployment evidence migrated | NOT STARTED |
+| G6 | Admin production cutover with rollback and explicit approval | NOT STARTED |
 
-No gate is complete solely because a PR exists. CI evidence or audited artifacts are mandatory.
+## Published-pair manual check
 
-## Operator-only configuration
+Open **Actions → Published Core UI pair preflight → Run workflow** and provide exact published Core/UI versions. This job performs strict peer installs using npm and pnpm on Node 22/24, inspects resolution realpaths and lockfiles and uploads evidence even on failure. It does **not** publish or deploy.
 
-The connected GitHub integration cannot configure repository rulesets, environments, secrets or self-hosted runners. The repository owner should enable main branch protection/rulesets with mandatory PR review and required successful `Policy / Node 22`, `Policy / Node 24`; avoid hard-coding the published Core smoke as a mandatory merge check if registry availability is outside the team's control. Create no production environment or secret before Phase 4/6 approval.
+The current candidate UI version may be unpublished. **A failed run is the correct outcome until the dependency contract is actually satisfiable.** The workflow is deliberately manual and does not produce false-green mandatory CI.
 
-### Safety policy
+Passing this installation check alone does **not** establish browser singleton identity or cross-host behavior.
 
-Read-only tests run on PRs with `contents: read`; no production publish or deployment triggers, self-hosted runner labels or write tokens are present in this bootstrap.
+## Repository settings still owned by an administrator
+
+The available integration cannot configure repository rulesets, secrets, environments or runner assignments. Enable a main protection ruleset with review and required CI checks. Keep jobs scoped to `contents: read`; do not transfer npm publish or production SSH tokens into this consumer repository.
+
+For production migration, restore full audit evidence, digest-based rollback and deployment acceptance as separate phases.

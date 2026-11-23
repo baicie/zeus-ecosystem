@@ -1,0 +1,35 @@
+name: Published Core consumer smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/core-consumer-smoke.mjs'
+      - 'scripts/check-published-core.mjs'
+      - 'docs/compatibility-matrix.json'
+      - '.github/workflows/core-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  core-smoke:
+    name: Published Core / Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22', '24']
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+      - name: Verify published Core package metadata
+        run: npm run check:registry
+      - name: Verify isolated published Core consumer
+        run: npm run check:core-consumer

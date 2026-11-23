@@ -3,12 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Complex demos and application integration verification for Zeus",
+  "description": "Independent applications and integration evidence for Zeus",
   "packageManager": "pnpm@10.33.4",
   "engines": {
-    "node": ">=22.0.0"
+    "node": "^22.18.0 || >=24.11.0"
   },
   "scripts": {
-    "check": "node scripts/validate-repository.mjs"
+    "check": "node scripts/validate-repository.mjs && node --test scripts/__tests__/*.test.mjs",
+    "check:policy": "node scripts/validate-repository.mjs",
+    "check:registry": "node scripts/check-published-core.mjs",
+    "check:core-consumer": "node scripts/core-consumer-smoke.mjs"
   }
 }

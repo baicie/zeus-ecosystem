@@ -1,41 +1,41 @@
 # Zeus Ecosystem
 
-The integration and reference-application repository for the Zeus framework and Zeus UI.
+Independent integration applications and reference deployments for the Zeus framework and Zeus UI.
 
-**Phase 3a foundation only.** This repository currently contains no migrated applications, production workflows, credentials, or released packages. It deliberately does not claim a successful Core/UI runtime integration.
+[Core](https://github.com/baicie/zeus) · [UI](https://github.com/baicie/zeus-ui) · [Phase 3 gates](docs/phase3-gates.md)
 
-## Repository responsibilities
+**Status: Phase 3a/3b bootstrap under validation.** No applications, production credentials, images, deployment workflows, or npm releases have been migrated. A compatible published Core + UI pair has **not yet been validated**.
 
-- `apps/`: advanced application demos and reference consumers (AI Workbench, AI Host, Admin are planned; not yet migrated).
-- `e2e/`: application-level and cross-product end-to-end tests.
-- `infra/`: application container and deployment definitions once explicitly approved.
-- `docs/`: compatibility evidence, demo catalog, architecture decisions.
-- `scripts/`: repository policy and migration validation tools.
+## Ownership
 
-The framework and UI component library continue to live in [`baicie/zeus`](https://github.com/baicie/zeus) and [`baicie/zeus-ui`](https://github.com/baicie/zeus-ui).
+| Repository | Owns |
+| --- | --- |
+| `zeus` | Framework runtime, compiler, core packages, framework-level fixtures |
+| `zeus-ui` | Web components, gallery/docs, component-level checks |
+| **`zeus-ecosystem`** | Complex application demos, app-level E2E, independent published-package integration, deployment evidence |
 
-## Dependency boundaries
-
-- Applications must consume **registry-published, pinned** versions of `@zeus-js/*` and `@zeus-web/*`.
-- Never use cross-repository `workspace:*`, `file:`, `link:`, Git URL, or copied upstream package sources for published product packages.
-- `workspace:*` is permitted only for packages actually defined **inside this repository**.
-- The complete Core + UI runtime compatibility gate is pending a compatible published UI release and independent consumer tests.
-- No npm publishing workflow belongs in this consumer repository.
+This repository may consume published `@zeus-js/*` and `@zeus-web/*` only; not cross-repository workspace links or source copies.
 
 ## Checks
 
+The bootstrap runs without pnpm installation or application migrations.
+
 ```bash
 node scripts/validate-repository.mjs
+npm run check               # policy tests
+npm run check:registry      # query published Core metadata
+npm run check:core-consumer # isolated npm install and Core signal/cleanup smoke
 ```
 
-This static policy check is **not** a substitute for install/build/E2E gates, which will be added when the first application is migrated.
+**Important:** the last two commands need npm registry access. The Core-only checks do not attest to UI compatibility or browser functionality.
 
-## Migration sequence
+## Next steps
 
-1. Phase 3a: repository and static policy CI (this bootstrap).
-2. Phase 3b: compatibility matrix, update policy, and permissions review.
-3. Phase 3c: **published-package consumer** installation and runtime verification, after compatible Core/UI versions are available.
-4. Phase 4: migrate AI Workbench and AI Host as the first integration workload, only after approved gates.
-5. Later: Admin, production acceptance, image/SBOM/size evidence, and controlled cutover.
+- [Dependency policy](docs/dependency-policy.md)
+- [Compatibility matrix](docs/compatibility-matrix.json)
+- [App inventory](docs/demo-catalog.md)
+- [Phase 3 gates](docs/phase3-gates.md)
+- [Migration checklist](docs/migration-checklist.md)
+- [Architecture](docs/architecture.md)
 
-**No application migration or production deployment is authorized by bootstrapping this repository.**
+No production changes are permitted before explicit release/deployment approval.

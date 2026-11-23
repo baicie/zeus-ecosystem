@@ -1,11 +1,9 @@
-# Decisions / gates
+# Phase 3 decisions
 
-- Repository name: `zeus-ecosystem`.
-- Recommended visibility: public, matching existing public `baicie/zeus` and `baicie/zeus-ui` repositories. Do not publish credentials, environment files or production secrets.
-- Main branch: `main`.
-- Published package versions: to be pinned per application, after compatibility is validated.
-- Core `0.2.0-rc.5` is verified in the prior audit; the next compatible UI release is pending. UI version need not equal Core version, unless maintainers choose a coordinated release policy.
-- Phase 3a/3b are independent of package publication; Phase 3c full integration must not be marked passed without a compatible Core/UI pair.
-- `zeus-host` runner access and GitHub Environments/secrets require separate administrator review.
-- No deployment secrets or npm publishing token are needed in the bootstrap.
-- Admin must not be the first production application migration.
+- The new repository is public, like `baicie/zeus` and `baicie/zeus-ui`. Its main branch exists.
+- The ecosystem is an **application-only consumer**. NPM publishing tokens and Core/UI release signing permissions are unnecessary here.
+- Core and UI may follow independent SemVer lines; compatibility must be established through published dependency pins, peer constraints and working consumers, not matching package version strings.
+- Core `0.2.0-rc.5` is the currently examined published release. UI `0.1.0-beta.35` has not been confirmed published or compatible, so Phase 3c UI remains blocked.
+- Automated policy checks and Core-only smoke may proceed without creating/deploying apps or installing production credentials.
+- `zeus-host` runner access, Actions Environments, image registries, release approvals and production credentials are explicitly deferred.
+- Existing producer repository release protocol issues are addressed in the producer, not copied into this consumer repository.

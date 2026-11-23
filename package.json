@@ -12,6 +12,7 @@
     "check": "node scripts/validate-repository.mjs && node --test scripts/__tests__/*.test.mjs",
     "check:policy": "node scripts/validate-repository.mjs",
     "check:registry": "node scripts/check-published-core.mjs",
-    "check:core-consumer": "node scripts/core-consumer-smoke.mjs"
+    "check:core-consumer": "node scripts/core-consumer-smoke.mjs",
+    "check:pair": "node scripts/verify-published-pair.mjs"
   }
 }

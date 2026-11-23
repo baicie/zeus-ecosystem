@@ -1,0 +1,12 @@
+{
+  "schema": "zeus.ecosystem.compatibility/v1",
+  "entries": [
+    {
+      "core": "0.2.0-rc.5",
+      "ui": null,
+      "status": "blocked",
+      "reason": "Published UI release compatible with this Core version has not yet been verified.",
+      "evidence": []
+    }
+  ]
+}

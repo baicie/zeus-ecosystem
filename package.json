@@ -1,0 +1,14 @@
+{
+  "name": "zeus-ecosystem",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Complex demos and application integration verification for Zeus",
+  "packageManager": "pnpm@10.33.4",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "check": "node scripts/validate-repository.mjs"
+  }
+}

@@ -1,0 +1,35 @@
+# The build context is the repository root, shared by both images.
+#
+# Everything the builder actually needs is: pnpm-workspace.yaml, pnpm-lock.yaml,
+# package.json, .npmrc, infra/contracts, scripts/release, and the one app being
+# built. Anything else is context to upload and never to read.
+
+# Never shipped into a layer.
+.git
+**/node_modules
+**/dist
+**/.data
+**/temp
+**/reports
+**/*.sqlite
+**/*.sqlite-journal
+
+# Secrets and local configuration.
+.env
+.env.*
+**/.env
+**/.env.*
+
+# The fixtures are separate install roots with their own lockfiles. They are not
+# workspace members, so their node_modules and lockfiles must not reach the
+# workspace install.
+fixtures
+
+# Development-only artefacts.
+**/.turbo
+**/.vite
+**/.cache
+**/*.log
+docs
+e2e
+infra/compose

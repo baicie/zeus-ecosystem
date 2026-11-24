@@ -99,7 +99,15 @@ export function createBuildInfo(options) {
   }
 
   const errors = []
-  const appCommit = git(root, ['rev-parse', 'HEAD'])
+  /*
+   * The app commit comes from the environment when there is no git history.
+   *
+   * A container build has no `.git` — `.dockerignore` removes it — so
+   * `git rev-parse HEAD` throws there. Passing the commit in is also more
+   * honest: the value names the commit the build was started from, which is
+   * not always what a checkout in the build context would report.
+   */
+  const appCommit = process.env.ZEUS_APP_COMMIT ?? git(root, ['rev-parse', 'HEAD'])
 
   if (!FULL_SHA.test(appCommit)) errors.push('the app commit is not a full SHA')
 

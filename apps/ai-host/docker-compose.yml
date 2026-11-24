@@ -1,0 +1,49 @@
+services:
+  ai-host:
+    build:
+      context: ../..
+      dockerfile: examples/ai-host/Dockerfile
+    expose:
+      - '8788'
+    environment:
+      ZEUS_AI_DB: /data/ai.sqlite
+      ZEUS_AI_HOST: 0.0.0.0
+      ZEUS_AI_WORKSPACE: /data/workspace
+      ZEUS_AI_WORKSPACE_ID: ${ZEUS_AI_WORKSPACE_ID:-reference}
+      ZEUS_AI_MODE: ${ZEUS_AI_MODE:-replay}
+      ZEUS_AI_TOKENS: ${ZEUS_AI_TOKENS:?Set ZEUS_AI_TOKENS JSON}
+      ZEUS_AI_ORIGINS: ${ZEUS_AI_ORIGINS:-http://127.0.0.1:5191,http://localhost:5191,http://localhost:8083}
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+      - ai-data:/data
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  ai-workbench:
+    build:
+      context: ../..
+      dockerfile: examples/ai-workbench/Dockerfile
+    ports:
+      - '127.0.0.1:8083:80'
+    depends_on:
+      - ai-host
+    environment:
+      ZEUS_AI_UPSTREAM_TOKEN: ${ZEUS_AI_UPSTREAM_TOKEN:?Set ZEUS_AI_UPSTREAM_TOKEN}
+      # Optional: CSP source list for BYOK. Unset keeps connect-src 'self'.
+      ZEUS_BYOK_CONNECT_SRC: ${ZEUS_BYOK_CONNECT_SRC:-}
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+      # nginx envsubst renders the upstream token into this read-only path.
+      - /etc/nginx/conf.d
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+volumes:
+  ai-data:

@@ -1,0 +1,10 @@
+/**
+ * Stylesheet entry.
+ *
+ * Order matters: tokens declare every custom property, layout consumes it,
+ * and the BYOK surfaces build on both. Nothing after `tokens.css` may name a
+ * literal colour.
+ */
+@import './styles/tokens.css';
+@import './styles/layout.css';
+@import './styles/byok.css';

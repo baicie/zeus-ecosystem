@@ -1,3 +1,8 @@
 node_modules/
 dist/
 reports/
+
+# Gate output: screenshots, reports and temp builds written by
+# scripts/checks. Regenerated on every run.
+apps/*/temp/
+apps/*/reports/

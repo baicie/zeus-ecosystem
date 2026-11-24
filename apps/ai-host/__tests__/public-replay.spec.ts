@@ -4,6 +4,7 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
+  realpathSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -53,9 +54,21 @@ afterEach(async () => {
 })
 
 function directory(): string {
+  /*
+   * Resolved, because `resolvePublicReplayRoot` resolves too.
+   *
+   * `mkdtempSync` returns the path it was given, but on macOS `/var` is a
+   * symlink to `/private/var`, so the production code's `realpathSync` returns
+   * a different string for the same directory. Comparing the two literally
+   * failed on macOS and passed on Linux — the test was asserting a path, not a
+   * behaviour.
+   *
+   * Resolving here keeps every safety assertion intact: the symlink and
+   * escape tests below still feed deliberately hostile roots.
+   */
   const value = mkdtempSync(path.join(tmpdir(), 'zeus-ai-public-'))
   directories.push(value)
-  return value
+  return realpathSync(value)
 }
 
 async function start(

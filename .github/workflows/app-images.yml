@@ -1,0 +1,127 @@
+# Image build and delivery evidence.
+#
+# ## What this does not do
+#
+# It does not push, and it does not deploy. A PR builds each image, starts it,
+# checks it, records what came out — and stops there. The evidence it writes has
+# `imageDigest: null` and `imageReference: null` on purpose: a digest only
+# exists once a registry stores the manifest, and the deployment plan is built
+# from digests. Filling one in for an unpushed build would make it look
+# deployable.
+#
+# ## Why the evidence is a file, not log lines
+#
+# `delivery-evidence/v1` has fields that are easy to record wrongly and
+# impossible to notice later — a local image ID in a digest field, a size
+# measured on another platform, a PASS for a check that did not run. Writing
+# them through one script means the shape is checked by tests, and anything
+# unmeasured stays `NOT_RUN`.
+name: App images
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-images-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  images:
+    name: Image / ${{ matrix.product }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        product: [ai-workbench, ai-host, admin]
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10.33.4
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+          package-manager-cache: false
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # The image is built from a clean context: `.dockerignore` keeps the
+      # workspace's node_modules out, so this proves the Dockerfile is
+      # self-sufficient rather than leaning on the checkout.
+      - name: Build, inspect and check the image
+        run: |
+          node scripts/release/build-image.mjs \
+            --product "${{ matrix.product }}" \
+            --tag "ci-${{ github.sha }}" \
+            --out "evidence-${{ matrix.product }}.json"
+
+      - name: Generate an SBOM
+        run: |
+          # Syft reads the image, not the repository: what matters is the
+          # packages actually inside the layer that ships.
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh \
+            | sh -s -- -b /usr/local/bin v1.27.0
+          syft "zeus-${{ matrix.product }}:ci-${{ github.sha }}" \
+            -o "spdx-json=sbom-${{ matrix.product }}.spdx.json"
+
+      - name: Record the SBOM digest
+        run: |
+          digest=$(node -e "const c=require('node:crypto'),f=require('node:fs');console.log(c.createHash('sha256').update(f.readFileSync(process.argv[1])).digest('hex'))" "sbom-${{ matrix.product }}.spdx.json")
+          node -e "
+            const fs = require('node:fs')
+            const file = 'evidence-${{ matrix.product }}.json'
+            const evidence = JSON.parse(fs.readFileSync(file, 'utf8'))
+            evidence.sbom = { file: 'sbom-${{ matrix.product }}.spdx.json', sha256: process.argv[1] }
+            fs.writeFileSync(file, JSON.stringify(evidence, null, 2) + '\n')
+          " "$digest"
+
+      # Skipped on a PR, because a PR must not publish. The step exists so the
+      # push path is a change of condition rather than a different workflow.
+      - name: Push candidate image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: echo "pushing is a separate, approved step; this build produced evidence only"
+
+      - name: Preserve the evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: evidence-${{ matrix.product }}
+          path: |
+            evidence-${{ matrix.product }}.json
+            sbom-${{ matrix.product }}.spdx.json
+          if-no-files-found: warn
+
+      # A missing evidence file is a failure: the point of this job is the file.
+      - name: Assert the evidence exists and passes
+        if: always()
+        run: |
+          file="evidence-${{ matrix.product }}.json"
+
+          if [ ! -f "$file" ]; then
+            echo "::error::no evidence file was produced"
+            exit 1
+          fi
+
+          node -e "
+            const evidence = require('./' + process.argv[1])
+            if (evidence.schema !== 'zeus.ecosystem.delivery-evidence/v1') {
+              console.error('::error::unexpected schema ' + evidence.schema); process.exit(1)
+            }
+            if (evidence.status !== 'PASS') {
+              console.error('::error::image did not pass: ' + JSON.stringify(evidence.failureReasons))
+              process.exit(1)
+            }
+            console.log('evidence ok:', evidence.product, evidence.platform, evidence.unpackedBytes + ' bytes')
+          " "$file"

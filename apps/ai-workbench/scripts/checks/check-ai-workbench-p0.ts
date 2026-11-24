@@ -151,17 +151,28 @@ async function shoot(page: Page, name: string): Promise<void> {
 }
 
 /** Runs the interactive (Host-backed) acceptance path in one engine. */
-async function runInteractive(
+/**
+ * The interactive scenario, exported for the container driver.
+ *
+ * It takes a URL and a browser rather than starting either, which is what lets
+ * the same assertions run against an in-process Vite server and against a
+ * compose stack. `authorize` is the only difference: in-process the page needs
+ * the bearer token itself, behind the proxy nginx injects it.
+ */
+export async function runInteractive(
   engine: keyof typeof engines,
   url: string,
+  options: { authorize?: boolean } = {},
 ): Promise<Checks[]> {
   const checks: Checks[] = []
   const browser: Browser = await engines[engine].launch({
     executablePath: executableFor(engine),
   })
-  const context = await browser.newContext({
-    extraHTTPHeaders: { Authorization: `Bearer ${HOST_TOKEN}` },
-  })
+  const context = await browser.newContext(
+    options.authorize === false
+      ? {}
+      : { extraHTTPHeaders: { Authorization: `Bearer ${HOST_TOKEN}` } },
+  )
   const page = await context.newPage()
   const pageErrors: string[] = []
   page.on('pageerror', error => pageErrors.push(error.message))
@@ -404,7 +415,7 @@ async function runInteractive(
  * The published build: static files, replay host, no server. The Agent surface
  * must say it is read-only, and the reader's own model must still be usable.
  */
-async function runReplay(
+export async function runReplay(
   engine: keyof typeof engines,
   url: string,
 ): Promise<Checks[]> {
@@ -742,4 +753,11 @@ async function main(): Promise<void> {
   if (!passed) throw new Error('AI Workbench P0 gate failed')
 }
 
-await main()
+/*
+ * Only run when executed. The container driver imports `runInteractive` from
+ * here, and a bare top-level `await main()` would start the whole in-process
+ * gate — starting a Vite server and a Host — just to reach one function.
+ */
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(import.meta.filename)) {
+  await main()
+}

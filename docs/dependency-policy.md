@@ -18,12 +18,46 @@ Each application is responsible for its own exact Core and UI pins. The root rep
 4. A `validated` entry in the matrix must reference both versions and have evidence.
 5. `blocked` entries remain blocked until verified, not green merely because a manifest parses.
 
-## Not yet enforced
+## Enforced by the contracts
 
-Exact versions alone do not ensure runtime singleton identity. Phase 3c must add a *published Core + published UI* consumer with npm and pnpm lockfiles, inspect resolution realpaths and bundler instances, and run Chromium, Firefox and WebKit behavior tests.
+Three files record what the repository depends on, and a script checks each:
+
+| File | Records | Checked by |
+| --- | --- | --- |
+| `infra/contracts/published-pair.json` | Core and UI version, tag, tag object, commit | `check-published-pair-contract.mjs` |
+| `infra/contracts/products.json` | Each product's Dockerfile, port, health path, size budget, unit | `check-published-pair-contract.mjs`, `build-image.mjs` |
+| `docs/compatibility-matrix.json` | Whether this pair is validated, and on what evidence | `validate-repository.mjs` |
+
+The pair contract is checked **against reality**, not only against itself:
+
+- each app and fixture manifest must pin exactly the recorded versions;
+- each tag must still resolve to the recorded commit, with annotated tags
+  peeled — reading `ref.object.sha` without peeling yields a SHA that never
+  built anything;
+- the matrix's status must agree with the contract's.
+
+`--offline` runs the structural half, so a PR that bumps one manifest without
+recording it fails without needing a token.
+
+## Singleton identity
+
+Exact versions do not by themselves guarantee a single runtime engine. That is
+what the browser fixtures exist for: they install only published packages and
+run in three engines, and the `native` fixture asserts that effects run across
+the Core/UI boundary. Duplicate engine copies fail the assertion rather than
+passing silently.
 
 ## Currently
 
-Core `0.2.0-rc.5` is published. The prior audit recorded UI `0.1.0-beta.34` as incompatible and `0.1.0-beta.35` as unpublished. A new UI release must be independently validated; do not claim that matching version numbers alone proves compatibility.
+Core `0.2.0-rc.5` and UI `0.1.0-beta.35` are both published and validated
+together: 90 browser checks across five fixtures and three engines, plus
+install and build under npm and pnpm on Node 22 and 24.
 
-The smoke in `scripts/core-consumer-smoke.mjs` verifies **Core only** and does not promote any UI pairing in `docs/compatibility-matrix.json`.
+Two version lines remain independent by design:
+
+- `@zeus-js/vite-plugin` is `0.0.5`, not the Core version. Pinning it to Core
+  fails with `ERR_PNPM_NO_MATCHING_VERSION`.
+- `@zeus-js/vite-plugin@0.0.5` itself depends on `@zeus-js/compiler-native`
+  `0.1.1-beta.20`, while the rc.5 packages depend on `0.2.0-rc.5`. Both resolve
+  and the plugin loads the older one. Nothing in this repository can fix that;
+  it needs a vite-plugin release on the rc line.

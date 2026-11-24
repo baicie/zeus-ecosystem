@@ -8,8 +8,8 @@
     "build": "vite build",
     "check": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "check:p0": "NODE_OPTIONS=--experimental-sqlite tsx scripts/checks/check-ai-workbench-p0.ts",
-    "check:byok": "NODE_OPTIONS=--experimental-sqlite tsx scripts/checks/check-ai-workbench-byok.ts",
+    "check:p0": "node scripts/run-with-sqlite.mjs scripts/checks/check-ai-workbench-p0.ts",
+    "check:byok": "node scripts/run-with-sqlite.mjs scripts/checks/check-ai-workbench-byok.ts",
     "check:csp": "tsx scripts/checks/check-ai-workbench-csp.ts",
     "check:gates": "pnpm check:byok && pnpm check:csp && pnpm check:p0"
   },
@@ -28,6 +28,7 @@
     "vitest": "4.1.9",
     "jsdom": "29.1.1",
     "@playwright/test": "1.57.0",
-    "tsx": "4.22.4"
+    "tsx": "4.22.4",
+    "@types/node": "26.0.0"
   }
 }

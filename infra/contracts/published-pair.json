@@ -1,0 +1,33 @@
+{
+  "schema": "zeus.ecosystem.published-pair/v1",
+  "core": {
+    "repository": "baicie/zeus",
+    "version": "0.2.0-rc.5",
+    "tag": "v0.2.0-rc.5",
+    "annotated": true,
+    "tagObject": "8f79492a238be5b0eba3b0f0773caac7b4fa118e",
+    "commit": "bc1d4fc2afaac8e5aa7625e62ea76c2f0d6805e2"
+  },
+  "ui": {
+    "repository": "baicie/zeus-ui",
+    "version": "0.1.0-beta.35",
+    "tag": "v0.1.0-beta.35",
+    "annotated": false,
+    "tagObject": null,
+    "commit": "9c90d0b350626b71ed735acfb0e2e05383c5c402"
+  },
+  "independent": {
+    "@zeus-js/vite-plugin": "0.0.5"
+  },
+  "compatibility": {
+    "status": "validated",
+    "verifiedAt": "2026-11-24",
+    "evidence": [
+      "CI run 45370251534: 90 browser tests passed across 5 fixtures and 3 engines",
+      "CI run 45371044819: fixtures installed and built under npm and pnpm on Node 22 and 24"
+    ]
+  },
+  "provenance": {
+    "note": "Commits were resolved from the tags, not typed. `v0.2.0-rc.5` is an annotated tag, so its commit is the peeled object; `v0.1.0-beta.35` is lightweight and resolves directly. Both were read from the GitHub API at the time this file was written."
+  }
+}

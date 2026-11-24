@@ -1,0 +1,24 @@
+{
+  "name": "@zeus-ecosystem/fixture-ai",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Drives the published AI packages with their own deterministic mock host",
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@zeus-js/zeus": "0.2.0-rc.5",
+    "@zeus-web/ai-core": "0.1.0-beta.35",
+    "@zeus-web/ai-adapters": "0.1.0-beta.35",
+    "@zeus-web/ai-primitives": "0.1.0-beta.35",
+    "@zeus-web/ai": "0.1.0-beta.35",
+    "@zeus-web/chat": "0.1.0-beta.35"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vite": "8.3.8"
+  }
+}

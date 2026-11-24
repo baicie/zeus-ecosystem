@@ -1,3 +1,14 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+
+# The published-consumer fixtures are deliberately NOT workspace members.
+#
+# A workspace member shares one lockfile and one node_modules tree, and pnpm
+# may satisfy a dependency from a sibling package rather than the registry.
+# That would make the fixture's evidence ambiguous exactly where it must be
+# unambiguous: "this installed the published tarball".
+#
+# Each fixture is its own install root, with its own lockfile and its own
+# node_modules, so the dependency graph it records is the one a real consumer
+# would get.

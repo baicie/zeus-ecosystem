@@ -1,0 +1,95 @@
+# The AI deployment unit: workbench shell plus reference host.
+#
+# Both services move together. The workbench proxies `/ai-host/` to the host and
+# injects the bearer token server-side, so the browser only ever talks to one
+# origin and never sees a credential.
+#
+# ## What this file is for
+#
+# Local and CI acceptance. It binds the workbench to a loopback port and does
+# not publish the host at all: the host is reachable only over the compose
+# network, which is the same topology the deployed stack uses.
+#
+# ## Tokens
+#
+# Generated per run by `infra/compose/ai/run.sh` and passed in through the
+# environment. Nothing here has a default, so a stack started without them
+# fails loudly instead of running with a known credential.
+name: zeus-ai
+
+services:
+  ai-host:
+    build:
+      context: ../../..
+      dockerfile: apps/ai-host/Dockerfile
+      args:
+        ZEUS_APP_COMMIT: ${ZEUS_APP_COMMIT:?the app commit must be provided}
+    image: zeus-ai-host:${ZEUS_IMAGE_TAG:-local}
+    # No `ports:` on purpose: the host is reachable only inside this network.
+    environment:
+      ZEUS_AI_TOKENS: ${ZEUS_AI_TOKENS:?a host token must be generated for this run}
+      ZEUS_AI_ORIGINS: ${ZEUS_AI_ORIGINS:-}
+      ZEUS_AI_MODE: ${ZEUS_AI_MODE:-replay}
+      ZEUS_AI_PUBLIC_REPLAY: ${ZEUS_AI_PUBLIC_REPLAY:-0}
+      ZEUS_AI_TRUST_PROXY: '1'
+    volumes:
+      - ai-data:/data
+    # The container filesystem is read-only; /data is the only writable place,
+    # and /tmp is a tmpfs because Node writes there.
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8788/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+    restart: 'no'
+
+  ai-workbench:
+    build:
+      context: ../../..
+      dockerfile: apps/ai-workbench/Dockerfile
+      args:
+        ZEUS_APP_COMMIT: ${ZEUS_APP_COMMIT:?the app commit must be provided}
+    image: zeus-ai-workbench:${ZEUS_IMAGE_TAG:-local}
+    depends_on:
+      ai-host:
+        condition: service_healthy
+    environment:
+      # Injected into the proxied request; never reaches the browser.
+      ZEUS_AI_UPSTREAM_TOKEN: ${ZEUS_AI_UPSTREAM_TOKEN:?the upstream token must match the host token}
+      # Space-separated CSP sources an operator opts into for BYOK.
+      ZEUS_BYOK_CONNECT_SRC: ${ZEUS_BYOK_CONNECT_SRC:-}
+    ports:
+      - '127.0.0.1:${ZEUS_WORKBENCH_PORT:-18080}:80'
+    read_only: true
+    tmpfs:
+      # The nginx entrypoint renders `/etc/nginx/templates/*.template` into
+      # `/etc/nginx/conf.d/` at startup. With a read-only root that write fails
+      # and the container exits 1 — so the directory is a tmpfs, which keeps
+      # the root read-only while letting the one unavoidable write happen.
+      - /etc/nginx/conf.d
+      # nginx's own scratch space: proxy temp files, the pid, and Node's /tmp.
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1/']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+    restart: 'no'
+
+volumes:
+  ai-data:

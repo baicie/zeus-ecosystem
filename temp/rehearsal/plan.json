@@ -1,0 +1,20 @@
+{
+  "schema": "zeus.ecosystem.deployment-plan/v1",
+  "environment": "staging",
+  "deploymentUnit": "admin",
+  "services": [
+    {
+      "product": "admin",
+      "targetImage": "zeus-admin@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "previousImage": "zeus-admin@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "runtimePort": 8787
+    }
+  ],
+  "acceptanceEvidence": [],
+  "dataCompatibility": "unverified",
+  "rollback": {
+    "strategy": "restore-previous-image-set",
+    "note": "Restoring the previous image set restores the binaries, not the database. A schema change needs its own compatibility evidence."
+  },
+  "applied": false
+}

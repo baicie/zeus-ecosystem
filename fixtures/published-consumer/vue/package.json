@@ -1,0 +1,23 @@
+{
+  "name": "@zeus-ecosystem/fixture-vue",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Mounts the published Vue wrappers with createApp",
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@zeus-js/zeus": "0.2.0-rc.5",
+    "@zeus-web/button": "0.1.0-beta.35",
+    "@zeus-web/input": "0.1.0-beta.35",
+    "@zeus-web/vue": "0.1.0-beta.35",
+    "vue": "3.5.38"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vite": "8.3.8"
+  }
+}

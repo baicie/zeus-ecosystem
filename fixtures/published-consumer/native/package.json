@@ -1,0 +1,31 @@
+{
+  "name": "@zeus-ecosystem/fixture-native",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Consumes only published @zeus-js and @zeus-web packages, with no path aliases",
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@zeus-js/zeus": "0.2.0-rc.5",
+    "@zeus-js/signal": "0.2.0-rc.5",
+    "@zeus-js/runtime-dom": "0.2.0-rc.5",
+    "@zeus-js/web-c-runtime": "0.2.0-rc.5",
+    "@zeus-js/web-c": "0.2.0-rc.5",
+    "@zeus-js/vite-plugin": "0.0.5",
+    "@zeus-web/button": "0.1.0-beta.35",
+    "@zeus-web/input": "0.1.0-beta.35",
+    "@zeus-web/dialog": "0.1.0-beta.35",
+    "@zeus-web/form-field": "0.1.0-beta.35",
+    "@zeus-web/data-grid": "0.1.0-beta.35",
+    "@zeus-web/themes": "0.1.0-beta.35",
+    "@zeus-web/icons": "0.1.0-beta.35"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vite": "8.3.8"
+  }
+}

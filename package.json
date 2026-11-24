@@ -14,6 +14,12 @@
     "check:registry": "node scripts/check-published-core.mjs",
     "check:core-consumer": "node scripts/core-consumer-smoke.mjs",
     "check:pair": "node scripts/verify-published-pair.mjs",
-    "check:matrix": "node scripts/published-consumer-matrix.mjs"
+    "check:matrix": "node scripts/published-consumer-matrix.mjs",
+    "check:published-fixtures": "node scripts/check-published-fixtures.mjs",
+    "test:e2e:published": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.57.0",
+    "typescript": "5.9.3"
   }
 }

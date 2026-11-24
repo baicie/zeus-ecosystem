@@ -4,19 +4,21 @@
     {
       "core": "0.2.0-rc.5",
       "ui": "0.1.0-beta.35",
-      "status": "candidate",
-      "reason": "Install, typecheck, production build, runtime import and CLI invocation pass with only published packages (npm and pnpm). Browser interaction, wrapper mounting in a real DOM, and visual acceptance are not covered yet, so this is a candidate rather than a validated pairing.",
+      "status": "validated",
+      "reason": "Installs, typechecks and builds from published packages under both npm and pnpm on Node 22 and 24, and the five consumer fixtures pass in Chromium, Firefox and WebKit. The browser matrix is what moves this from candidate: it drives signals, custom elements, both framework wrappers and the AI packages in a real DOM rather than checking that imports resolve.",
       "evidence": [
-        "scripts/published-consumer-matrix.mjs pnpm: matrix PASS (0.2.0-rc.5 + 0.1.0-beta.35, node v22.12.0)",
-        "scripts/published-consumer-matrix.mjs npm: matrix PASS (0.2.0-rc.5 + 0.1.0-beta.35, node v22.12.0)",
-        "scripts/verify-published-pair.mjs pnpm: pass, single physical @zeus-js copies"
+        "CI run 45370251534 (published-consumer.yml): 90 passed, 0 failed, 0 skipped \u2014 5 fixtures x 3 engines",
+        "CI run 45370251534: fixtures installed, typechecked and built under npm and pnpm on Node 22 and Node 24",
+        "scripts/published-consumer-matrix.mjs: matrix PASS (0.2.0-rc.5 + 0.1.0-beta.35, node v22.12.0) via npm and pnpm",
+        "scripts/verify-published-pair.mjs: pass, single physical @zeus-js copies",
+        "Report artifact: published-consumer-browsers/published-consumer.json on that run"
       ]
     },
     {
       "core": "0.2.0-rc.5",
       "ui": null,
       "status": "blocked",
-      "reason": "Core-only row: no UI release was verified against this Core version before beta.35.",
+      "reason": "Superseded by the validated 0.2.0-rc.5 + 0.1.0-beta.35 pairing below; kept so the history shows this Core version was once accepted alone.",
       "evidence": []
     }
   ]

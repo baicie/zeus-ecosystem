@@ -21,11 +21,12 @@ import {
 } from '@zeus-js/signal'
 import { defineElement } from '@zeus-js/runtime-dom'
 
-import '@zeus-web/button'
-import '@zeus-web/input'
-import '@zeus-web/dialog'
-import '@zeus-web/data-grid'
+// `/wc/auto` registers the elements; the package root only exports them.
 import '@zeus-web/themes'
+import '@zeus-web/button/wc/auto'
+import '@zeus-web/input/wc/auto'
+import '@zeus-web/dialog/wc/auto'
+import '@zeus-web/data-grid/wc/auto'
 
 interface Probe {
   effectRuns: number[]

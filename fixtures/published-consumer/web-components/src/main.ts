@@ -11,12 +11,21 @@
  * releases its rows. `customElements.get(...)` is checked too, but only as a
  * precondition — registering an element proves nothing about whether it works.
  */
+/*
+ * `/wc/auto`, not the package root.
+ *
+ * The root export (`"."` → `dist/wc/index.js`) exports the component classes
+ * without registering them; only `/wc/auto` calls `customElements.define`.
+ * Importing the root left every `zw-*` tag in the DOM as an unupgraded
+ * `HTMLElement` — it rendered, and did nothing. The browser test caught it as
+ * `customElements.get('zw-button') === undefined`.
+ */
 import '@zeus-web/themes'
-import '@zeus-web/button'
-import '@zeus-web/input'
-import '@zeus-web/form-field'
-import '@zeus-web/dialog'
-import '@zeus-web/data-grid'
+import '@zeus-web/button/wc/auto'
+import '@zeus-web/input/wc/auto'
+import '@zeus-web/form-field/wc/auto'
+import '@zeus-web/dialog/wc/auto'
+import '@zeus-web/data-grid/wc/auto'
 
 interface WebComponentProbe {
   registered: Record<string, boolean>

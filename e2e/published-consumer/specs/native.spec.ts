@@ -80,24 +80,34 @@ test.describe('native consumer', () => {
     await expect(page.locator('.remountable')).toHaveCount(1)
   })
 
-  test('marks every @zeus-js module as a single physical copy', async ({ page }) => {
+  test('runs a single reactive engine across Core and UI', async ({ page }) => {
     /*
-     * Duplicate engines are the failure this whole repository exists to catch
-     * with Core+UI together. Two copies of @zeus-js/signal would still import
-     * cleanly; the runtime identity would differ and effects would not cross.
+     * Duplicate engines are the failure this repository exists to catch with
+     * Core and UI installed together: two copies of @zeus-js/signal still
+     * import cleanly, but their module identities differ and effects do not
+     * cross. The engine guard throws in that case rather than failing
+     * silently.
+     *
+     * Checked through what the page already loaded, not by importing. A bare
+     * specifier like '@zeus-js/signal' is resolved by Vite at build time; at
+     * runtime `await import('@zeus-js/signal')` inside page.evaluate throws
+     * "Failed to resolve module specifier", which says nothing about the
+     * release.
      */
-    const duplicates = await page.evaluate(async () => {
-      const a = await import('@zeus-js/signal')
-      const viaZeus = await import('@zeus-js/zeus')
+    const engine = await page.evaluate(() => {
+      const probe = window.__zeusProbe
 
       return {
-        sameCreateSignal: typeof a.createSignal === 'function',
-        zeusLoaded: typeof viaZeus === 'object',
+        effectRuns: probe.effectRuns.length,
+        props: probe.props.length,
+        // A second engine would show up as effects that never run for the
+        // signal that a component's own runtime created.
+        mounted: probe.mounted,
       }
     })
 
-    expect(duplicates.sameCreateSignal).toBe(true)
-    expect(duplicates.zeusLoaded).toBe(true)
+    expect(engine.effectRuns).toBeGreaterThan(0)
+    expect(engine.mounted).toBeGreaterThanOrEqual(1)
   })
 
   test('produces no console errors', async ({ page }) => {

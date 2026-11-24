@@ -1,0 +1,178 @@
+# Published-consumer acceptance.
+#
+# Three jobs with stable names, because these are the checks a branch
+# protection rule should require:
+#
+#   Fixtures / Node <n> / <manager>   install, typecheck and build every fixture
+#   Published consumer browsers       drive all fixtures in three engines
+#
+# ## No path filters on the required jobs
+#
+# `core-smoke.yml` filters on `paths`, which means a PR touching none of those
+# files leaves the check pending forever. A required check that never runs
+# blocks the merge it was meant to guard. These jobs always run; the cost is a
+# few minutes, and the alternative is a gate that silently is not there.
+#
+# ## Why install is part of the job, not a cached artifact
+#
+# The point of this workflow is that the fixtures install published tarballs.
+# Restoring a prebuilt `node_modules` from a cache would make the job green
+# even if the registry had broken, so only the pnpm/npm download cache is
+# cached — never the installed tree.
+name: Published consumer
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: published-consumer-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # A developer mirror can lag behind a release; this workflow must read the
+  # public registry, which is what a consumer gets.
+  NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+
+jobs:
+  fixtures:
+    name: Fixtures / Node ${{ matrix.node }} / ${{ matrix.manager }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        # Node 22 and 24 are both supported by the published engines field;
+        # npm and pnpm differ in how they resolve and report peers.
+        node: ['22', '24']
+        manager: [npm, pnpm]
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        if: matrix.manager == 'pnpm'
+        with:
+          version: 10.33.4
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+
+      - name: Record the environment
+        run: |
+          {
+            echo "### Fixture environment"
+            echo
+            echo "| key | value |"
+            echo "| --- | --- |"
+            echo "| node | $(node --version) |"
+            echo "| npm | $(npm --version) |"
+            echo "| manager | ${{ matrix.manager }} |"
+            echo "| registry | $NPM_CONFIG_REGISTRY |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # The fixtures must not become workspace members: a workspace member
+      # shares one lockfile and pnpm may satisfy a dependency from a sibling
+      # package instead of the registry.
+      - name: Assert fixtures are not workspace members
+        run: node scripts/check-published-fixtures.mjs
+
+      - name: Install and verify every fixture
+        run: node scripts/run-published-fixtures.mjs --manager "${{ matrix.manager }}" --out "fixtures-${{ matrix.node }}-${{ matrix.manager }}.json"
+
+      # Evidence is kept whether the run passed or failed, so a red job can be
+      # diagnosed without a re-run.
+      - name: Preserve fixture evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fixtures-${{ matrix.node }}-${{ matrix.manager }}
+          path: |
+            fixtures-${{ matrix.node }}-${{ matrix.manager }}.json
+            fixtures/published-consumer/*/pnpm-lock.yaml
+            fixtures/published-consumer/*/package-lock.json
+          if-no-files-found: warn
+
+  browsers:
+    name: Published consumer browsers
+    # Pinned, not `ubuntu-latest`.
+    #
+    # On 2026-11-24 `ubuntu-latest` resolved to 26.04 and Playwright refused to
+    # install: "Playwright does not support chromium on ubuntu26.04-x64". That
+    # is a platform the browser builds do not target yet, and the failure looked
+    # like a network stall because the job died before printing anything useful.
+    #
+    # A fixed image makes the runner a deliberate choice rather than whatever
+    # GitHub promoted this month.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10.33.4
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+          package-manager-cache: false
+
+      # Playwright's own cache, keyed by the resolved version so a bump
+      # invalidates it. Only the browsers are cached, not node_modules.
+      - name: Resolve the Playwright version
+        id: playwright
+        run: |
+          echo "version=$(node -p "require('./package.json').devDependencies['@playwright/test']")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
+      - name: Install the tooling
+        run: pnpm install --frozen-lockfile
+
+      - name: Install browsers
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      # Each fixture is built and served by playwright.config.ts's webServer
+      # entries, which run `vite preview` against the fixture's own build.
+      - name: Build the fixtures
+        run: node scripts/run-published-fixtures.mjs --manager pnpm
+
+      - name: Run the browser matrix
+        run: pnpm exec playwright test
+
+      - name: Preserve browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: published-consumer-browsers
+          path: |
+            reports/published-consumer.json
+            reports/published-consumer-html
+            reports/published-consumer-artifacts
+          if-no-files-found: warn
+
+      # A missing report is a failure, not a skip: it means the run did not
+      # produce the evidence the gate exists for.
+      - name: Assert the browser matrix produced a report
+        if: always()
+        run: |
+          if [ ! -f reports/published-consumer.json ]; then
+            echo "::error::the browser matrix produced no report; the acceptance has no evidence"
+            exit 1
+          fi
+          node scripts/summarize-published-matrix.mjs reports/published-consumer.json

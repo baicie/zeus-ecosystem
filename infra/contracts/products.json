@@ -1,0 +1,87 @@
+{
+  "schema": "zeus.ecosystem.products/v1",
+  "products": [
+    {
+      "productId": "ai-workbench",
+      "appPath": "apps/ai-workbench",
+      "dockerfile": "apps/ai-workbench/Dockerfile",
+      "context": ".",
+      "platforms": [
+        "linux/amd64",
+        "linux/arm64"
+      ],
+      "runtimePort": 80,
+      "healthcheckPath": "/",
+      "buildInfoPath": "apps/ai-workbench/dist/build-info.json",
+      "staticArtifact": true,
+      "dependsOn": [],
+      "deploymentUnit": "ai",
+      "sizePolicy": {
+        "note": "nginx plus the built bundle; the nginx base is most of it",
+        "maxUnpackedBytes": 125829120
+      }
+    },
+    {
+      "productId": "ai-host",
+      "appPath": "apps/ai-host",
+      "dockerfile": "apps/ai-host/Dockerfile",
+      "context": ".",
+      "platforms": [
+        "linux/amd64",
+        "linux/arm64"
+      ],
+      "runtimePort": 8788,
+      "healthcheckPath": "/health",
+      "buildInfoPath": null,
+      "staticArtifact": false,
+      "dependsOn": [],
+      "deploymentUnit": "ai",
+      "sizePolicy": {
+        "note": "the node base image dominates; the app layer is one bundled file",
+        "maxUnpackedBytes": 419430400
+      }
+    },
+    {
+      "productId": "admin",
+      "appPath": "apps/admin",
+      "dockerfile": "apps/admin/Dockerfile",
+      "context": ".",
+      "platforms": [
+        "linux/amd64",
+        "linux/arm64"
+      ],
+      "runtimePort": 8787,
+      "healthcheckPath": "/api/health",
+      "buildInfoPath": "apps/admin/dist/build-info.json",
+      "staticArtifact": true,
+      "dependsOn": [],
+      "deploymentUnit": "admin",
+      "sizePolicy": {
+        "note": "node runtime plus the SPA and the API server",
+        "maxUnpackedBytes": 524288000
+      }
+    }
+  ],
+  "deploymentUnits": {
+    "ai": {
+      "note": "The workbench and its host upgrade together: the proxy contract and the token are shared, so a version skew between them is a broken deployment, not a degraded one.",
+      "products": [
+        "ai-workbench",
+        "ai-host"
+      ],
+      "order": [
+        "ai-host",
+        "ai-workbench"
+      ]
+    },
+    "admin": {
+      "note": "Admin is independent of the AI unit and carries its own database.",
+      "products": [
+        "admin"
+      ],
+      "order": [
+        "admin"
+      ]
+    }
+  }
+}

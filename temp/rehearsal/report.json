@@ -1,0 +1,48 @@
+{
+  "schema": "zeus.ecosystem.rehearsal/v1",
+  "unit": "admin",
+  "startedAt": "2026-11-24T15:51:15.854Z",
+  "steps": [
+    {
+      "name": "baseline A starts and reports healthy",
+      "ok": true
+    },
+    {
+      "name": "baseline A serves its health path",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "baseline A created its database in the volume",
+      "ok": true,
+      "detail": "3 file(s)"
+    },
+    {
+      "name": "a plan is generated for the candidate",
+      "ok": true
+    },
+    {
+      "name": "candidate B starts on the volume A wrote",
+      "ok": true
+    },
+    {
+      "name": "candidate B reads the existing database",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "rolling back leaves A serving",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "the data survived the round trip",
+      "ok": true,
+      "detail": "3 file(s)"
+    }
+  ],
+  "baselineImageId": "sha256:2b06744e71dbdc4c7db1d0fb6df9a49d5bf49376299c0c0ae6f805c009f31d34",
+  "candidateImageId": "sha256:2b06744e71dbdc4c7db1d0fb6df9a49d5bf49376299c0c0ae6f805c009f31d34",
+  "finishedAt": "2026-11-24T15:51:30.676Z",
+  "passed": true
+}

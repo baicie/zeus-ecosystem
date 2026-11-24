@@ -28,8 +28,18 @@ services:
     # No `ports:` on purpose: the host is reachable only inside this network.
     environment:
       ZEUS_AI_TOKENS: ${ZEUS_AI_TOKENS:?a host token must be generated for this run}
-      ZEUS_AI_ORIGINS: ${ZEUS_AI_ORIGINS:-}
-      ZEUS_AI_MODE: ${ZEUS_AI_MODE:-replay}
+      # The proxied request carries the browser's Origin, and the host rejects any
+      # origin that is not listed. Leaving this empty makes every authenticated
+      # call return 403 AI_HOST_ORIGIN.
+      ZEUS_AI_ORIGINS: ${ZEUS_AI_ORIGINS:?the workbench origin must be allowed}
+            # `interactive`, not `replay`.
+      #
+      # Replay mode serves *recorded* events and needs `ZEUS_AI_PUBLIC_REPLAY`
+      # plus a recording that was made somewhere else. With neither, the host
+      # answers health checks and returns an empty timeline — the P0 interactive
+      # scenario then fails on a component that rendered with no text, which
+      # looks like a broken component rather than a misconfigured host.
+      ZEUS_AI_MODE: ${ZEUS_AI_MODE:-interactive}
       ZEUS_AI_PUBLIC_REPLAY: ${ZEUS_AI_PUBLIC_REPLAY:-0}
       ZEUS_AI_TRUST_PROXY: '1'
     volumes:

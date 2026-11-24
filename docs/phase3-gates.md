@@ -1,26 +1,35 @@
 # Phase 3 completion gates
 
-| Gate | Requirement | Current state |
-| --- | --- | --- |
-| G3a | Repository, main, pinned read-only CI, working test suite | PASS (main CI) |
-| G3b | Dependency policy, evidence matrix, app catalog, permissions review | PASS (main CI, documentation) |
-| G3c-core | Published Core registry install and signal lifecycle | PASS (Node 22/24 Core smoke) |
-| G3c-pair-install | Published Core + UI strict-peer install, npm/pnpm, lockfiles, realpath | Manual workflow prepared; NOT YET PASSED |
-| G3c-browser | Core + UI browser runtime identity, event and cleanup E2E | BLOCKED pending compatible UI release |
-| G4 | AI Workbench + Host migrated and accepted | NOT STARTED |
-| G5 | Image/SBOM/size/deployment evidence migrated | NOT STARTED |
-| G6 | Admin production cutover with rollback and explicit approval | NOT STARTED |
+| Gate | Requirement | State | Evidence |
+| --- | --- | --- | --- |
+| G3a | Repository, main, pinned read-only CI, working test suite | PASS | `ci.yml` |
+| G3b | Dependency policy, evidence matrix, app catalog, permissions review | PASS | this repository |
+| G3c-core | Published Core registry install and signal lifecycle | PASS | `core-smoke.yml`, Node 22/24 |
+| G3c-pair-install | Published Core + UI strict-peer install, npm/pnpm, lockfiles, realpath | PASS | `published-pair-preflight.yml` |
+| G3c-pair-browser | The pair works in a real browser, three engines | PASS | `published-consumer.yml`: 90 checks, 5 fixtures x 3 engines |
 
-## Published-pair manual check
+Phase 3c is complete. The browser half is what closed it: the install gates
+proved the tree resolves, and the fixture matrix proved the components run.
 
-Open **Actions → Published Core UI pair preflight → Run workflow** and provide exact published Core/UI versions. This job performs strict peer installs using npm and pnpm on Node 22/24, inspects resolution realpaths and lockfiles and uploads evidence even on failure. It does **not** publish or deploy.
+## What G3c-pair-browser covers
 
-The current candidate UI version may be unpublished. **A failed run is the correct outcome until the dependency contract is actually satisfiable.** The workflow is deliberately manual and does not produce false-green mandatory CI.
+Five fixtures, each installing only published packages:
 
-Passing this installation check alone does **not** establish browser singleton identity or cross-host behavior.
+| Fixture | Proves |
+| --- | --- |
+| `native` | signals, effects, memo, cleanup, conditional rendering, mount/unmount |
+| `web-components` | button, input, dialog, form field, data grid — mounted and driven |
+| `react` | `createRoot` under StrictMode, props, press event, unmount |
+| `vue` | `createApp`, reactive props, emits, unmount |
+| `ai` | the AI packages' own mock host and S1 scenario |
 
-## Repository settings still owned by an administrator
+The `web-components` fixture is the one that found a real defect: importing
+`@zeus-web/button` exports the class without registering it, and only
+`/wc/auto` calls `customElements.define`. Every `zw-*` tag was an unupgraded
+`HTMLElement` — it rendered and did nothing, and every typecheck passed.
 
-The available integration cannot configure repository rulesets, secrets, environments or runner assignments. Enable a main protection ruleset with review and required CI checks. Keep jobs scoped to `contents: read`; do not transfer npm publish or production SSH tokens into this consumer repository.
+## Phase 4
 
-For production migration, restore full audit evidence, digest-based rollback and deployment acceptance as separate phases.
+Application migration is tracked in [migration-checklist.md](migration-checklist.md)
+rather than here, because it has per-app stages that a single gate row would
+hide.

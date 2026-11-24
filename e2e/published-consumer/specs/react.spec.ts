@@ -24,8 +24,12 @@ test.describe('react consumer', () => {
   })
 
   test('mounts the published Button and Input', async ({ page }) => {
-    await expect(page.locator('#react-button')).toBeAttached()
-    await expect(page.locator('#react-input')).toBeAttached()
+    // `ButtonProps` has no `id`, so the wrapper cannot put one on the element.
+    // Select what it actually renders.
+    await expect(page.getByRole('button', { name: /button:first/ })).toBeAttached()
+    // The wrapper puts the caller's id on its host element as well as on the
+    // inner input, so `#react-input` matches twice. `first()` is the host.
+    await expect(page.locator('#react-input').first()).toBeAttached()
 
     expect(await page.evaluate(() => window.__reactProbe.mounted)).toBeGreaterThan(0)
   })
@@ -39,7 +43,7 @@ test.describe('react consumer', () => {
   })
 
   test('delivers the wrapper press event', async ({ page }) => {
-    await page.locator('#react-button').click()
+    await page.getByRole('button', { name: /button:/ }).click()
 
     await expect
       .poll(() => page.evaluate(() => window.__reactProbe.clicks))
@@ -60,7 +64,7 @@ test.describe('react consumer', () => {
   test('unmounts without leaving the tree behind', async ({ page }) => {
     await page.evaluate(() => window.__reactActions.unmount())
 
-    await expect(page.locator('#react-button')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /button:/ })).toHaveCount(0)
     expect(await page.evaluate(() => window.__reactProbe.unmounted)).toBe(1)
   })
 

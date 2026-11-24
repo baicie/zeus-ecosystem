@@ -150,7 +150,7 @@ jobs:
       # Each fixture is built and served by playwright.config.ts's webServer
       # entries, which run `vite preview` against the fixture's own build.
       - name: Build the fixtures
-        run: node scripts/run-published-fixtures.mjs --manager pnpm --build-only
+        run: node scripts/run-published-fixtures.mjs --manager pnpm
 
       - name: Run the browser matrix
         run: pnpm exec playwright test

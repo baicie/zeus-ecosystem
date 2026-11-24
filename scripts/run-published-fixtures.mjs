@@ -121,7 +121,15 @@ export function runFixture(name, options = {}) {
   result.steps.push({ step: 'typecheck', ...typecheck })
   if (!typecheck.ok) result.ok = false
 
-  if (options.buildOnly === false) return result
+  /*
+   * Building is the default; only an explicit `--no-build` skips it.
+   *
+   * The first version had a `--build-only` flag whose value was computed as
+   * `!args.includes('--build-only')`, so passing it *skipped* the build. The
+   * browser job passes it, so the fixtures were served from a dist that did
+   * not exist, and the only symptom was `vite preview` refusing to start.
+   */
+  if (!shouldBuild(options)) return result
 
   const build = run('npx', ['--no-install', 'vite', 'build'], directory, 300_000)
 
@@ -129,6 +137,19 @@ export function runFixture(name, options = {}) {
   if (!build.ok) result.ok = false
 
   return result
+}
+
+/**
+ * Whether a run should build the fixture.
+ *
+ * Split out because the flag was inverted once and the mistake survived every
+ * check: the step reported success while doing nothing, and the only symptom
+ * was Playwright failing to serve a dist that was never built. A pure
+ * predicate can be asserted directly; a side effect buried after a network
+ * install cannot.
+ */
+export function shouldBuild(options = {}) {
+  return options.skipBuild !== true
 }
 
 export function runAllFixtures(options = {}) {
@@ -155,7 +176,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
 
   const report = runAllFixtures({
     manager: value('--manager', 'pnpm'),
-    buildOnly: !args.includes('--build-only'),
+    // `--no-build` is the only thing that skips the build; building is the
+    // default, because a fixture without its dist is not evidence.
+    skipBuild: args.includes('--no-build'),
   })
 
   const out = value('--out')

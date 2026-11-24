@@ -35,7 +35,7 @@ test.describe('vue consumer', () => {
   })
 
   test('receives the wrapper press emit', async ({ page }) => {
-    await page.locator('zw-button').first().click()
+    await page.getByRole('button', { name: /button:/ }).first().click()
 
     await expect
       .poll(() => page.evaluate(() => window.__vueProbe.presses))

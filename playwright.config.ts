@@ -55,7 +55,15 @@ export default defineConfig({
 
   /* One preview server per fixture, serving that fixture's built output. */
   webServer: FIXTURES.map(fixture => ({
-    command: `npx vite preview --port ${fixture.port} --strictPort`,
+    /*
+     * `--host 127.0.0.1` is required, not cosmetic.
+     *
+     * `vite preview` listens on `localhost`, which on macOS resolves to ::1
+     * first. Playwright probes the IPv4 `url` below and waits for it forever:
+     * the server is up, the probe is on the wrong address, and the failure
+     * reads as "Timed out waiting 120000ms from config.webServer".
+     */
+    command: `npx vite preview --host 127.0.0.1 --port ${fixture.port} --strictPort`,
     cwd: `fixtures/published-consumer/${fixture.name}`,
     url: `http://127.0.0.1:${fixture.port}`,
     reuseExistingServer: !process.env.CI,

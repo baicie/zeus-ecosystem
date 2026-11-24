@@ -4,6 +4,7 @@ import { test } from 'node:test'
 import {
   installCommand,
   runFixture,
+  shouldBuild,
 } from '../run-published-fixtures.mjs'
 import {
   parseProjectName,
@@ -18,6 +19,22 @@ test('each manager installs with peers treated strictly', () => {
   assert.deepEqual(installCommand('npm')[1].slice(0, 1), ['install'])
   assert.ok(installCommand('npm')[1].includes('--strict-peer-deps'))
   assert.ok(installCommand('pnpm')[1].includes('--strict-peer-dependencies'))
+})
+
+test('builds by default and only skips on an explicit flag', () => {
+  /*
+   * The browser job serves each fixture with `vite preview`, so the fixture
+   * must be built first. An inverted flag made that step a silent no-op, and
+   * the only symptom was "The directory dist does not exist" — which reads
+   * like a missing build, not like a broken option.
+   *
+   * The predicate is asserted directly because the side effect happens after a
+   * multi-minute network install, where a test cannot see it cheaply.
+   */
+  assert.equal(shouldBuild(), true)
+  assert.equal(shouldBuild({}), true)
+  assert.equal(shouldBuild({ manager: 'pnpm' }), true)
+  assert.equal(shouldBuild({ skipBuild: true }), false)
 })
 
 test('refuses a fixture that does not exist', () => {

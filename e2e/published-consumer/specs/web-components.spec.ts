@@ -51,21 +51,29 @@ test.describe('web components consumer', () => {
   })
 
   test('zw-dialog opens, closes and reopens', async ({ page }) => {
-    await page.evaluate(() => window.__wcActions.openDialog())
-    await expect
-      .poll(() => page.evaluate(() => window.__wcProbe.dialogOpens))
-      .toBeGreaterThan(0)
+    /*
+     * Driven through the element's own `open` property, because that is the
+     * API it exposes — probing it showed `open` reflected to an attribute and
+     * `data-state` changing, and no `open`/`toggle`/`zeus:open` event firing.
+     * A test that listened for an event would have failed on a working dialog.
+     */
+    const dialog = page.locator('#probe-dialog')
 
-    const openedOnce = await page.evaluate(() => window.__wcProbe.dialogOpens)
+    await page.evaluate(() => {
+      ;(document.querySelector('#probe-dialog') as { open?: boolean }).open = true
+    })
+    await expect(dialog).toHaveAttribute('open', '')
 
-    await page.evaluate(() => window.__wcActions.closeDialog())
-    await page.waitForTimeout(100)
-    await page.evaluate(() => window.__wcActions.openDialog())
+    await page.evaluate(() => {
+      ;(document.querySelector('#probe-dialog') as { open?: boolean }).open = false
+    })
+    await expect(dialog).not.toHaveAttribute('open', '')
 
     // Reopening is the part that breaks when a dialog leaves stale state.
-    await expect
-      .poll(() => page.evaluate(() => window.__wcProbe.dialogOpens))
-      .toBeGreaterThan(openedOnce)
+    await page.evaluate(() => {
+      ;(document.querySelector('#probe-dialog') as { open?: boolean }).open = true
+    })
+    await expect(dialog).toHaveAttribute('open', '')
   })
 
   test('zw-data-grid accepts rows, updates and clears them', async ({ page }) => {

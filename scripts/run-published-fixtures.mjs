@@ -82,10 +82,24 @@ export function runFixture(name, options = {}) {
    * two layouts coexisting, not of the packages. Removing node_modules is what
    * makes each run a genuine fresh install for that manager.
    */
-  const otherLock = manager === 'npm' ? 'pnpm-lock.yaml' : 'package-lock.json'
-  const otherLockPath = join(directory, otherLock)
+  /*
+   * Only one manager's lockfile is committed (pnpm's, to match the repository
+   * itself). Asking for the other manager removes it so that run resolves from
+   * the manifest, and regenerates its own — which is what a new consumer with
+   * that manager actually does.
+   *
+   * The generated lockfile is the evidence: the workflow uploads whichever one
+   * the run produced, so the resolved graph is recorded either way.
+   */
+  const locks = manager === 'npm'
+    ? ['pnpm-lock.yaml']
+    : ['package-lock.json']
 
-  if (existsSync(otherLockPath)) rmSync(otherLockPath, { force: true })
+  for (const lock of locks) {
+    const path = join(directory, lock)
+
+    if (existsSync(path)) rmSync(path, { force: true })
+  }
 
   if (options.fresh !== false) {
     rmSync(join(directory, 'node_modules'), { recursive: true, force: true })

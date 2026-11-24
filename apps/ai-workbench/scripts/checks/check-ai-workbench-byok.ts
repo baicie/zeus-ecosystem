@@ -9,7 +9,7 @@
  * Run with `pnpm check:ai-workbench-byok`. Browsers default to Chromium; set
  * `ZEUS_AI_WORKBENCH_BROWSERS` for more.
  */
-import { mkdirSync, rmSync } from 'node:fs'
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 
 import { expect } from '@playwright/test'
@@ -478,9 +478,18 @@ async function main(): Promise<void> {
     absent.length === 0 &&
     empty.length === 0 &&
     results.every(result => result.status === 'passed')
-  console.log(
-    JSON.stringify({ results, absentEngines: absent, passed }, null, 2),
-  )
+  /*
+   * Written to a file as well as stdout.
+   *
+   * CI used to capture stdout with `tee`, but the gate removes and recreates
+   * its own output directory, so a file redirected into it was deleted before
+   * it could be read. Writing here is inside the gate's own lifecycle, and a
+   * downstream baseline check can then require the report to exist.
+   */
+  const report = { results, absentEngines: absent, passed }
+  const reportFile = path.join(outDir, 'report.json')
+  writeFileSync(reportFile, `${JSON.stringify(report, null, 2)}\n`)
+  console.log(JSON.stringify(report, null, 2))
   if (!passed) throw new Error('BYOK gate failed')
 }
 

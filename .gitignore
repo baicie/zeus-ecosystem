@@ -6,3 +6,7 @@ reports/
 # scripts/checks. Regenerated on every run.
 apps/*/temp/
 apps/*/reports/
+
+# Host runtime state: the SQLite database the app creates on first start.
+apps/ai-host/.data/
+apps/*/dist/

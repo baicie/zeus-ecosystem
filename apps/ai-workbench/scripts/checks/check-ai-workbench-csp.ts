@@ -15,7 +15,7 @@ import type { Page } from '@playwright/test'
  *
  * Run with `pnpm check:ai-workbench-csp`.
  */
-import { existsSync, readdirSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs'
 
 import path from 'node:path'
 import { chromium } from '@playwright/test'
@@ -42,6 +42,7 @@ import { selectMode } from './support/workbench-ui'
  * `apps/vite.config.ts`.
  */
 const root = path.resolve(import.meta.dirname, '../..')
+const outDir = path.join(root, 'temp/ai-workbench-csp')
 const GATEWAY_KEY = 'mock-key-0123456789'
 const PASSPHRASE = 'correct horse battery staple'
 
@@ -276,7 +277,13 @@ async function main(): Promise<void> {
     await allowedPage.close()
     await allowed.close()
 
-    console.log(JSON.stringify({ checks, passed: true }, null, 2))
+    const report = { checks, passed: true }
+    mkdirSync(outDir, { recursive: true })
+    writeFileSync(
+      path.join(outDir, 'report.json'),
+      `${JSON.stringify(report, null, 2)}\n`,
+    )
+    console.log(JSON.stringify(report, null, 2))
   } finally {
     await browser.close()
     await gateway.close()

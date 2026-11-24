@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "vite/client", "@zeus-js/zeus/jsx"],
+    "allowJs": false
+  },
+  "include": ["scripts", "src", "__tests__"]
+}

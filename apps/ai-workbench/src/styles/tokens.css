@@ -1,0 +1,177 @@
+/**
+ * Workbench design tokens — the ChatGPT web palette.
+ *
+ * Values are sampled from the frozen reference captures
+ * (`artifacts/design-acceptance/reference/chatgpt/C01/C03/C07`):
+ *
+ *   light   page #fcfcfc · composer #ffffff · border rgb(219 219 219)
+ *           user bubble #edf3fe · text #0d0d0d · muted #5d5d5d
+ *   dark    page #000000 · composer #212121 · border #272727
+ *           user bubble #24324a · text #ffffff · muted #9b9b9b
+ *   send    #2451da filled, disabled #9ab2f7 (light) / #2b4488 (dark)
+ *
+ * Both themes carry the full set; nothing after this file names a colour.
+ */
+
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --wb-surface-base: #fcfcfc;
+  --wb-surface-raised: #ffffff;
+  --wb-surface-composer: #ffffff;
+  --wb-surface-hover: #f0f0f0;
+  --wb-surface-active: #e8e8e8;
+  --wb-surface-inset: #f4f4f4;
+  --wb-surface-code: #f2f2f2;
+  --wb-surface-code-header: #f7f7f7;
+
+  /*
+   * Code tokens. The hues are the reference capture's: call names read blue,
+   * strings green, comments grey. Contrast against `--wb-surface-code` is at
+   * least 4.5:1 for every one of them on both themes.
+   */
+  --wb-code-keyword: #9b2393;
+  --wb-code-string: #1a7f37;
+  --wb-code-comment: #6e7781;
+  --wb-code-number: #b35900;
+  --wb-code-function: #2451da;
+
+  --wb-border-default: #e2e2e2;
+  --wb-border-subtle: #ececec;
+  --wb-border-strong: #d0d0d0;
+
+  --wb-text-primary: #0d0d0d;
+  --wb-text-secondary: #3d3d3d;
+  --wb-text-muted: #5d5d5d;
+  --wb-text-inverse: #ffffff;
+
+  --wb-bubble-user: #edf3fe;
+  --wb-bubble-user-text: #0d0d0d;
+
+  --wb-accent-default: #0d0d0d;
+  --wb-accent-contrast: #ffffff;
+  --wb-accent-link: #2451da;
+  --wb-send: #2451da;
+  --wb-send-disabled: #9ab2f7;
+  --wb-avatar-surface: #ececec;
+  --wb-avatar-text: #5d5d5d;
+
+  --wb-danger-subtle: #fdeaea;
+  --wb-danger-default: #c0322f;
+  --wb-success-subtle: #e7f6ec;
+  --wb-success-default: #1c7a4b;
+  --wb-warning-subtle: #fdf4e3;
+  --wb-warning-default: #8a5a09;
+
+  --wb-focus-ring: #2451da;
+  --wb-scrim: rgba(0, 0, 0, 0.45);
+
+  --wb-shadow-composer:
+    0 0 0 1px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04),
+    0 4px 80px 8px rgba(0, 0, 0, 0.024);
+  --wb-shadow-popover: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --wb-shadow-drawer: 0 16px 48px rgba(0, 0, 0, 0.18);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --wb-surface-base: #000000;
+  --wb-surface-raised: #212121;
+  --wb-surface-composer: #212121;
+  --wb-surface-hover: #2f2f2f;
+  --wb-surface-active: #3a3a3a;
+  --wb-surface-inset: #171717;
+  --wb-surface-code: #0d0d0d;
+  --wb-surface-code-header: #171717;
+
+  --wb-code-keyword: #ff7ab2;
+  --wb-code-string: #7ee787;
+  --wb-code-comment: #8b949e;
+  --wb-code-number: #ffa657;
+  --wb-code-function: #79c0ff;
+
+  --wb-border-default: #272727;
+  --wb-border-subtle: #1f1f1f;
+  --wb-border-strong: #3d3d3d;
+
+  --wb-text-primary: #ffffff;
+  --wb-text-secondary: #d2d2d2;
+  --wb-text-muted: #9b9b9b;
+  --wb-text-inverse: #0d0d0d;
+
+  --wb-bubble-user: #24324a;
+  --wb-bubble-user-text: #ffffff;
+
+  --wb-accent-default: #ffffff;
+  --wb-accent-contrast: #0d0d0d;
+  --wb-accent-link: #7aa2ff;
+  --wb-send: #2b4488;
+  --wb-send-disabled: #2b4488;
+  --wb-avatar-surface: #3a3a3a;
+  --wb-avatar-text: #d2d2d2;
+
+  --wb-danger-subtle: #3a1a19;
+  --wb-danger-default: #f08b80;
+  --wb-success-subtle: #12301f;
+  --wb-success-default: #5ec98d;
+  --wb-warning-subtle: #33260f;
+  --wb-warning-default: #e0aa4e;
+
+  --wb-focus-ring: #7aa2ff;
+  --wb-scrim: rgba(0, 0, 0, 0.6);
+
+  --wb-shadow-composer:
+    0 0 0 1px rgba(255, 255, 255, 0.04), 0 2px 8px rgba(0, 0, 0, 0.4);
+  --wb-shadow-popover: 0 8px 30px rgba(0, 0, 0, 0.5);
+  --wb-shadow-drawer: 0 16px 48px rgba(0, 0, 0, 0.6);
+}
+
+:root {
+  --wb-space-1: 4px;
+  --wb-space-2: 8px;
+  --wb-space-3: 12px;
+  --wb-space-4: 16px;
+  --wb-space-5: 20px;
+  --wb-space-6: 24px;
+  --wb-space-8: 32px;
+  --wb-space-10: 40px;
+  --wb-space-12: 48px;
+
+  --wb-radius-sm: 8px;
+  --wb-radius-md: 10px;
+  --wb-radius-lg: 14px;
+  --wb-radius-xl: 24px;
+  --wb-radius-composer: 28px;
+  --wb-radius-full: 999px;
+
+  --wb-font-sans:
+    -apple-system-body, ui-sans-serif, -apple-system, 'Segoe UI', Helvetica,
+    'Apple Color Emoji', Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --wb-font-mono:
+    ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+
+  --wb-font-xs: 12px;
+  --wb-font-sm: 13px;
+  --wb-font-base: 16px;
+  --wb-font-lg: 18px;
+  --wb-font-xl: 24px;
+
+  /* Geometry measured from the frozen ChatGPT captures at 1440×900. */
+  --wb-sidebar-width: 260px;
+  --wb-sidebar-width-collapsed: 0px;
+  --wb-topbar-height: 60px;
+  --wb-thread-max: 768px;
+  --wb-composer-height: 52px;
+  --wb-inspector-width: 400px;
+
+  --wb-duration: 150ms;
+  --wb-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --wb-duration: 0ms;
+  }
+}

@@ -1,0 +1,928 @@
+/**
+ * Workbench layout — the ChatGPT web chat shell.
+ *
+ * Structure (measured against the frozen reference captures):
+ *
+ *   .wb-shell
+ *     ├─ .wb-sidebar   260px; brand row, New chat, Search, Recent list, account
+ *     └─ .wb-main
+ *          ├─ .wb-topbar   60px; sidebar toggle + model picker, actions right
+ *          ├─ .wb-thread   centred 768px column, scrolls independently
+ *          └─ .wb-composer-wrap   composer anchored at the bottom, same column
+ *
+ * The empty state centres the welcome line and the composer in the viewport;
+ * once a conversation exists the composer drops to the bottom and the thread
+ * takes the scroll. The inspector is an overlay drawer that is **not mounted**
+ * until the user opens it, so the default chat surface is never compressed.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/*
+ * `hidden` must win over a class that sets `display` (`.icon-button`,
+ * `.byok-send`, `.wb-suggestion` …). The UA rule loses to any author rule of
+ * equal specificity, so without this a "hidden" element still lays out and is
+ * still clickable — which is how the second composer and the idle Stop button
+ * stayed on screen.
+ */
+[hidden] {
+  display: none !important;
+}
+
+* {
+  margin: 0;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  background: var(--wb-surface-base);
+  color: var(--wb-text-primary);
+  font-family: var(--wb-font-sans);
+  font-size: var(--wb-font-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--wb-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--wb-radius-sm);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--wb-radius-md);
+  color: var(--wb-text-primary);
+}
+
+.icon-button:hover {
+  background: var(--wb-surface-hover);
+}
+
+.icon-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ----------------------------------------------------------------- shell */
+.wb-shell {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  background: var(--wb-surface-base);
+}
+
+/* --------------------------------------------------------------- sidebar */
+.wb-sidebar {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  width: var(--wb-sidebar-width);
+  height: 100%;
+  padding: 8px 0 12px;
+  background: var(--wb-surface-base);
+  border-right: 1px solid var(--wb-border-default);
+  transition: width var(--wb-duration) var(--wb-ease);
+}
+
+.wb-shell.is-sidebar-collapsed .wb-sidebar {
+  width: 0;
+  padding: 0;
+  border-right: 0;
+  overflow: hidden;
+}
+
+.wb-sidebar-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 52px;
+  padding: 0 6px 0 8px;
+}
+
+.wb-brand {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  height: 36px;
+  padding: 0 8px;
+  border-radius: var(--wb-radius-md);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.wb-brand:hover {
+  background: var(--wb-surface-hover);
+}
+
+.wb-brand-name {
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+.wb-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  border-radius: var(--wb-radius-full);
+  background: var(--wb-text-primary);
+  color: var(--wb-surface-base);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wb-brand-caret {
+  width: 14px;
+  height: 14px;
+  color: var(--wb-text-muted);
+}
+
+.wb-sidebar-scroll {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  padding: 8px 6px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.wb-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--wb-radius-md);
+  color: var(--wb-text-primary);
+  font-size: 14px;
+  font-weight: 400;
+  text-align: start;
+  white-space: nowrap;
+}
+
+.wb-nav-item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* The reference's icon gutter starts at 16px and the label at 38px. */
+.wb-sidebar-scroll {
+  padding: 12px 8px 8px;
+}
+
+.wb-nav-item:hover {
+  background: var(--wb-surface-hover);
+}
+
+.wb-nav-item.is-active {
+  background: var(--wb-surface-active);
+}
+
+.wb-sidebar-section {
+  padding: 22px 10px 8px;
+  color: var(--wb-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.wb-conversation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wb-conversation-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: var(--wb-radius-md);
+}
+
+.wb-conversation-row:hover,
+.wb-conversation-row.is-active {
+  background: var(--wb-surface-hover);
+}
+
+.wb-conversation-button {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--wb-radius-md);
+  color: var(--wb-text-primary);
+  font-size: 14px;
+  text-align: start;
+}
+
+.wb-conversation-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wb-conversation-menu {
+  display: none;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  margin-right: 4px;
+  border-radius: var(--wb-radius-sm);
+  color: var(--wb-text-muted);
+}
+
+.wb-conversation-row:hover .wb-conversation-menu,
+.wb-conversation-row.is-active .wb-conversation-menu,
+.wb-conversation-menu[aria-expanded='true'] {
+  display: grid;
+  place-items: center;
+}
+
+.wb-conversation-menu:hover {
+  background: var(--wb-surface-active);
+  color: var(--wb-text-primary);
+}
+
+.wb-conversation-menu svg {
+  width: 16px;
+  height: 16px;
+}
+
+/*
+ * Search sits directly under the button that opens it, at the same inset as the
+ * conversation rows, so the list it filters is immediately below. The field is
+ * the only control in the sidebar that is not a row: it is a real input, and it
+ * carries the reference's 36px row height so opening it does not shift the list.
+ */
+.wb-sidebar-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  margin: 2px 0;
+  padding: 0 8px;
+  border: 1px solid var(--wb-border-default);
+  border-radius: var(--wb-radius-md);
+  background: var(--wb-surface-base);
+}
+
+.wb-sidebar-search:focus-within {
+  border-color: var(--wb-accent-default);
+}
+
+.wb-search-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--wb-text-primary);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.wb-search-input::placeholder {
+  color: var(--wb-text-muted);
+}
+
+.wb-search-clear {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--wb-radius-sm);
+  color: var(--wb-text-muted);
+}
+
+.wb-search-clear:hover {
+  background: var(--wb-surface-hover);
+  color: var(--wb-text-primary);
+}
+
+.wb-sidebar-empty {
+  padding: 8px 10px;
+  color: var(--wb-text-muted);
+  font-size: 13px;
+}
+
+.wb-sidebar-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 6px 0;
+  border-top: 1px solid var(--wb-border-subtle);
+}
+
+.wb-account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: var(--wb-radius-md);
+  text-align: start;
+}
+
+.wb-account:hover {
+  background: var(--wb-surface-hover);
+}
+
+.wb-avatar {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  border-radius: var(--wb-radius-full);
+  background: var(--wb-avatar-surface);
+  color: var(--wb-avatar-text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.wb-account-copy {
+  display: grid;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.wb-account-name {
+  overflow: hidden;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wb-account-plan {
+  color: var(--wb-text-muted);
+  font-size: 12px;
+}
+
+/* ------------------------------------------------------------------ main */
+.wb-main {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  container-type: inline-size;
+  height: 100%;
+  background: var(--wb-surface-base);
+}
+
+.wb-topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--wb-topbar-height);
+  flex: 0 0 auto;
+  padding: 8px 16px;
+}
+
+.wb-sidebar-toggle {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 36px;
+  border-radius: var(--wb-radius-md);
+  color: var(--wb-text-primary);
+}
+
+.wb-sidebar-toggle:hover {
+  background: var(--wb-surface-hover);
+}
+
+.wb-model-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--wb-radius-md);
+  color: var(--wb-text-primary);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.wb-model-picker:hover {
+  background: var(--wb-surface-hover);
+}
+
+.wb-model-picker svg {
+  width: 16px;
+  height: 16px;
+  color: var(--wb-text-muted);
+}
+
+.wb-model-picker .wb-model-kind {
+  color: var(--wb-text-muted);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.wb-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.wb-mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--wb-border-default);
+  border-radius: var(--wb-radius-full);
+  color: var(--wb-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.wb-mode-pill:hover {
+  background: var(--wb-surface-hover);
+}
+
+.wb-mode-pill[data-tone='busy'] {
+  border-color: var(--wb-warning-default);
+  color: var(--wb-warning-default);
+}
+
+.wb-mode-pill[data-tone='error'] {
+  border-color: var(--wb-danger-default);
+  color: var(--wb-danger-default);
+}
+
+.wb-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--wb-radius-full);
+  background: currentColor;
+}
+
+.wb-dot[data-connection='live'] {
+  background: var(--wb-success-default);
+}
+
+.wb-dot[data-connection='connecting'],
+.wb-dot[data-connection='reconnecting'] {
+  background: var(--wb-warning-default);
+}
+
+.wb-dot[data-connection='error'],
+.wb-dot[data-connection='offline'] {
+  background: var(--wb-danger-default);
+}
+
+.wb-pill-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: var(--wb-radius-full);
+  color: var(--wb-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.wb-pill-button:hover {
+  background: var(--wb-surface-hover);
+  color: var(--wb-text-primary);
+}
+
+.wb-pill-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.wb-badge {
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--wb-radius-full);
+  background: var(--wb-text-primary);
+  color: var(--wb-surface-base);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------- thread */
+.wb-surface {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.wb-welcome {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* 32px block gap: the reference's title text sits 39px above the composer,
+     and its 28px line box eats 5–6px of that on either side. */
+  gap: 32px;
+  padding: 24px 16px 22vh;
+}
+
+.wb-welcome[hidden] {
+  display: none;
+}
+
+.wb-welcome-title {
+  color: var(--wb-text-primary);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0.07px;
+  text-align: center;
+}
+
+.wb-suggestion {
+  display: block;
+  margin: 8px auto 0;
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid var(--wb-border-default);
+  border-radius: var(--wb-radius-full);
+  background: var(--wb-surface-base);
+  color: var(--wb-text-primary);
+  font-size: 14px;
+}
+
+.wb-suggestion:hover {
+  background: var(--wb-surface-hover);
+}
+
+/* A class that sets `display` outranks the UA `[hidden]` rule. */
+.wb-suggestion[hidden] {
+  display: none;
+}
+
+.wb-suggestion:hover {
+  background: var(--wb-surface-hover);
+}
+
+/* A class that sets `display` outranks the UA `[hidden]` rule. */
+.wb-suggestion[hidden] {
+  display: none;
+}
+
+.wb-thread {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 16px;
+  scrollbar-width: thin;
+}
+
+.wb-thread[hidden] {
+  display: none;
+}
+
+.wb-thread-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--wb-thread-max);
+  margin: 0 auto;
+  padding: 8px 0 24px;
+}
+
+/* -------------------------------------------------------------- composer */
+.wb-composer-zone {
+  flex: 0 0 auto;
+  width: 100%;
+  padding: 0 16px 16px;
+}
+
+/*
+ * The dock. Exactly one owner element ever sits in `.wb-dock-slot`; the
+ * shell moves the zone, never the composer, so a draft and its caret survive
+ * the welcome-to-thread transition and every mode switch.
+ */
+.wb-dock-slot {
+  display: contents;
+}
+
+.wb-dock-accessory {
+  display: block;
+}
+
+.wb-dock-accessory[hidden] {
+  display: none;
+}
+
+.wb-composer-zone.is-centred {
+  padding: 0 16px;
+}
+
+.wb-composer-stack {
+  width: 100%;
+  max-width: var(--wb-thread-max);
+  margin: 0 auto;
+}
+
+.wb-composer-hint {
+  margin-top: 8px;
+  color: var(--wb-text-muted);
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+}
+
+.wb-error-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--wb-danger-default);
+  border-radius: var(--wb-radius-md);
+  background: var(--wb-danger-subtle);
+  color: var(--wb-danger-default);
+  font-size: 13px;
+}
+
+.wb-error-line[hidden] {
+  display: none;
+}
+
+.wb-error-line button {
+  margin-left: auto;
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- drawer */
+.wb-drawer-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: var(--wb-scrim);
+}
+
+.wb-drawer {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  bottom: 8px;
+  z-index: 41;
+  display: flex;
+  flex-direction: column;
+  width: min(var(--wb-inspector-width), calc(100vw - 16px));
+  border: 1px solid var(--wb-border-default);
+  border-radius: var(--wb-radius-lg);
+  background: var(--wb-surface-raised);
+  box-shadow: var(--wb-shadow-drawer);
+  overflow: hidden;
+}
+
+.wb-drawer-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  flex: 0 0 auto;
+  padding: 0 8px 0 16px;
+  border-bottom: 1px solid var(--wb-border-subtle);
+}
+
+.wb-drawer-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.wb-drawer-tabs {
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+  padding: 8px;
+  border-bottom: 1px solid var(--wb-border-subtle);
+}
+
+.wb-drawer-tab {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: var(--wb-radius-full);
+  color: var(--wb-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.wb-drawer-tab:hover {
+  background: var(--wb-surface-hover);
+}
+
+.wb-drawer-tab[aria-selected='true'] {
+  background: var(--wb-surface-active);
+  color: var(--wb-text-primary);
+}
+
+.wb-drawer-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  padding: 12px 16px 16px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.wb-drawer-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wb-text-secondary);
+}
+
+.wb-drawer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wb-drawer[hidden],
+.wb-drawer-scrim[hidden] {
+  display: none;
+}
+
+/*
+ * Wide viewports dock the drawer as a flex column (a real split), so the chat
+ * keeps its measured reading width and stays interactive. Below 1280px it is a
+ * fixed overlay with a scrim, because squeezing the 768px column further would
+ * break the message rhythm the reference defines.
+ */
+@media (min-width: 1280px) {
+  /*
+   * The docked column yields space instead of fixing 320px. A page zoom (or a
+   * narrow window just above the breakpoint) reduces the layout width without
+   * changing the media query, so a hard 320px reserve would collapse the chat
+   * column to zero. `clamp` keeps the drawer usable while leaving the composer
+   * a real width at every zoom level.
+   */
+  .wb-drawer {
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    flex: 0 1 auto;
+    width: clamp(200px, 24%, 320px);
+    min-width: 200px;
+    margin: 8px 8px 8px 0;
+    height: auto;
+    align-self: stretch;
+  }
+
+  .wb-drawer-scrim {
+    display: none !important;
+  }
+}
+
+/* --------------------------------------------------------------- mobile */
+@media (max-width: 767px) {
+  .wb-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 45;
+    width: min(86vw, 300px);
+    box-shadow: var(--wb-shadow-drawer);
+    transform: translateX(-102%);
+    transition: transform var(--wb-duration) var(--wb-ease);
+  }
+
+  .wb-shell.is-sidebar-open-mobile .wb-sidebar {
+    transform: translateX(0);
+  }
+
+  .wb-shell.is-sidebar-open-mobile .wb-sidebar-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 44;
+    display: block;
+    background: var(--wb-scrim);
+  }
+
+  .wb-topbar {
+    padding: 8px 10px;
+  }
+
+  .wb-model-picker {
+    font-size: 16px;
+  }
+  .wb-model-picker {
+    font-size: 16px;
+  }
+
+  /*
+   * On a phone the reference's top bar is a menu button, the product name and
+   * the account action — nothing else. The connection lamp, the activity drawer
+   * and the theme switch are desktop affordances: at 390px they crowd the title
+   * and, in the case of the drawer, cover the answer. The connection state is
+   * still reachable through the activity panel on a wide viewport, and the theme
+   * follows the system preference here.
+   */
+  .wb-topbar-actions .wb-activity-toggle,
+  .wb-topbar-actions [data-testid='connection'] {
+    display: none;
+  }
+
+  .wb-welcome {
+    justify-content: flex-start;
+    gap: 20px;
+    padding-top: 33vh;
+  }
+
+  .wb-welcome-title {
+    font-size: 20px;
+  }
+
+  .wb-composer-zone {
+    padding: 0 10px 10px;
+  }
+
+  .wb-composer-zone.is-centred {
+    padding-bottom: 10px;
+  }
+
+  .wb-thread {
+    padding: 0 10px;
+  }
+}

@@ -103,7 +103,16 @@ jobs:
 
   browsers:
     name: Published consumer browsers
-    runs-on: ubuntu-latest
+    # Pinned, not `ubuntu-latest`.
+    #
+    # On 2026-11-24 `ubuntu-latest` resolved to 26.04 and Playwright refused to
+    # install: "Playwright does not support chromium on ubuntu26.04-x64". That
+    # is a platform the browser builds do not target yet, and the failure looked
+    # like a network stall because the job died before printing anything useful.
+    #
+    # A fixed image makes the runner a deliberate choice rather than whatever
+    # GitHub promoted this month.
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5

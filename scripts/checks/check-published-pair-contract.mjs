@@ -43,6 +43,7 @@ const EXACT_VERSION = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/
 const DEPENDENT_MANIFESTS = [
   'apps/ai-workbench/package.json',
   'apps/ai-host/package.json',
+  'apps/admin/package.json',
   'fixtures/published-consumer/native/package.json',
   'fixtures/published-consumer/web-components/package.json',
   'fixtures/published-consumer/react/package.json',

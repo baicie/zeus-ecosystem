@@ -7,11 +7,55 @@ import {
   shouldBuild,
 } from '../run-published-fixtures.mjs'
 import {
-  parseProjectName,
   renderMarkdown,
   summarize,
   verdictOf,
 } from '../summarize-published-matrix.mjs'
+
+/**
+ * The shape Playwright actually writes: suites nest, and the project name is
+ * on each spec's `tests[]`, not on the suite. A summarizer that assumed
+ * otherwise reported "0 passed" against a report the runner called 90.
+ */
+function report(entries) {
+  const byFixture = new Map()
+
+  for (const entry of entries) {
+    const [fixture] = entry.project.split('-')
+    const list = byFixture.get(fixture) ?? []
+    list.push(entry)
+    byFixture.set(fixture, list)
+  }
+
+  /*
+   * The nesting is the point: file → describe → specs. A summarizer that reads
+   * only `suites[].specs` finds nothing here, which is exactly the bug this
+   * fixture has to be able to expose.
+   */
+  return {
+    suites: [...byFixture.entries()].map(([fixture, listed]) => ({
+      title: `${fixture}.spec.ts`,
+      file: `${fixture}.spec.ts`,
+      specs: [],
+      suites: [
+        {
+          title: `${fixture} consumer`,
+          specs: listed.map(entry => ({
+            title: entry.test,
+            tests: [
+              {
+                projectName: entry.project,
+                status: entry.status,
+                results: [{ status: entry.status, error: entry.error }],
+              },
+            ],
+          })),
+          suites: [],
+        },
+      ],
+    })),
+  }
+}
 
 test('each manager installs with peers treated strictly', () => {
   // A peer conflict must fail the install, not warn: the whole point is
@@ -44,31 +88,35 @@ test('refuses a fixture that does not exist', () => {
   assert.equal(result.steps[0].step, 'locate')
 })
 
-test('splits a Playwright project name into fixture and browser', () => {
-  assert.deepEqual(parseProjectName('native-chromium'), {
-    fixture: 'native',
-    browser: 'chromium',
-  })
-  assert.deepEqual(parseProjectName('web-components-webkit'), {
-    fixture: 'web-components',
-    browser: 'webkit',
-  })
-  assert.equal(parseProjectName('not-a-project'), undefined)
+test('reads a nested report and counts each project', () => {
+  const summary = summarize(
+    report([
+      { project: 'native-chromium', test: 'a', status: 'passed' },
+      { project: 'native-firefox', test: 'a', status: 'passed' },
+      { project: 'native-webkit', test: 'a', status: 'passed' },
+      { project: 'react-chromium', test: 'b', status: 'passed' },
+    ]),
+  )
+
+  assert.equal(summary.totals.pass, 4)
+  assert.equal(summary.rows.get('native/webkit').pass, 1)
+  assert.equal(verdictOf(summary).ok, true)
 })
 
-function report(suites) {
-  return {
-    suites: suites.map(entry => ({
-      title: entry.project,
-      specs: [
-        {
-          title: entry.test,
-          tests: [{ results: [{ status: entry.status, error: entry.error }] }],
-        },
-      ],
-    })),
-  }
-}
+test('counts a spec that runs in one project per project', () => {
+  /*
+   * The same spec appears once per project; reading only the top level lost
+   * every one of them.
+   */
+  const summary = summarize(
+    report([
+      { project: 'ai-chromium', test: 'x', status: 'passed' },
+      { project: 'ai-firefox', test: 'x', status: 'passed' },
+    ]),
+  )
+
+  assert.equal(summary.totals.pass, 2)
+})
 
 test('summarizes passing cells', () => {
   const summary = summarize(

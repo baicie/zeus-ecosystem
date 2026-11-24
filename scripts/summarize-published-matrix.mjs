@@ -19,39 +19,49 @@ import { appendFileSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-/** Splits a Playwright project name (`native-chromium`) into its parts. */
-export function parseProjectName(name) {
-  const match = /^(.+)-(chromium|firefox|webkit)$/.exec(name)
+/**
+ * Walks Playwright's report and returns one row per spec.
+ *
+ * The report is nested: `suites[].suites[].specs[]`, with the file at the top
+ * and `describe` blocks below. The first version only read the top level, so
+ * every fixture had zero specs and the summary read "0 passed" while the
+ * runner had reported 90.
+ *
+ * The project name is not on the suite either — it is on each spec's
+ * `tests[].projectName`, because the same spec runs in several projects.
+ */
+export function flattenSpecs(suites, into = []) {
+  for (const suite of suites ?? []) {
+    for (const spec of suite.specs ?? []) {
+      into.push({ spec, file: suite.file ?? suite.title })
+    }
 
-  return match ? { fixture: match[1], browser: match[2] } : undefined
+    flattenSpecs(suite.suites, into)
+  }
+
+  return into
 }
 
 export function summarize(report) {
   const rows = new Map()
   const failures = []
 
-  for (const suite of report.suites ?? []) {
-    for (const spec of suite.specs ?? []) {
-      const project = parseProjectName(suite.title ?? spec.title ?? '') ?? {
-        fixture: suite.title ?? 'unknown',
-        browser: 'unknown',
-      }
-      const key = `${project.fixture}/${project.browser}`
+  for (const { spec, file } of flattenSpecs(report.suites)) {
+    for (const test of spec.tests ?? []) {
+      const project = test.projectName ?? file ?? 'unknown'
+      const match = /^(.+)-(chromium|firefox|webkit)$/.exec(project)
+      const key = match ? `${match[1]}/${match[2]}` : `${project}/unknown`
       const row = rows.get(key) ?? { pass: 0, fail: 0, skip: 0 }
-      const results = spec.tests?.flatMap(test => test.results ?? []) ?? []
-      const outcome = results[0]?.status ?? 'skipped'
+      const result = (test.results ?? [])[0]
+      const outcome = result?.status ?? test.status ?? 'skipped'
 
-      if (outcome === 'passed') row.pass += 1
+      if (outcome === 'passed' || outcome === 'expected') row.pass += 1
       else if (outcome === 'skipped') row.skip += 1
       else {
         row.fail += 1
-        const message = results[0]?.error?.message ?? 'failed'
-
         failures.push({
           test: `${key} :: ${spec.title}`,
-          // First line only: the rest is a stack trace, which belongs in the
-          // artifact, not in a summary table cell.
-          message: message.split('\n')[0].trim(),
+          message: String(result?.error?.message ?? 'failed').split('\n')[0].trim(),
         })
       }
 

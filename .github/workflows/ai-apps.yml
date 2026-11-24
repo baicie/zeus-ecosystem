@@ -107,9 +107,16 @@ jobs:
         working-directory: apps/ai-workbench
         run: pnpm exec vite build
 
+      # `pnpm bundle`, not a copy of the command.
+      #
+      # This step used to spell out the bundler invocation, and the two drifted
+      # the moment the bundler changed: tsup rewrites `node:` specifiers to bare
+      # package names, so `node:sqlite` became an npm package that does not
+      # exist, and the Dockerfile had already moved to esbuild. Calling the same
+      # script the Dockerfile calls is what keeps them from disagreeing again.
       - name: Bundle the host
         working-directory: apps/ai-host
-        run: pnpm exec tsup src/server.ts --format esm --platform node --out-dir dist --external node:*
+        run: pnpm bundle
 
       - name: Preserve build output
         if: always()

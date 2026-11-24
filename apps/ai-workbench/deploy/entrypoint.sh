@@ -104,4 +104,15 @@ else
   export ZEUS_BYOK_CONNECT_SRC_SPACED=" $normalised"
 fi
 
+# nginx refuses to start when a `$variable` in the config is unknown, and the
+# template embeds `${ZEUS_AI_UPSTREAM_TOKEN}` inside a quoted header. With the
+# value unset, envsubst leaves `$` behind — or the header renders as a bare
+# dollar — and nginx fails with `unknown "zeus_ai_upstream_token" variable`.
+#
+# An empty value is the correct default: the proxy then sends
+# `Authorization: Bearer `, which the host rejects. That is a failing
+# deployment, but a *running* one, and its failure is a 401 the operator can
+# see rather than a container that will not start at all.
+export ZEUS_AI_UPSTREAM_TOKEN="${ZEUS_AI_UPSTREAM_TOKEN:-}"
+
 exec /docker-entrypoint.sh "$@"

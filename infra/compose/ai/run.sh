@@ -33,14 +33,19 @@ project="zeus-ai-$(id -u)"
 # The workbench port is configurable so a developer can run two stacks at once.
 port=${ZEUS_WORKBENCH_PORT:-18080}
 
+# `ZEUS_AI_ORIGINS` must name the workbench origin: the browser's Origin reaches
+# the host through the proxy, and the host rejects any origin it does not list
+# with 403 `AI_HOST_ORIGIN` — which reads as an auth failure rather than a CORS
+# one. A comment line inside the assignment would end the continuation, so it
+# lives here.
 compose() {
   ZEUS_APP_COMMIT=${ZEUS_APP_COMMIT:-$(git -C "$root" rev-parse HEAD)} \
   ZEUS_IMAGE_TAG=${ZEUS_IMAGE_TAG:-local} \
   ZEUS_WORKBENCH_PORT=$port \
   ZEUS_AI_TOKENS=${ZEUS_AI_TOKENS:-} \
   ZEUS_AI_UPSTREAM_TOKEN=${ZEUS_AI_UPSTREAM_TOKEN:-} \
-  ZEUS_AI_ORIGINS=${ZEUS_AI_ORIGINS:-} \
-  ZEUS_AI_MODE=${ZEUS_AI_MODE:-replay} \
+  ZEUS_AI_ORIGINS=${ZEUS_AI_ORIGINS:-http://127.0.0.1:$port} \
+  ZEUS_AI_MODE=${ZEUS_AI_MODE:-interactive} \
   ZEUS_BYOK_CONNECT_SRC=${ZEUS_BYOK_CONNECT_SRC:-} \
     docker compose -p "$project" -f "$here/compose.yml" "$@"
 }
@@ -50,7 +55,7 @@ compose() {
 generate_tokens() {
   secret=$(od -An -tx1 -N24 /dev/urandom | tr -d ' \n')
   ZEUS_AI_UPSTREAM_TOKEN=$secret
-  ZEUS_AI_TOKENS="[{\"token\":\"$secret\",\"tenantId\":\"reference\",\"userId\":\"acceptance\",\"role\":\"editor\"}]"
+  ZEUS_AI_TOKENS="[{\"token\":\"$secret\",\"tenantId\":\"reference\",\"userId\":\"acceptance\",\"role\":\"admin\"}]"
   export ZEUS_AI_UPSTREAM_TOKEN ZEUS_AI_TOKENS
 }
 
@@ -80,7 +85,7 @@ case "$command" in
     # Placeholder tokens: compose interpolates every service before acting, and
     # the `:?` guards make a missing value fatal. Tearing down must not require
     # a credential that was only ever needed to start.
-    ZEUS_APP_COMMIT=teardown ZEUS_AI_TOKENS='[]' ZEUS_AI_UPSTREAM_TOKEN=teardown \
+    ZEUS_APP_COMMIT=teardown ZEUS_AI_TOKENS='[]' ZEUS_AI_UPSTREAM_TOKEN=teardown ZEUS_AI_ORIGINS=teardown \
       docker compose -p "$project" -f "$here/compose.yml" down -v --remove-orphans
     ;;
 

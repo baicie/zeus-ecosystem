@@ -9,11 +9,32 @@
 | `SOURCE_MIGRATED` | 代码已迁入，依赖全部是已发布版本 | 契约检查通过，无 `workspace:`/`file:`/alias |
 | `LOCAL_TESTED` | 本地 typecheck、单测、构建通过 | 命令输出 |
 | `CI_VALIDATED` | 最新 HEAD 上的 CI 绿 | run 链接 |
-| `VISUAL_VALIDATED` | 截图与已审查的基准比对 | 截图、diff、基准提交 |
+| `VISUAL_VALIDATED` | 截图与已审查的基准**按像素**比对 | 截图、diff、差异比例、基准提交、人工审查记录 |
 | `IMAGE_VALIDATED` | 镜像能构建、启动、回答健康路径 | `delivery-evidence/v1` |
 | `DEPLOYMENT_REHEARSED` | 部署计划与回滚被实际演练 | rehearsal 报告 |
 | `PRODUCTION_ACCEPTED` | 真实部署已被验收 | 线上证据 |
 | `LEGACY_REMOVED` | 旧实现已删除 | 删除的 PR |
+
+## 证据元数据
+
+八级状态回答"这个应用走到哪一步"。另一组标记回答"这条证据本身处于什么状态"，
+用来避免把"代码写了"读成"已经生效"：
+
+| 标记 | 含义 | 事实来源 |
+| --- | --- | --- |
+| `IMPLEMENTED` | 代码在工作区 | 文件 |
+| `LOCAL_VERIFIED` | 本机跑通 | 命令输出 |
+| `PR_OPEN` | 有 PR 未合并 | GitHub PR |
+| `MERGED` | 已合入 main | GitHub PR 状态 |
+| `PUBLISHED` | 已发到 registry | npm / OCI |
+| `CI_VERIFIED` | 目标 HEAD 的 CI 绿 | Actions run |
+| `PRODUCTION_DEPLOYED` | 已部署到生产 | 服务器 |
+| `PRODUCTION_ACCEPTED` | 生产验收通过 | 线上证据 |
+
+这些标记不重定义八级生命周期，只是给每条证据加一个"到哪了"。
+
+**禁止用研发报告代替事实来源。** PR 合并状态看 GitHub，CI 看 Actions，发布看
+registry，镜像身份看 OCI。本文件里的每一句状态描述都应当能指回其中一处。
 
 ## 当前状态
 
@@ -51,8 +72,8 @@
 | --- | --- | --- |
 | SOURCE_MIGRATED | ✅ | 30 个依赖全部指向已发布版本 |
 | LOCAL_TESTED | ✅ | tsc 0 错误、26/26 服务端测试、vite build 成功 |
-| CI_VALIDATED | ✅ | `Admin / Browser gates`（三引擎 33 项）与 `AI Apps` 全绿 |
-| VISUAL_VALIDATED | ✅ | 8 个场景对 `ghcr.io/baicie/zeus-admin@sha256:faf238d3b701…`（按 digest 固定）；见下方说明 |
+| CI_VALIDATED | ✅ | `Admin / Browser gates`（14 场景 × 3 引擎）与 `AI Apps` 全绿 |
+| VISUAL_VALIDATED | ⬜ | 只有**结构一致性**：8 个场景的 landmark 与文本重合度对 `ghcr.io/baicie/zeus-admin@sha256:faf238d3b701…` 比对。截图已保存但未经人工审查，也没有像素 diff；见下方说明 |
 | IMAGE_VALIDATED | ✅ | `delivery-evidence/v1`，尺寸与平台见该文件 |
 | DEPLOYMENT_REHEARSED | ✅ | **真实跨版本** 20/20 步，83.6 秒；回滚后数据完好 |
 | PRODUCTION_ACCEPTED | ⬜ | 未部署 |
@@ -85,14 +106,24 @@
 
 ## 明确的阻塞
 
-**1. AI 侧没有视觉参考。** Admin 能比是因为有发布过的历史镜像。AI Workbench
-从未以独立镜像发布过，所以没有可信的冻结基准；用当前构建生成基准等于把现在
-的样子记录成"迁移前"。这不是没做，是**没有可用的参考源**。
+**1. AI 侧没有视觉参考，但参考源是可恢复的。**
+我之前的结论写错了：AI Workbench 从未以独立镜像发布过，**不等于**没有可信的
+参考源。旧实现完整存在于 `zeus-ui/examples/ai-workbench`，最近的改动是 `9c90d0b`
+（在 `main` 的祖先链上），`src/` 下有完整的 `byok/`、`composer-dock.ts`、
+`highlight.ts` 等。
 
-**2. `@zeus-js/devtools-consumer` 从未发布。** `private: true` 的
-`0.1.1-beta.14`。已在 `feat/publish-devtools-consumer`（zeus#408）中补上发布
-路径与包形状，**但发布本身需要授权**，标记 `PUBLISH_BLOCKED`。Admin 的
-`?devtools` 面板要等版本上了 npm。
+有效的 Reference 不必须是 npm 或 Docker 发布物。**可信源码 + 可复现构建 + 完整
+来源记录**同样成立。取法是 detached worktree 检出那个 commit、恢复当时的 lockfile、
+用原始方式构建并启动。
+
+之所以还没做：那需要一个可运行的旧 Host + 旧 Workbench，且 Replay fixture 要与
+当时的行为一致。这是 Task F 的工作量，不是"没有参考源"。
+
+**2. `@zeus-js/devtools-consumer` 已发布，Admin 尚未接入。**
+`0.1.1-beta.15` 在 npm 上（`latest` 与 `beta` 都指向它——**首次发布无条件占用 `latest`**，
+这是 npm 的行为，不是本仓库的选择）。包本身可用：ESM/CJS 双入口、`.d.ts` 与 `.d.cts`、
+SLSA provenance 已验证。**Admin 的 `?devtools` 面板还没接**——那是 `apps/admin` 的一处
+DEV-only 改动，不在本轮范围内。
 
 **3. `vite-plugin` 的编译器版本线错配。** `@zeus-js/vite-plugin@0.0.5` 硬依赖
 `compiler-native@0.1.1-beta.20`，而 rc.5 包依赖 `0.2.0-rc.5`。已加
@@ -124,3 +155,42 @@
 - 观察期内无回滚
 - 旧实现引用的工作流全部有替代
 - `zeus` 与 `zeus-ui` 的框架级测试不再依赖 `examples/admin`
+
+## 进度口径
+
+单一百分比会把"代码写完"和"生产验收"混成一个数。分四维记录，每维说明
+**分子分母各是什么**：
+
+### 工程研发完成度
+
+以 R19 的 A–L 十二项为分母（本轮前已完成的不计入）：
+
+```
+已完成并合并或待合并    A（表生成器）、B（契约检查）、D（provenance）、H（CI 收敛）
+阻塞在授权            B 的发布部分、E 的 AI baseline、F 的人工审查、G 的产品决策、J 的生产权限
+```
+
+结论：**能自主完成的已全部完成**，剩下的每一项都需要本仓库之外的输入。
+
+### 功能与产品验收完成度
+
+| 应用 | 证据 | 缺口 |
+| --- | --- | --- |
+| Admin | 14 场景 × 3 引擎浏览器；跨版本 20/20；结构一致性 8/8 | 像素级视觉与人工审查 |
+| AI Workbench | P0 / BYOK / CSP 基线；容器 48 项 | 逐项对照旧版；视觉参考未生成 |
+| AI Host | 协议 9/9（含真实重启） | 与 Workbench 的联合升级未预演 |
+
+### 正式交付准备度
+
+- provenance：**63/63 已验证**（本轮新增）
+- Release Candidate 聚合：**未建**
+- 生产切换 runbook：已写，**未执行**
+
+### 生产验收完成状态
+
+`PRODUCTION_ACCEPTED`：**0 个应用**。本仓库没有生产凭据，也没有执行过任何生产操作。
+
+### 旧实现清理完成度
+
+已删三个 workflow（本轮）。旧应用源码、`check:admin`、视觉参考提交**全部保留**，
+因为删除条件依赖前三维完成。

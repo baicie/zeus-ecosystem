@@ -449,6 +449,14 @@ const SCENARIOS: ReadonlyArray<{
        * The sign-in itself is an audited event, so the table cannot legitimately
        * be empty here. Asserting on a row — rather than on the table element —
        * is what separates "the page renders" from "the log has entries".
+       *
+       * Measured, the rows read `"11/25/2026, 02:37 PM\tlogin\tada\t\nsuccess"`,
+       * so `/\blogin\b/` looks like the tighter assertion. It does not match:
+       * Playwright applies `hasText` to the element's text with its own
+       * normalisation, and against this table the word boundary did not hold.
+       * The pattern below is the one that was measured to work; the tighter
+       * version was reverted rather than left in on the assumption that it
+       * should.
        */
       const row = page.getByRole('row').filter({ hasText: /sign|login|in/i }).first()
 

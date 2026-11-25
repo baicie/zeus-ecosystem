@@ -216,6 +216,15 @@ jobs:
 
       # The assertion counts are the migration baseline. A gate that suddenly
       # asserts less is a regression even if it still says passed.
+      # The live gate never runs here. It needs a paid provider and credentials,
+      # and a pull request must not call one. What runs is the part that must
+      # hold either way: the redaction property and the refusal to make a call
+      # without being asked. Without credentials it reports LIVE_BLOCKED, which
+      # is neither a pass nor a failure — the unit tests are the gate.
+      - name: Live gate guardrails (redaction and opt-in)
+        working-directory: apps/ai-workbench
+        run: pnpm exec vitest run __tests__/live-gate.spec.ts
+
       - name: Assert the gates still assert what they did
         run: node scripts/checks/assert-gate-baseline.mjs
 

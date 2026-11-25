@@ -232,10 +232,66 @@ export async function buildProduct(options) {
         }
       : { imageDigest: null }),
     imageReference: push ? reference : null,
+    /*
+     * The platform actually built, and separately what the declaration claims.
+     *
+     * `products.json` lists two architectures per product; this script builds
+     * one. Recording the claim beside the measurement is what stops "declared
+     * for amd64 and arm64" from being read as "validated on both" — a report
+     * that says both were tested when only one was is worse than no report.
+     */
     platform: `${inspected.os}/${inspected.architecture}`,
+    declaredPlatforms: product.platforms ?? [],
+    /*
+     * Filled in after the health check, not before. A `PENDING` placeholder
+     * written here would survive into the artefact if the check never ran, and
+     * a status that is neither a pass nor a refusal is the kind of value that
+     * gets read as "probably fine".
+     */
+    platformValidation: (product.platforms ?? []).map(entry => ({
+      platform: entry,
+      build: entry === `${inspected.os}/${inspected.architecture}` ? 'PASS' : 'NOT_RUN',
+      runtime: 'NOT_RUN',
+    })),
+    /*
+     * Three sizes that are not interchangeable, each labelled.
+     *
+     * `unpackedBytes` is what the daemon reports after pulling; a registry
+     * stores the compressed layers, so a reduction quoted from one and compared
+     * against the other overstates it. The application layer is the part this
+     * repository controls — the base image is most of the total.
+     */
+    sizes: {
+      unpackedBytes: inspected.unpackedBytes,
+      unpackedNote: 'as reported by the daemon; this is the budget metric',
+      layerCount: inspected.unpackedLayers,
+    },
     unpackedBytes: inspected.unpackedBytes,
     layerCount: inspected.unpackedLayers,
     revision: inspected.revision,
+    /*
+     * The evidence dimensions, each answered separately.
+     *
+     * `status` is one value and cannot say *what* was proven. "The image builds
+     * and answers its health path" and "the product works" are different
+     * claims, and a single PASS invited a reader to assume the second. These
+     * are evidence dimensions, not a lifecycle: the eight-stage migration
+     * vocabulary in docs/migration-checklist.md is unchanged.
+     *
+     * Every unmeasured dimension is NOT_RUN, never PASS.
+     */
+    dimensions: {
+      BUILD_PASS: 'PASS',
+      STARTUP_PASS: 'NOT_RUN',
+      HEALTH_PASS: 'NOT_RUN',
+      READINESS_PASS: 'NOT_RUN',
+      FUNCTIONAL_PASS: 'NOT_RUN',
+      VISUAL_PASS: 'NOT_RUN',
+      PERSISTENCE_PASS: 'NOT_RUN',
+      CROSS_VERSION_PASS: 'NOT_RUN',
+      ROLLBACK_PASS: 'NOT_RUN',
+      LIVE_PASS: 'NOT_RUN',
+    },
     // Every unmeasured item is NOT_RUN, never PASS.
     unit: 'NOT_RUN',
     browser: 'NOT_RUN',
@@ -248,6 +304,18 @@ export async function buildProduct(options) {
     const health = await checkHealth(product, localTag)
 
     evidence.containerAcceptance = health.ok ? 'PASS' : 'FAIL'
+    evidence.dimensions.STARTUP_PASS = 'PASS'
+    evidence.dimensions.HEALTH_PASS = health.ok ? 'PASS' : 'FAIL'
+
+    /*
+     * The runtime column is set here, where the answer exists. Only the
+     * platform this build targeted is measured; the other stays NOT_RUN rather
+     * than inheriting its neighbour's verdict.
+     */
+    evidence.platformValidation = evidence.platformValidation.map(entry => ({
+      ...entry,
+      runtime: entry.build === 'PASS' ? (health.ok ? 'PASS' : 'FAIL') : 'NOT_RUN',
+    }))
 
     if (!health.ok) evidence.failureReasons = [`health check: ${health.status}`]
   }

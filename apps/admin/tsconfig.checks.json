@@ -1,0 +1,14 @@
+{
+  /*
+   * The gate scripts under `scripts/checks` are TypeScript, and the app's own
+   * `tsconfig.json` covers `src` only — so a broken gate script used to fail at
+   * runtime inside a browser run rather than here. This config exists so it
+   * fails at typecheck time instead.
+   */
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["@zeus-js/zeus/jsx", "vite/client", "node"]
+  },
+  "include": ["scripts", "server"]
+}

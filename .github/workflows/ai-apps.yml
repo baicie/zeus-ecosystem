@@ -13,6 +13,7 @@
 #   AI Apps / Node 22
 #   AI Apps / Node 24
 #   AI Workbench / Browser gates
+#   Admin / Browser gates
 #   AI Apps / Required      <- the aggregator
 #
 # None of them uses a path filter. A required check that never runs blocks the
@@ -102,6 +103,26 @@ jobs:
       - name: Host unit tests
         working-directory: apps/ai-host
         run: pnpm test
+
+      - name: Typecheck admin
+        working-directory: apps/admin
+        run: pnpm exec tsc -p tsconfig.json --noEmit
+
+      # The gate scripts are TypeScript and the app's own config covers `src`
+      # only, so without this a broken gate fails at runtime inside a browser.
+      - name: Typecheck admin gate scripts
+        working-directory: apps/admin
+        run: pnpm exec tsc -p tsconfig.checks.json --noEmit
+
+      # node:sqlite is behind a flag on 22.x, so this goes through the launcher
+      # that probes it rather than calling vitest directly.
+      - name: Admin server tests
+        working-directory: apps/admin
+        run: pnpm test:server
+
+      - name: Build admin
+        working-directory: apps/admin
+        run: pnpm exec vite build
 
       - name: Build the workbench
         working-directory: apps/ai-workbench
@@ -201,12 +222,62 @@ jobs:
             apps/ai-workbench/reports
           if-no-files-found: warn
 
+  admin-browsers:
+    name: Admin / Browser gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10.33.4
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+          package-manager-cache: false
+
+      - name: Resolve the Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('./package.json').devDependencies['@playwright/test']")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Install browsers
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      # The gate builds the app itself. It serves the production build from the
+      # API server's origin, which is how it is deployed — a dev server would
+      # exercise a different module graph and pass while the build was broken.
+      - name: Admin browser acceptance (three engines)
+        env:
+          ZEUS_ADMIN_BROWSERS: chromium,firefox,webkit
+        run: pnpm run check:admin-browser
+
+      - name: Preserve browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: admin-browser-gates
+          path: apps/admin/temp/admin-browser
+          if-no-files-found: warn
+
   required:
     name: AI Apps / Required
     # The aggregator runs even when an upstream job failed, so it can report
     # *why* this is red instead of being skipped and looking absent.
     if: always()
-    needs: [apps, browsers]
+    needs: [apps, browsers, admin-browsers]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -214,8 +285,9 @@ jobs:
         run: |
           apps='${{ needs.apps.result }}'
           browsers='${{ needs.browsers.result }}'
+          admin='${{ needs.admin-browsers.result }}'
 
-          echo "apps=$apps browsers=$browsers" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "apps=$apps browsers=$browsers admin=$admin" | tee -a "$GITHUB_STEP_SUMMARY"
 
           if [ "$apps" != 'success' ]; then
             echo "::error::AI Apps matrix did not succeed ($apps)"
@@ -225,4 +297,8 @@ jobs:
             echo "::error::AI Workbench browser gates did not succeed ($browsers)"
             exit 1
           fi
-          echo "both required jobs succeeded"
+          if [ "$admin" != 'success' ]; then
+            echo "::error::Admin browser gates did not succeed ($admin)"
+            exit 1
+          fi
+          echo "all required jobs succeeded"

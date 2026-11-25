@@ -7,6 +7,10 @@ reports/
 apps/*/temp/
 apps/*/reports/
 
+# Release rehearsal output: reports, database backups and plan documents.
+# Every run writes a new one and they are meant to be evidence, not source.
+temp/
+
 # Host runtime state: the SQLite database the app creates on first start.
 apps/ai-host/.data/
 apps/*/dist/

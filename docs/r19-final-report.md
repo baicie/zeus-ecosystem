@@ -10,14 +10,13 @@
 | --- | --- | --- |
 | `baicie/zeus` | `6e623d5f` | `release: vite-plugin@0.0.6 (#415)`，main CI 绿 |
 | `baicie/zeus-ui` | `4e7e429f` | 本轮未改动；工作区有两个未跟踪的 `Dockerfile.baseline-*` |
-| `baicie/zeus-ecosystem` | `f817cc5` | 本轮全部改动落在这里 |
+| `baicie/zeus-ecosystem` | `7d447406` | 本轮全部改动落在这里 |
 
 ## 一、结论
 
 ```
 工程实现        12/12 有交付物
-独立核查         11 项已裁决：5 DELIVERED、5 PARTIAL、1 项 DELIVERED 但清单有实质错误
-                 L 一项由我本地实测判定（核查代理未在时限内返回）
+独立核查         12 项全部裁决：5 DELIVERED、6 PARTIAL、1 项 DELIVERED 但清单有实质错误
 生产验收         0/3  应用 PRODUCTION_ACCEPTED
                 但 AI Workbench 的**旧实现**正在生产：zeus-ui 的
                 ai-workbench-image.yml 于 2026-11-24 部署成功
@@ -42,19 +41,19 @@ Release Candidate  BLOCKED
 | **C** Admin DevTools | ⚠️ PARTIAL | 四道守卫全部实测成立（devDependency、双重守卫、动态 import、66 chunk 中 0 个含它）。但**冷加载时面板是空的**：`render()` 早于 consumer 连接，85 个事件在 hook 安装前就发出去了 |
 | **D** Provenance | ⚠️ PARTIAL → 已修 | 真拉取（56/56 VERIFIED，单包 2.2–10.6 秒，篡改 payload 被 sigstore 拒绝）。但**commit 绑定在 CLI 路径上是死代码**——见下文，已修复 |
 | **E** AI 跨版本演练 | ✅ DELIVERED | 15 步全绿，镜像不同、数据真穿越。**但 `sqlite3 .backup` 从未执行过**：镜像里没有 `sqlite3`，记录为 `no-sqlite3` |
-| **F** 视觉四维分离 | ✅ DELIVERED | 四维度各自独立；结构 8/8；像素 1/8；`DesignReview` 如实为 `REVIEW_REQUIRED` |
+| **F** 视觉四维分离 | ⚠️ PARTIAL → 已修关键一处 | 四维度在 `visual-dimensions.ts` 里定义，但报告只产出 structural 与 screenshot 两维；`overallStatus` **被 import 后零次调用**，`roles` 的像素回归仍判 `passed: true`。已接线并加测试 |
 | **G** 页面级权限 | ⚠️ PARTIAL → 已修两处 | 权限门槛 16/16 成立。但**个人主题被页面覆盖**、**`<select>` 显示错误值**——两处已修；**逐字输入丢字符未修**，见下文 |
 | **H** CI 收敛 | ⚠️ PARTIAL | 审计交付完整（`ci-ownership.md`、`check:admin` 存续并实测阻塞合并）。但**CI 没有收敛**：`Playground Image` 因 TCR 的 100-tag 上限失败，修复 `92c01cdd` 躺在未合并的 `chore/remove-legacy-admin-ci` 分支上；`ci-ownership.md` 的 41/26 断言数无法复现 |
 | **I** RC 聚合 | ✅ DELIVERED | 12 维度，`check:candidate` 可重跑 |
 | **J** 生产切换准备 | ✅ DELIVERED | 9 项前置条件，`check:cutover-preflight` 不指定镜像与环境 |
 | **K** 旧实现清理准备 | ⚠️ DELIVERED 但清单有实质错误 | 脚本零 `rmSync`、五项前置实测。但清单把 AI 旧实现的位置写错了，且漏了它正在生产上跑——见第七节 |
-| **L** 文档校准 | ✅ DELIVERED | 两处明确标注更正（「本机无法安装浏览器」与 vite-plugin 错配），另有维度分离等结构性改写。**不是四条都带更正标记**——我先前在报告里写多了 |
+| **L** 文档校准 | ⚠️ PARTIAL → 已修 | 审计指出七类错误陈述：provenance 数字、INCOMPLETE 项数、前置条件条数、devtools「未接入」、AI「未演练」、`IMAGE_VALIDATED` 引用不存在的文件。逐条核实后已改 |
 
 ---
 
-## 三、独立核查推翻的五个结论
+## 三、独立核查推翻的六个结论
 
-这是本轮最有价值的部分。五个 PARTIAL 都不是「没做完」，而是**做完了但有一处不成立**。
+这是本轮最有价值的部分。六个 PARTIAL 都不是「没做完」，而是**做完了但有一处不成立**。
 
 ### D：commit 绑定没有接上
 
@@ -109,6 +108,47 @@ matrix PASS: 0.2.0-rc.5 + 0.1.0-beta.35 via pnpm
 `compatibility-matrix.json` 的说明也改写了，但**证据日期仍是旧的**，所以
 `scope.compilerCompatibility` 保持 `partial`：改叙述而不动证据日期，等于声称有
 不存在的证据。
+
+### F：四维在类型里，两维在报告里
+
+`visual-dimensions.ts` 定义了四个维度，`overallStatus` 的规则也写得很清楚：
+任一前三维度回归即失败，`NOT_RUN` 与 `REFERENCE_UNAVAILABLE` 记 `INCOMPLETE`，
+未审查的设计记 `REVIEW_REQUIRED`。
+
+但 `check-admin-visual.ts` **import 了 `overallStatus` 却零次调用**。通过判定只看
+`entry.kind`。实测后果：
+
+```
+roles   kind=CANDIDATE_ADDED   screenshot.verdict=REGRESSION (1.68%)
+report.passed = true            进程 exit 0
+```
+
+同一份报告，读 `screenshot` 字段的人和读 `passed` 字段的人得到相反答案。
+
+**已修**：`passed` 现在把 screenshot 维度算进去。`CANDIDATE_ADDED` 是唯一例外——
+候选有参考没有的内容，像素必然不同，而结构维度已经说明了它。四组测试钉住这个谓词，
+包括此前会溜过去的那种组合。
+
+**仍未做**：functional 与 design 两维从未被产出。把它们接进报告需要合并门禁的场景表
+与浏览器断言，那是接线工作，不是措辞。
+
+### L：七类失效陈述
+
+文档自己第 36–37 行写着「每一句状态描述都应当能指回事实来源」。审计逐条对照后，
+有七处指不回去：
+
+| 陈述 | 实际 |
+| --- | --- |
+| provenance 63/63 | 168 个包，三产品各 56/56（63 是 #15 时 Admin 单产品的数） |
+| `INCOMPLETE` 六项 | 五项（provenance 转 PASS 后没回写） |
+| 前置条件八项 | 脚本读九项（同句自己的 3+2+4 就是 9） |
+| devtools 面板「还没接」 | aa590b3 就已接入，`MIGRATION.md` 还写着「已迁移」 |
+| AI 单元「尚未演练」（三处） | `ai-rehearsal.mjs` 15/15，与那三句同在 aa590b3 |
+| `IMAGE_VALIDATED` ✅ 引 `delivery-evidence/v1`（三处） | **仓库里没有任何这种文件**，候选聚合器明说 |
+| AI 视觉参考「还没做」 | 已重建并记录，状态 `CANDIDATE` |
+
+第六条最严重：三个应用都标了 ✅，引用的证据文件一个都不存在。已降级为 ⬜，
+而不是换个说法继续标绿。
 
 ### H：CI 没有收敛，修复挂在未合并的分支上
 

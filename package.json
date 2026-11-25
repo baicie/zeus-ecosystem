@@ -20,7 +20,10 @@
     "check:admin-browser": "pnpm --filter @zeus-ecosystem/admin run check:browser",
     "check:admin-visual": "pnpm --filter @zeus-ecosystem/admin run check:visual",
     "check:provenance": "tsx scripts/release/verify-provenance.mjs",
-    "check:provenance:offline": "tsx scripts/release/verify-provenance.mjs --product admin --offline"
+    "check:provenance:offline": "tsx scripts/release/verify-provenance.mjs --product admin --offline",
+    "check:candidate": "node scripts/release/release-candidate.mjs",
+    "check:cleanup": "node scripts/release/cleanup-preflight.mjs",
+    "check:cutover-preflight": "node scripts/release/cutover-preflight.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.57.0",

@@ -70,31 +70,71 @@ Phase 7 may begin when all of these hold:
 3. Every workflow listed above has a replacement that has run green at least
    once on the new implementation.
 4. `zeus` and `zeus-ui` no longer reference `examples/admin` from anything that
-   runs. Measured today, three references remain, and they are not all the same
-   kind:
-
-   ```
-   package.json:130              "example:admin": "pnpm -C examples/admin dev"
-   vitest.config.ts:13           a project that includes examples/admin/server/**
-   crates/zeus_compiler/src/support/nesting.rs:1369   a doc comment naming a
-                                 real JSX depth measured in examples/admin
-   ```
-
-   The first two are build configuration and go with the app. The third is a
-   comment recording a measurement — deleting it would lose why the nesting
-   limit is what it is, so it moves into prose rather than being removed.
-
-   The measurable form of this prerequisite:
+   runs. The measurable form is the manifest's own:
 
    ```bash
    grep -rn "examples/admin" package.json vitest.config.ts
    ```
 
-   must return nothing. Documentation references are permitted and are listed
-   below.
+   Running it against `zeus` at `6e623d5f` leaves exactly one hit:
+
+   ```
+   vitest.config.ts:13   a project that includes examples/admin/server/**
+   ```
+
+   `package.json`'s `"example:admin": "pnpm -C examples/admin dev"` — which an
+   earlier version of this file listed — **is already gone**. That is the
+   argument for `scripts/release/cleanup-preflight.mjs`: a written claim about
+   a tree drifts the moment the tree changes, and a preflight that reads the
+   tree does not.
+
+   The other two kinds of reference, neither of which blocks:
+
+   ```
+   crates/zeus_compiler/src/support/nesting.rs:1369   a doc comment naming a
+                                 real JSX depth measured in examples/admin
+   examples/admin/**                                  the app's own files
+   ```
+
+   The first is a measurement someone took. Deleting it would lose why the
+   nesting limit is what it is, so it moves into prose rather than being
+   removed. The second goes with the app.
+
+   `scripts/release/*` and `scripts/check/*` references are the manifest's
+   "audit individually" column, and the preflight reports them as such rather
+   than judging them — a verdict from a script would be the guess the column
+   was written to avoid.
+
 5. The visual baseline in `apps/admin/visual-baselines/reference.json` remains
    explainable after the sources it came from are gone — the image digest is
    recorded there for exactly this reason.
+
+## Reading the prerequisites
+
+`scripts/release/cleanup-preflight.mjs` reads them and deletes nothing:
+
+```bash
+node scripts/release/cleanup-preflight.mjs --zeus ../zeus
+```
+
+It refuses `--zeus`, so a tree it has not read is `UNKNOWN` rather than `MET`.
+Measured at `zeus@6e623d5f` / `zeus-ecosystem@aa590b3`:
+
+```
+UNMET    production-accepted      0 of 3 PRODUCTION_ACCEPTED row(s) complete
+UNKNOWN  observation-window       a decision after a cutover, not a file
+MET      deleted-workflows-gone   the three workflows are absent
+UNMET    build-config-clean       vitest.config.ts still includes examples/admin/server/**
+MET      baseline-explainable     the baseline names the digest it came from
+```
+
+`UNKNOWN` is not a soft `MET`. The observation window is the reason Phase 7 is
+blocked even for an application accepted tomorrow: nothing has been
+observed, because nothing has been deployed.
+
+**The tool has no delete path, deliberately.** Phase 7 removes the only
+implementation anyone can roll back to, so the tool that reads its
+prerequisites must not be the tool that acts.
 
 ## Per-repository split
 

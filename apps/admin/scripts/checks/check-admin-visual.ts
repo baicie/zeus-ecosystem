@@ -66,8 +66,8 @@ const BASELINES = path.join(APP, 'visual-baselines')
 export const REFERENCE_IMAGE =
   'ghcr.io/baicie/zeus-admin@sha256:faf238d3b701ff896a5524225ef92ffdc99aed1828f1ed7088ee6c443096f819'
 
-/** The image id the committed baseline was captured from. */
-export const BASELINE_IMAGE_ID =
+/** The registry digest the committed baseline was captured from. */
+export const BASELINE_DIGEST =
   'sha256:faf238d3b701ff896a5524225ef92ffdc99aed1828f1ed7088ee6c443096f819'
 
 interface Scenario {
@@ -500,17 +500,32 @@ async function main(): Promise<void> {
    */
   fs.mkdirSync(ARTIFACTS, { recursive: true })
 
+  /*
+   * Which digest this image actually is, read from `RepoDigests` rather than
+   * from `.Id`.
+   *
+   * They are different things: `.Id` is a hash of the image *config*, while the
+   * digest is a hash of the *manifest*. On this machine they happened to be
+   * equal, so comparing `.Id` worked locally and reported a mismatch on a Linux
+   * runner for the same image — 9a12a066 against faf238d3 — which reads as "the
+   * reference changed" when nothing had. `RepoDigests` is the field that
+   * answers the question being asked.
+   */
   let identity: string | null = null
 
   try {
-    identity = execFileSync('docker', ['image', 'inspect', image, '--format', '{{.Id}}'], {
-      encoding: 'utf8',
-    }).trim()
+    const digests = JSON.parse(
+      execFileSync('docker', ['image', 'inspect', image, '--format', '{{json .RepoDigests}}'], {
+        encoding: 'utf8',
+      }).trim(),
+    ) as string[]
+
+    identity = digests.find(entry => entry.includes('@'))?.split('@')[1] ?? null
   } catch {
     /*
-     * A digest reference is not pulled by its tag, so a runner that only has
-     * `:main` does not have it. Say so, rather than silently comparing against
-     * whatever `:main` happens to be today.
+     * A digest reference that was never pulled has no RepoDigests, and a runner
+     * that only has `:main` does not have this digest at all. Say so, rather
+     * than silently comparing against whatever `:main` happens to be today.
      */
     identity = null
   }
@@ -530,7 +545,7 @@ async function main(): Promise<void> {
     const unavailable = {
       schema: 'zeus.ecosystem.admin-visual-report/v1',
       startedAt: new Date().toISOString(),
-      reference: { image, imageId: null },
+      reference: { image, digest: null },
       verdict: 'REFERENCE_UNAVAILABLE',
       detail: `${image} is not present in this environment; no comparison was made`,
       comparisons: [],
@@ -551,20 +566,20 @@ async function main(): Promise<void> {
    * the first version of this gate compare a Chinese reference against an
    * English candidate and call it a layout difference.
    */
-  if (identity && identity !== BASELINE_IMAGE_ID) {
+  if (identity && identity !== BASELINE_DIGEST) {
     const mismatch = {
       schema: 'zeus.ecosystem.admin-visual-report/v1',
       startedAt: new Date().toISOString(),
-      reference: { image, imageId: identity, expectedImageId: BASELINE_IMAGE_ID },
+      reference: { image, digest: identity, expectedDigest: BASELINE_DIGEST },
       verdict: 'REFERENCE_MISMATCH',
-      detail: `the image resolves to ${identity.slice(7, 19)}, but the baseline was captured from ${BASELINE_IMAGE_ID.slice(7, 19)}`,
+      detail: `the image is ${identity.slice(7, 19)}, but the baseline was captured from ${BASELINE_DIGEST.slice(7, 19)}`,
       comparisons: [],
       passed: false,
     }
 
     fs.writeFileSync(path.join(ARTIFACTS, 'report.json'), `${JSON.stringify(mismatch, null, 2)}\n`)
 
-    console.log(`REFERENCE_MISMATCH  ${identity.slice(7, 19)} != ${BASELINE_IMAGE_ID.slice(7, 19)}`)
+    console.log(`REFERENCE_MISMATCH  ${identity.slice(7, 19)} != ${BASELINE_DIGEST.slice(7, 19)}`)
     console.log('a baseline describes one build; comparing against another is not a comparison')
     process.exit(args.includes('--require-reference') ? 1 : 0)
   }

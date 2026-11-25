@@ -60,16 +60,22 @@
 
 ## 证据说明
 
-**Admin 的跨版本演练是真的跨版本。** 基线是 `ghcr.io/baicie/zeus-admin:main`
-（`faf238d3…`，`132c777e`，`0.1.1-beta.20`，监听 8080），候选是从当前树构建的
+**Admin 的跨版本演练是真的跨版本。** 基线是
+`ghcr.io/baicie/zeus-admin@sha256:faf238d3b701…`（`132c777e`，`0.1.1-beta.20`，
+监听 8080），候选是从当前树构建的
 `zeus-admin:local`（`2b06744e…`，`0.2.0-rc.5`，监听 8787）。两者映像 ID 相同
 时脚本直接拒绝启动。20 步全部通过，包括：基线写用户 → 备份 → 停止并移除 →
 候选在同一卷上读到并修改那一行 → 移除候选 → 重启基线 → 读回 candidate 的修改
 （`team=upgraded`）与 candidate 新建的行。报告在 `temp/rehearsal/cross-version-*.json`。
 
-**Admin 的视觉比对是结构比对，不是像素比对。** 参考镜像实测固定渲染中文
-（`navigator.languages === ['en-US']` 时仍是 `lang="zh-CN"`），当前构建按浏览器
-协商渲染英文。所以比的是 landmark 的种类与顺序，加上字符串重合度。八分类见
+**Admin 的视觉比对按 digest 固定参考。** `:main` 是**可变标签**：写这个门禁时
+它解析到 `faf238d3…`（`132c777e`，2026-11-11，渲染中文），再拉一次变成了
+`dfa60dd6…`（`4a5db055`，2026-11-23，渲染英文）。两次构建的界面语言不同，所以
+用标签做基准会把"两个不同构建"报成"界面差异"。门禁现在按 digest 引用，并在
+镜像 ID 与基线不符时报 `REFERENCE_MISMATCH` 而不是继续比对。
+
+在该固定构建下，参考与候选的结构一致、字符串重合度低——**这是语言差异，不是
+布局差异**。所以比的是 landmark 的种类与顺序，加上字符串重合度。八分类见
 `apps/admin/scripts/checks/check-admin-visual.ts` 的 `compare`，其中
 `CANDIDATE_ADDED` 记的是候选版本多出的内容（roles 页的能力矩阵与分配表单），
 它**不是**回归。

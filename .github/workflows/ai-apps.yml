@@ -280,6 +280,18 @@ jobs:
           ZEUS_ADMIN_BROWSERS: chromium,firefox,webkit
         run: pnpm run check:admin-browser
 
+      # The reference is a published image, pulled by digest.
+      #
+      # `:main` is a moving tag: it resolved to one build when the baseline was
+      # taken and to a different one a pull later, and the two render
+      # differently. A baseline describes one build, so the digest is the
+      # reference — pulling the tag would compare against whatever was pushed
+      # most recently and report the difference as a UI change.
+      - name: Pull the visual reference image
+        run: >-
+          docker pull
+          ghcr.io/baicie/zeus-admin@sha256:faf238d3b701ff896a5524225ef92ffdc99aed1828f1ed7088ee6c443096f819
+
       # Visual parity against the published reference image.
       #
       # It fails the job when a page loses a landmark, because that is a
@@ -287,11 +299,14 @@ jobs:
       # page or on content the candidate added, and it never approves a
       # difference as intentional — that needs a person looking at the images.
       #
+      # `--require-reference` because this job did pull it: a missing image here
+      # means the pull silently did not happen, and that must fail rather than
+      # report a comparison that never ran.
+      #
       # No `continue-on-error`: a gate that is allowed to fail silently is a
-      # gate nobody reads, and the whole point of this one is that its verdict is
-      # visible.
+      # gate nobody reads.
       - name: Admin visual parity against the reference image
-        run: pnpm run check:admin-visual
+        run: pnpm run check:admin-visual -- --require-reference
 
       - name: Preserve browser evidence
         if: always()

@@ -50,8 +50,25 @@ const APP = path.resolve(import.meta.dirname, '../..')
 const ARTIFACTS = path.join(APP, 'temp/admin-visual')
 const BASELINES = path.join(APP, 'visual-baselines')
 
-/** The reference most recently used, recorded with the baseline it produced. */
-export const REFERENCE_IMAGE = 'ghcr.io/baicie/zeus-admin:main'
+/**
+ * The reference image, pinned by digest.
+ *
+ * `ghcr.io/baicie/zeus-admin:main` is a **moving tag**. It resolved to
+ * `faf238d3…` (built from `132c777e`, 2026-11-11) when this gate was written,
+ * and to `dfa60dd6…` (from `4a5db055`, 2026-11-23) a pull later. The two
+ * renders differ — including the interface language — so a baseline taken
+ * against one describes a build the other is not.
+ *
+ * A visual baseline against a moving tag is not a baseline. The digest below is
+ * the build the committed baseline was taken from; comparing against anything
+ * else is reported as a different reference rather than as a UI difference.
+ */
+export const REFERENCE_IMAGE =
+  'ghcr.io/baicie/zeus-admin@sha256:faf238d3b701ff896a5524225ef92ffdc99aed1828f1ed7088ee6c443096f819'
+
+/** The image id the committed baseline was captured from. */
+export const BASELINE_IMAGE_ID =
+  'sha256:faf238d3b701ff896a5524225ef92ffdc99aed1828f1ed7088ee6c443096f819'
 
 interface Scenario {
   readonly name: string
@@ -457,7 +474,12 @@ export function compare(
 }
 
 async function main(): Promise<void> {
-  const args = process.argv.slice(2)
+  /*
+   * pnpm forwards `-- <args>` to the script, and tsx passes the `--` through as
+   * a positional. Dropping it is what makes `--require-reference` arrive as a
+   * flag rather than as a value nobody looks at.
+   */
+  const args = process.argv.slice(2).filter(arg => arg !== '--')
   const value = (flag: string) => {
     const index = args.indexOf(flag)
 
@@ -467,23 +489,73 @@ async function main(): Promise<void> {
   const image = value('--reference') ?? REFERENCE_IMAGE
   const writeBaseline = args.includes('--write-baseline')
 
-  const identity = (() => {
-    try {
-      return execFileSync('docker', ['image', 'inspect', image, '--format', '{{.Id}}'], {
-        encoding: 'utf8',
-      }).trim()
-    } catch {
-      return null
-    }
-  })()
+  let identity: string | null = null
+
+  try {
+    identity = execFileSync('docker', ['image', 'inspect', image, '--format', '{{.Id}}'], {
+      encoding: 'utf8',
+    }).trim()
+  } catch {
+    /*
+     * A digest reference is not pulled by its tag, so a runner that only has
+     * `:main` does not have it. Say so, rather than silently comparing against
+     * whatever `:main` happens to be today.
+     */
+    identity = null
+  }
 
   if (!identity) {
-    console.error(
-      `the reference image ${image} is not available.\n` +
-        'Without it there is nothing to compare against, and generating a baseline from the\n' +
-        'candidate would record the current build as its own reference.',
-    )
-    process.exit(1)
+    /*
+     * A missing reference is `REFERENCE_UNAVAILABLE`, not a failure and not a
+     * pass.
+     *
+     * The image is published; a runner that has not pulled it has nothing to
+     * compare against. Failing would make every job that wants visual coverage
+     * need registry credentials, and passing would report a comparison that
+     * never ran. The verdict is written to the report and the exit code is 0,
+     * so the job states which happened — `--require-reference` turns it into a
+     * hard failure for a pipeline that does pull the image.
+     */
+    const unavailable = {
+      schema: 'zeus.ecosystem.admin-visual-report/v1',
+      startedAt: new Date().toISOString(),
+      reference: { image, imageId: null },
+      verdict: 'REFERENCE_UNAVAILABLE',
+      detail: `${image} is not present in this environment; no comparison was made`,
+      comparisons: [],
+      passed: false,
+    }
+
+    fs.writeFileSync(path.join(ARTIFACTS, 'report.json'), `${JSON.stringify(unavailable, null, 2)}\n`)
+
+    console.log(`REFERENCE_UNAVAILABLE  ${image} is not present in this environment`)
+    console.log('no comparison was made; the verdict is recorded, not inferred')
+
+    process.exit(args.includes('--require-reference') ? 1 : 0)
+  }
+
+  /*
+   * The identity is checked against the baseline's, not just that *an* image
+   * exists. A different build under the same name is the failure mode that made
+   * the first version of this gate compare a Chinese reference against an
+   * English candidate and call it a layout difference.
+   */
+  if (identity && identity !== BASELINE_IMAGE_ID) {
+    const mismatch = {
+      schema: 'zeus.ecosystem.admin-visual-report/v1',
+      startedAt: new Date().toISOString(),
+      reference: { image, imageId: identity, expectedImageId: BASELINE_IMAGE_ID },
+      verdict: 'REFERENCE_MISMATCH',
+      detail: `the image resolves to ${identity.slice(7, 19)}, but the baseline was captured from ${BASELINE_IMAGE_ID.slice(7, 19)}`,
+      comparisons: [],
+      passed: false,
+    }
+
+    fs.writeFileSync(path.join(ARTIFACTS, 'report.json'), `${JSON.stringify(mismatch, null, 2)}\n`)
+
+    console.log(`REFERENCE_MISMATCH  ${identity.slice(7, 19)} != ${BASELINE_IMAGE_ID.slice(7, 19)}`)
+    console.log('a baseline describes one build; comparing against another is not a comparison')
+    process.exit(args.includes('--require-reference') ? 1 : 0)
   }
 
   fs.mkdirSync(ARTIFACTS, { recursive: true })

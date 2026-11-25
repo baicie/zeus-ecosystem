@@ -415,6 +415,37 @@ export async function verifyOnePackage(locked, claims, options = {}) {
    */
   const verified = result.attestation
 
+  /*
+   * The commit binding, which the CLI path used to skip.
+   *
+   * `judgePackage` compares what the attestation says against what the build
+   * claims, and the module's own documentation promises that a build naming a
+   * commit the attestation does not is `INVALID`. That comparison lived in a
+   * function only the tests called: `verifyOnePackage` took `claims` in its
+   * signature and never read it, so editing a build-info's `coreCommit` to a
+   * forged value still produced `VERIFIED` for every package and exit 0.
+   *
+   * A parameter that is accepted and ignored is worse than one that is
+   * missing — the signature says the check exists.
+   */
+  const judgement = judgePackage(locked, verified, claims)
+
+  if (judgement.verdict === 'INVALID') {
+    return {
+      name: locked.name,
+      version: locked.version,
+      lockfileIntegrity: locked.integrity,
+      actualRepository: verified.repository,
+      actualCommit: verified.commit,
+      expectedCommit: judgement.expectedCommit,
+      signerIdentity: verified.signerIdentity,
+      signerIssuer: verified.signerIssuer,
+      tlogEntries: verified.tlogEntries,
+      verdict: 'INVALID',
+      reason: judgement.reason,
+    }
+  }
+
   return {
     name: locked.name,
     version: locked.version,
@@ -422,6 +453,7 @@ export async function verifyOnePackage(locked, claims, options = {}) {
     expectedRepository: repository ?? undefined,
     actualRepository: verified.repository,
     actualCommit: verified.commit,
+    expectedCommit: judgement.expectedCommit,
     signerIdentity: verified.signerIdentity,
     signerIssuer: verified.signerIssuer,
     tlogEntries: verified.tlogEntries,

@@ -245,3 +245,85 @@ test('decodes the lockfile integrity the verifier wants', () => {
   assert.equal(decodeIntegritySha512('sha512-AAAA'), 'AAAA')
   assert.equal(decodeIntegritySha512('sha1-AAAA'), undefined)
 })
+
+test('the CLI path refuses a build that names a commit the attestation does not', async () => {
+  /*
+   * The defect this pins: `verifyOnePackage` accepted `claims` in its
+   * signature and never read it. `judgePackage` did the comparison, and only
+   * the tests called it — so editing a build-info's `coreCommit` to a forged
+   * value still produced VERIFIED for every package and exit 0, while the
+   * module's own documentation promised INVALID.
+   *
+   * A parameter that is accepted and ignored is worse than one that is
+   * missing: the signature says the check exists.
+   */
+  const result = await verifyOnePackage(
+    { name: '@zeus-js/zeus', version: '1.0.0', integrity: 'sha512-AAAA' },
+    { coreCommit: 'f'.repeat(40) },
+    {
+      fetch: async () => ({
+        status: 200,
+        ok: true,
+        json: async () => ({
+          attestations: [{ predicateType: 'https://slsa.dev/provenance/v1', bundle: {} }],
+        }),
+      }),
+      attestation: {
+        attestationUrl: () => 'https://registry.test/x',
+        findSlsaBundle: () => ({ mediaType: 'application/vnd.dev.sigstore.bundle.v0.3+json' }),
+        verifyAttestation: async () => ({
+          ok: true,
+          attestation: {
+            repository: 'baicie/zeus',
+            /* What the registry actually signed — a different commit. */
+            commit: 'a'.repeat(40),
+            subjectDigest: 'sha512-x',
+            signerIdentity: 'id',
+            tlogEntries: 1,
+          },
+        }),
+      },
+    },
+  )
+
+  assert.equal(result.verdict, 'INVALID')
+  assert.match(result.reason, /build-info claims/)
+})
+
+test('an independent package is not compared against the core commit', async () => {
+  /*
+   * `vite-plugin` and `devtools-consumer` publish on their own version lines
+   * from their own tags. Comparing their commit to the core build's would
+   * report a mismatch that is not one, which is the failure the independent
+   * list exists to prevent.
+   */
+  const result = await verifyOnePackage(
+    { name: '@zeus-js/vite-plugin', version: '0.0.6', integrity: 'sha512-AAAA' },
+    { coreCommit: 'f'.repeat(40) },
+    {
+      fetch: async () => ({
+        status: 200,
+        ok: true,
+        json: async () => ({
+          attestations: [{ predicateType: 'https://slsa.dev/provenance/v1', bundle: {} }],
+        }),
+      }),
+      attestation: {
+        attestationUrl: () => 'https://registry.test/x',
+        findSlsaBundle: () => ({ mediaType: 'application/vnd.dev.sigstore.bundle.v0.3+json' }),
+        verifyAttestation: async () => ({
+          ok: true,
+          attestation: {
+            repository: 'baicie/zeus',
+            commit: 'b'.repeat(40),
+            subjectDigest: 'sha512-x',
+            signerIdentity: 'id',
+            tlogEntries: 1,
+          },
+        }),
+      },
+    },
+  )
+
+  assert.equal(result.verdict, 'VERIFIED')
+})

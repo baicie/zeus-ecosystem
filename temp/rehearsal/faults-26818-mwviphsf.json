@@ -1,0 +1,39 @@
+{
+  "schema": "zeus.ecosystem.rehearsal-faults/v1",
+  "runId": "26818-mwviphsf",
+  "startedAt": "2026-11-25T02:41:58.863Z",
+  "baseline": "ghcr.io/baicie/zeus-admin:main",
+  "candidate": "zeus-admin:local",
+  "cases": [
+    {
+      "name": "a candidate that exits immediately is reported as unstartable",
+      "detected": true,
+      "matched": true,
+      "reason": "container reached \"unhealthy\" after 0.2s",
+      "ok": true
+    },
+    {
+      "name": "a missing rollback image is reported before anything starts",
+      "detected": false,
+      "matched": false,
+      "reason": "undefined",
+      "ok": false
+    },
+    {
+      "name": "a wrong token or origin is refused by the product, not silently accepted",
+      "detected": true,
+      "matched": true,
+      "reason": "wrong password answered HTTP 401 {\"error\":{\"code\":\"ZEUS_ADMIN_INVALID_CREDENTIALS\",\"message\":\"Email or password i",
+      "ok": true
+    },
+    {
+      "name": "an unreadable volume is reported as a data failure, not a start failure",
+      "detected": true,
+      "matched": true,
+      "reason": "container unhealthy; logs mention database: false",
+      "ok": true
+    }
+  ],
+  "finishedAt": "2026-11-25T02:42:39.617Z",
+  "passed": false
+}

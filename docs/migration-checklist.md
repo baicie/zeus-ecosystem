@@ -52,7 +52,7 @@
 | SOURCE_MIGRATED | ✅ | 30 个依赖全部指向已发布版本 |
 | LOCAL_TESTED | ✅ | tsc 0 错误、26/26 服务端测试、vite build 成功 |
 | CI_VALIDATED | ✅ | `Admin / Browser gates`（三引擎 33 项）与 `AI Apps` 全绿 |
-| VISUAL_VALIDATED | ✅ | 8 个场景对 `ghcr.io/baicie/zeus-admin:main`（`faf238d3`）；见下方说明 |
+| VISUAL_VALIDATED | ✅ | 8 个场景对 `ghcr.io/baicie/zeus-admin@sha256:faf238d3b701…`（按 digest 固定）；见下方说明 |
 | IMAGE_VALIDATED | ✅ | `delivery-evidence/v1`，尺寸与平台见该文件 |
 | DEPLOYMENT_REHEARSED | ✅ | **真实跨版本** 20/20 步，83.6 秒；回滚后数据完好 |
 | PRODUCTION_ACCEPTED | ⬜ | 未部署 |

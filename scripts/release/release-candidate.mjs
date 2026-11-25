@@ -304,7 +304,23 @@ export function buildCandidate(root, options = {}) {
     ?? process.env.ZEUS_APP_COMMIT
     ?? git(root, ['rev-parse', 'HEAD'])
 
-  const dirty = git(root, ['status', '--porcelain']).length > 0
+  /*
+   * A working tree that git cannot read is not a dirty one.
+   *
+   * `buildCandidate` is documented as pure over the tree, and it takes
+   * `--commit` precisely so it can be pointed at a checkout without asking
+   * git for HEAD. Asking git about the working tree anyway made it throw
+   * inside a temp directory — which is how a caller that supplied everything
+   * it needed still could not run it. Where git is unavailable the answer is
+   * "unknown", reported as such rather than as clean.
+   */
+  const dirty = (() => {
+    try {
+      return git(root, ['status', '--porcelain']).length > 0
+    } catch {
+      return undefined
+    }
+  })()
   const pair = readJson(join(root, 'infra/contracts/published-pair.json'))
   const products = readJson(join(root, 'infra/contracts/products.json'))
   const matrix = readJson(join(root, 'docs/compatibility-matrix.json'))
@@ -516,18 +532,71 @@ export function buildCandidate(root, options = {}) {
   }
 
   /* ---- provenance ---------------------------------------------------- */
-  const provenance = readJson(join(root, 'temp/provenance-report.json'))
+  /*
+   * The verifier is per-product and writes only where `--out` points, so the
+   * reports arrive as `temp/provenance-<product>.json`. An earlier version of
+   * this reader looked for one file called `temp/provenance-report.json`,
+   * which nothing produces by default — so this dimension reported INCOMPLETE
+   * for every product while three passing reports sat beside it. A reader that
+   * names a path no writer writes is a reader that always says "no evidence".
+   *
+   * Both shapes are accepted: the per-product files, and a single aggregate if
+   * somebody generates one.
+   */
+  const provenanceReports = (() => {
+    const single = readJson(join(root, 'temp/provenance-report.json'))
 
-  if (provenance?.verdict === 'PASS') {
-    dimensions.push(dimension('provenance', 'PASS', provenance.summary ?? 'see report'))
-  } else if (provenance) {
-    dimensions.push(dimension('provenance', provenance.verdict === 'FAIL' ? 'BLOCKED' : 'INCOMPLETE', provenance.summary ?? provenance.verdict))
+    if (single) return [single]
+
+    if (!existsSync(join(root, 'temp'))) return []
+
+    return readdirSync(join(root, 'temp'))
+      .filter(name => /^provenance-.+\.json$/.test(name))
+      .map(name => readJson(join(root, 'temp', name)))
+      .filter(Boolean)
+  })()
+
+  const verified = provenanceReports.filter(report => report.verdict === 'PASS')
+  const failed = provenanceReports.filter(report => report.verdict === 'FAIL')
+  const inconclusive = provenanceReports.filter(
+    report => report.verdict !== 'PASS' && report.verdict !== 'FAIL',
+  )
+
+  if (failed.length > 0) {
+    dimensions.push(
+      dimension(
+        'provenance',
+        'BLOCKED',
+        `${failed.length} report(s) verified as failing: ${failed.map(entry => entry.productId).join(', ')}`,
+      ),
+    )
+  } else if (verified.length > 0 && verified.length === provenanceReports.length) {
+    const total = verified.reduce((sum, entry) => sum + (entry.packages?.length ?? 0), 0)
+
+    dimensions.push(
+      dimension(
+        'provenance',
+        'PASS',
+        `${total} package(s) across ${verified.length} product report(s), every attestation verified`,
+        verified.map(entry => `temp/provenance-${entry.productId}.json`),
+      ),
+    )
+  } else if (inconclusive.length > 0 && verified.length === 0) {
+    dimensions.push(
+      dimension(
+        'provenance',
+        'INCOMPLETE',
+        `${inconclusive.length} report(s) did not reach a verdict: ${inconclusive
+          .map(entry => `${entry.productId ?? '?'}=${entry.verdict}`)
+          .join(', ')}`,
+      ),
+    )
   } else {
     dimensions.push(
       dimension(
         'provenance',
         options.offline ? 'INCOMPLETE' : 'INCOMPLETE',
-        'no report; run pnpm check:provenance (network) or accept this dimension is unmeasured',
+        'no report; run pnpm check:provenance --product <id> --out temp/provenance-<id>.json',
       ),
     )
   }
@@ -615,7 +684,11 @@ export function overallVerdict(dimensions) {
 
 export function formatCandidate(candidate) {
   const lines = [
-    `release candidate for ${candidate.commit.slice(0, 12)}${candidate.dirty ? ' (working tree dirty)' : ''}`,
+    `release candidate for ${candidate.commit.slice(0, 12)}${
+      candidate.dirty === true ? ' (working tree dirty)'
+        : candidate.dirty === undefined ? ' (working tree state unknown)'
+          : ''
+    }`,
     candidate.pair
       ? `  Core ${candidate.pair.core.version} + UI ${candidate.pair.ui.version}`
       : '  no published pair',

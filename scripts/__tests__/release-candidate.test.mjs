@@ -158,3 +158,46 @@ test('counts nothing as zero rather than guessing', () => {
   assert.equal(countChecks({}), 0)
   assert.equal(countChecks(undefined), 0)
 })
+
+test('finds per-product provenance reports, not only one aggregate file', async () => {
+  /*
+   * The defect this pins: the reader looked for `temp/provenance-report.json`,
+   * which nothing writes by default, so the dimension reported INCOMPLETE for
+   * every product while three passing reports sat beside it. A reader that
+   * names a path no writer writes is a reader that always says "no evidence".
+   *
+   * The verifier takes `--out`, so its files arrive as
+   * `temp/provenance-<product>.json`; the reader has to accept that shape.
+   */
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import('node:fs')
+  const { tmpdir } = await import('node:os')
+  const { join } = await import('node:path')
+  const { buildCandidate } = await import('../release/release-candidate.mjs')
+
+  const root = mkdtempSync(join(tmpdir(), 'zeus-candidate-'))
+
+  try {
+    mkdirSync(join(root, 'temp'), { recursive: true })
+
+    for (const product of ['admin', 'ai-workbench', 'ai-host']) {
+      writeFileSync(
+        join(root, 'temp', `provenance-${product}.json`),
+        JSON.stringify({
+          schema: 'zeus.ecosystem.provenance-report/v1',
+          productId: product,
+          verdict: 'PASS',
+          packages: new Array(56).fill({ verdict: 'VERIFIED' }),
+        }),
+      )
+    }
+
+    /* The candidate needs a commit; git is not available in a temp dir. */
+    const candidate = buildCandidate(root, { commit: 'f'.repeat(40) })
+    const provenance = candidate.dimensions.find(entry => entry.name === 'provenance')
+
+    assert.equal(provenance.verdict, 'PASS')
+    assert.match(provenance.detail, /168 package\(s\) across 3 product report\(s\)/)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})

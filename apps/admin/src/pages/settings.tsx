@@ -220,6 +220,7 @@ export function SettingsPage() {
                   id="workspace-locale"
                   class="select"
                   data-testid="workspace-locale"
+                  disabled={!canManageWorkspace}
                   value={locale()}
                   onChange={event => {
                     const value = (event.currentTarget as HTMLSelectElement)
@@ -240,6 +241,7 @@ export function SettingsPage() {
                 <select
                   id="workspace-theme"
                   class="select"
+                  disabled={!canManageWorkspace}
                   value={theme()}
                   onChange={event => {
                     const value = (event.currentTarget as HTMLSelectElement)

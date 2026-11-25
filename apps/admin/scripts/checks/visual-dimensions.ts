@@ -88,9 +88,20 @@ export function overallStatus(evidence: VisualEvidence): 'PASS' | 'REGRESSION' |
   if (evidence.structural.verdict === 'REGRESSION') return 'REGRESSION'
   if (evidence.screenshot.verdict === 'REGRESSION') return 'REGRESSION'
 
+  /*
+   * A dimension that did not run is incomplete, and so is one that ran against
+   * nothing.
+   *
+   * `REFERENCE_UNAVAILABLE` was falling through to `PASS`: the only early
+   * returns named `NOT_RUN`, so a screenshot that could not be compared was
+   * reported as a screenshot that matched. That is the whole defect this
+   * vocabulary exists to prevent — "no basis" reading as "no problem" — and it
+   * was in the module that defines the vocabulary.
+   */
   if (evidence.functional === 'NOT_RUN') return 'INCOMPLETE'
   if (evidence.structural.verdict === 'NOT_RUN') return 'INCOMPLETE'
   if (evidence.screenshot.verdict === 'NOT_RUN') return 'INCOMPLETE'
+  if (evidence.screenshot.verdict === 'REFERENCE_UNAVAILABLE') return 'INCOMPLETE'
 
   if (evidence.design.verdict === 'REVIEW_REQUIRED') return 'REVIEW_REQUIRED'
 

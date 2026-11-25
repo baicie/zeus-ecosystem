@@ -12,7 +12,9 @@
     "check": "tsc --noEmit",
     "test:server": "node scripts/run-with-sqlite.mjs node_modules/vitest/vitest.mjs run",
     "check:browser": "tsx scripts/checks/check-admin-browser.ts",
-    "check:visual": "tsx scripts/checks/check-admin-visual.ts"
+    "check:visual": "tsx scripts/checks/check-admin-visual.ts",
+    "check:permissions": "node scripts/run-with-sqlite.mjs scripts/checks/check-admin-permissions.ts",
+    "test:checks": "node scripts/run-with-sqlite.mjs node_modules/vitest/vitest.mjs run scripts/checks"
   },
   "dependencies": {
     "@zeus-js/i18n": "0.2.0-rc.5",
@@ -48,12 +50,15 @@
   },
   "devDependencies": {
     "@types/node": "26.0.0",
+    "@types/pngjs": "6.0.5",
+    "@zeus-js/devtools-consumer": "0.1.1-beta.15",
     "@zeus-js/vite-plugin": "0.0.6",
+    "esbuild": "0.28.2",
+    "pixelmatch": "8.0.0",
+    "pngjs": "7.0.0",
     "tsx": "4.22.4",
     "typescript": "5.9.3",
     "vite": "8.3.8",
-    "vitest": "4.1.9",
-    "esbuild": "0.28.2",
-    "@zeus-js/devtools-consumer": "0.1.1-beta.15"
+    "vitest": "4.1.9"
   }
 }

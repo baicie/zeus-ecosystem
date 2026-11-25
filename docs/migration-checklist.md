@@ -73,7 +73,7 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 | SOURCE_MIGRATED | ✅ | 30 个依赖全部指向已发布版本 |
 | LOCAL_TESTED | ✅ | tsc 0 错误、26/26 服务端测试、vite build 成功 |
 | CI_VALIDATED | ✅ | `Admin / Browser gates`（14 场景 × 3 引擎）与 `AI Apps` 全绿 |
-| VISUAL_VALIDATED | ⬜ | 只有**结构一致性**：8 个场景的 landmark 与文本重合度对 `ghcr.io/baicie/zeus-admin@sha256:faf238d3b701…` 比对。截图已保存但未经人工审查，也没有像素 diff；见下方说明 |
+| VISUAL_VALIDATED | ⬜ | **结构一致性 8/8**（landmark 与文本重合度对按 digest 固定的参考构建）+ **像素比对 1/8**（`roles`，1.68%，差异全在候选新增的能力矩阵；其余 7 个场景两构建语言不同，不可比，记 `NOT_RUN`）。设计审查未做——那需要人，不是脚本。见下方说明 |
 | IMAGE_VALIDATED | ✅ | `delivery-evidence/v1`，尺寸与平台见该文件 |
 | DEPLOYMENT_REHEARSED | ✅ | **真实跨版本** 20/20 步，83.6 秒；回滚后数据完好 |
 | PRODUCTION_ACCEPTED | ⬜ | 未部署 |
@@ -101,35 +101,84 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 `CANDIDATE_ADDED` 记的是候选版本多出的内容（roles 页的能力矩阵与分配表单），
 它**不是**回归。
 
-**视觉结论的边界。** 它证明迁移后的页面保住了结构与内容；它不证明"看起来对"。
-后者需要人阅读 `apps/admin/temp/admin-visual` 的截图。本轮没有做这一步。
+**视觉结论的边界。** 它证明迁移后的页面保住了结构与内容；像素维度在可比的地方
+给出了比值。它**不证明"看起来对"**——后者需要人阅读 `apps/admin/temp/admin-visual`
+的截图。本轮没有做这一步，`DesignReview` 因此是 `REVIEW_REQUIRED` 而非通过。
+
+**四个维度分开报，不再合成一个布尔值。**
+`apps/admin/scripts/checks/visual-dimensions.ts`：
+
+```
+Functional  场景还能不能完成
+Structural  页面还有没有同样的 landmark，顺序是否一致
+Screenshot  像素是否在阈值内
+Design      差异是否有意——人的答案，脚本永远不填
+```
+
+任一前三维度回归即失败；`NOT_RUN` 与 `REFERENCE_UNAVAILABLE` 记 `INCOMPLETE`，
+**不记通过**；未审查的设计记 `REVIEW_REQUIRED`，不记失败——被红灯逼出来的签字
+不是审查。像素算法在 `screenshot-diff.ts`，8 条测试覆盖相同、局部变化、
+尺寸不同（不可比，不猜）、亚阈值差异。
 
 ## 明确的阻塞
 
-**0. 本机无法安装浏览器，截图比对未执行。**
-`playwright install chromium` 在这个网络下停在 0%（159.6 MiB 一个字节也没下来），
-直接 `curl` CDN 同样中断。**这不是代码问题，也不是 CI 问题**——CI 的
-`ubuntu-24.04` runner 有缓存，`Admin / Browser gates` 与 `AI Workbench / Browser gates`
-都在那里跑过。
+**0. 视觉验收：结构 8/8，像素 1/8，设计审查需人工。**
 
-因此本轮视觉验收的完成情况是：
+上一次记在这里的"本机无法安装浏览器"是**错的**，现已更正：CDN 不通，但
+`cdn.npmmirror.com/binaries/playwright` 可用，`PLAYWRIGHT_DOWNLOAD_HOST` 指过去后
+Chromium 143.0.7499.4（正是 lockfile 钉的 build）安装成功，本机可跑真实浏览器。
 
 | 维度 | 状态 |
 | --- | --- |
-| Functional Parity | ✅ 已在 CI 与本地跑过 |
-| Structural Parity | ✅ 已在本地跑过（8 场景） |
-| Screenshot Regression | ⬜ **本机无法执行**；代码与基线已就位 |
+| Functional Parity | ✅ CI 与本地 |
+| Structural Parity | ✅ **8/8** 场景，landmark 种类与顺序对 `faf238d3…` 比对 |
+| Screenshot Regression | ✅ 已实现并跑通；**1/8** 场景可比，其余 7 个因两构建语言不同记 `NOT_RUN` |
 | Design Review | ⬜ 需要人 |
 
-基线与门禁都已提交：`apps/admin/visual-baselines/reference.json`（按 digest 固定）、
-`apps/ai-workbench/visual-baselines/reference.json`（`CANDIDATE`，重建自 zeus-ui 源码）。
-缺的是执行环境，不是实现。
+`roles` 是唯一可比像素的场景，1.68% 差异——**不是回归**。diff 图
+（`temp/admin-visual/diff-roles.png`）显示差异集中在候选新增的能力矩阵与分配表单，
+参考构建那一区域完全没有内容。`compare` 把这类结果记作 `CANDIDATE_ADDED`：
+多出内容，没有丢失。
 
+**为什么 7/8 不可比。** 参考构建（`faf238d3`）决定界面的方式与候选不同，且没有
+任何外部输入能同时作用于两者：
 
-**0b. Admin 权限的浏览器验收同样待执行。** 权限模型与服务端契约都有测试守着
-（10 条），但"viewer 看到 disabled 的保存按钮"这件事只有浏览器能证明。待执行场景：
-viewer 打开 settings 后 workspace 字段与保存按钮禁用、语言与主题仍可切换；
-访问 audit/upload/roles 得到 403；直接 POST `/api/settings` 被服务端拒绝。
+| 输入 | 参考构建 | 候选 |
+| --- | --- | --- |
+| `navigator.languages` | 忽略 | 读取 |
+| `accept-language` | 忽略 | 读取 |
+| 服务端 workspace locale（PATCH API） | 存下但不渲染 | 读取 |
+| `localStorage` 每账号键 | 该构建里不存在 | 读取 |
+
+实测：浏览器语言 `en-US` 与 `zh-CN`、服务端 `locale=en` 三种组合，参考构建都渲染
+`<html lang="zh-CN">` 与中文标题。**这是两个构建的真实产品差异**，不是 harness
+缺陷。门禁在结构判定为 `STRUCTURE_MATCHES_TRANSLATED` 时不给像素数字——跨语言
+比对测的是翻译，不是布局。
+
+**这一轮修掉的三个门禁自身缺陷**（都是先报出假答案，再被追到根因）：
+
+1. **参考会话中途掉线**，五个参考截图全是登录卡片（同一 33857 字节），门禁把它当
+   设置页比，报出 3 条 `critical` 与 1.68%–4.69% 的"回归"。修复：每页前检查会话并
+   重新登录；`pageContent()` 记录 `signedIn` 与 `pathname`；比对前两侧都检查，任一
+   不是目标页面就记 `UNUSABLE`，不产出数字。
+2. **readiness 等英文标题**，参考构建渲染中文，6 个场景超时后仍抓图。修复：改用
+   landmark 计数判就绪，与界面语言无关。
+3. **`waitForFunction` 在 tsx 下必然抛错**：esbuild 给具名函数插入 `__name(...)`
+   辅助调用，序列化进页面后不存在；改传字符串又被 CSP `unsafe-eval` 拒绝。修复：
+   `page.evaluate` 轮询（`evaluate` 内联函数体，不经 `toString()`）。这个缺陷伪装成
+   "页面没就绪"，报告写 `page did not become ready`，看起来像产品或环境问题。
+
+三条都有测试守着：`visual-dimensions.test.ts`（`REFERENCE_UNAVAILABLE` 必须是
+`INCOMPLETE` 不是 `PASS`）、`check-admin-visual.test.ts`（源码里不得出现英文标题
+等待或语言猜测）、`screenshot-diff.test.ts`（8 条，含尺寸不同必须判不可比）。
+
+**0b. Admin 权限的浏览器验收已执行（16/16）。**
+`check:permissions` 驱动真实服务器与生产构建，验证：viewer 的 workspace 名称输入与
+保存按钮在无障碍树里是 disabled、提示写明只有管理员能改；viewer 的个人语言仍可切换且
+真的改变 `<html lang>`；workspace 语言与主题下拉同样禁用（这一条是本轮补的——只禁用
+输入框会留下两个保存必然失败的可用控件）；`PATCH /api/settings` 返回 403 且 body 是
+`ZEUS_ADMIN_FORBIDDEN` 而非 CSRF；audit/upload/roles 三个页面渲染 403 错误页；viewer
+导航不提供这些入口；**管理员侧仍可编辑与保存**（否则"对所有人禁用"也会全部通过）。
 
 **1. AI 侧没有视觉参考，但参考源是可恢复的。**
 我之前的结论写错了：AI Workbench 从未以独立镜像发布过，**不等于**没有可信的
@@ -159,9 +208,14 @@ DEV-only 改动，不在本轮范围内。
 （`apps/ai-workbench/scripts/checks/check-ai-workbench-live.ts`），无凭据时报告
 `LIVE_BLOCKED`——既不是通过也不是失败。**不得用 Replay 通过冒充 Live 通过。**
 
-**5. viewer 的页面级权限未实现。** viewer 能打开 `/admin/settings`，导航也提供
-它。这不是迁移回归（框架仓的 `examples/admin` 行为相同），API 确实拒绝 viewer
-的写操作。记录为既有产品缺口。
+**5. viewer 的页面级权限已实现，服务端边界有浏览器证据。**
+viewer 能打开 `/admin/settings`，这是有意的：该页同时承载工作区设置（管理员）与
+个人偏好（语言、主题）。修复前的行为是整页可编辑、保存时被服务端 403；现在的行为是
+工作区三项控件禁用并说明原因，个人偏好仍可用。audit/upload/roles 在路由器里就拒绝，
+渲染 403 错误页。
+
+`check:permissions` 的 16 项断言守着这条边界，其中包括**管理员侧仍可保存**——
+一个把控件对所有人禁用的"修复"会通过其余每一项检查，只有这一项能发现它。
 
 ## 生产切换 checklist
 
@@ -192,7 +246,8 @@ DEV-only 改动，不在本轮范围内。
 
 ```
 已完成并合并或待合并    A（表生成器）、B（契约检查）、D（provenance）、H（CI 收敛）
-阻塞在授权            B 的发布部分、E 的 AI baseline、F 的人工审查、G 的产品决策、J 的生产权限
+本轮补齐              F（视觉四维 + 截图比对 + 语言无关就绪）、G（权限模型 + 16 项浏览器验收）
+阻塞在授权            B 的发布部分、E 的 AI baseline、F 的人工审查、J 的生产权限
 ```
 
 结论：**能自主完成的已全部完成**，剩下的每一项都需要本仓库之外的输入。
@@ -201,8 +256,8 @@ DEV-only 改动，不在本轮范围内。
 
 | 应用 | 证据 | 缺口 |
 | --- | --- | --- |
-| Admin | 14 场景 × 3 引擎浏览器；跨版本 20/20；结构一致性 8/8 | 像素级视觉与人工审查 |
-| AI Workbench | P0 / BYOK / CSP 基线；容器 48 项 | 逐项对照旧版；视觉参考未生成 |
+| Admin | 14 场景 × 3 引擎浏览器；跨版本 20/20；结构一致性 8/8；像素 1/8（可比场景全过）；权限 16/16 | 设计审查（需人）；7 个场景因参考构建语言不同无法像素比对 |
+| AI Workbench | P0 / BYOK / CSP 基线；容器 48 项 | 逐项对照旧版；视觉参考仍是 `CANDIDATE` |
 | AI Host | 协议 9/9（含真实重启） | 与 Workbench 的联合升级未预演 |
 
 ### 正式交付准备度

@@ -345,16 +345,21 @@ const SCENARIOS: ReadonlyArray<{
     name: 'a viewer sees a narrower navigation than an administrator',
     async run(page) {
       /*
-       * Measured, and this is what the product does today: a viewer can open
-       * `/admin/settings` and its navigation still offers Settings. The
-       * migration did not introduce that — `examples/admin` in the framework
-       * repository has the same behaviour — so it is a pre-existing product
-       * gap, not a regression, and this check records it rather than asserting
-       * a boundary the product does not draw.
+       * A viewer *can* open `/admin/settings`, and that is deliberate: the page
+       * holds both workspace settings (an administrator's) and the reader's own
+       * language and theme. Gating the page whole would take the second away to
+       * protect the first.
        *
-       * What *is* enforced is the API: a viewer's write to `/api/users` is
-       * rejected. The scenario below asserts the narrower navigation, which the
-       * app does implement, and the report names the gap separately.
+       * What changed is that the workspace controls inside it are now disabled
+       * and say why. The boundary itself is asserted deeper, in
+       * `check-admin-permissions.ts`: the accessibility tree, the 403 error
+       * pages, and the server refusing the write the disabled control would
+       * have sent.
+       *
+       * This scenario stays at the navigation level on purpose — a viewer's
+       * sidebar must not offer the administrator-only pages even though the
+       * router would refuse them. Hiding an entry is a courtesy; the refusal is
+       * the control, and both are checked.
        */
       await signIn(page, VIEWER)
       await page.goto('/admin/settings')

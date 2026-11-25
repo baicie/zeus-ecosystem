@@ -53,6 +53,21 @@ export const BASELINE = {
     results: 0,
     checks: 5,
   },
+  /*
+   * The permission gate emits one entry per assertion, not per engine: it runs
+   * a single Chromium because the claims are about the accessibility tree and
+   * the server, neither of which is engine-specific. Its `checks` count is
+   * therefore zero by shape, and `results` is the number that means something.
+   *
+   * Sixteen is the measured count. Removing one — say, the administrator-side
+   * save — would still leave a green run that proves less, which is exactly
+   * what this file exists to catch.
+   */
+  permissions: {
+    report: 'apps/admin/temp/admin-permissions/report.json',
+    results: 16,
+    checks: 0,
+  },
 }
 
 /** Reads the first JSON object in a file, since gates also log to stdout. */
@@ -132,21 +147,45 @@ export function checkGate(root, name, baseline) {
   return errors
 }
 
-export function checkAll(root = process.cwd()) {
-  return Object.entries(BASELINE).flatMap(([name, baseline]) =>
-    checkGate(root, name, baseline),
-  )
+export function checkAll(root = process.cwd(), only = undefined) {
+  const selected = only
+    ? Object.entries(BASELINE).filter(([name]) => only.includes(name))
+    : Object.entries(BASELINE)
+
+  /*
+   * A name that matches nothing must fail.
+   *
+   * Otherwise a typo in `--only` runs zero gates and reports success, which is
+   * the same defect as `[].every(...)` — the reason the Workbench gates grew
+   * their own empty-selection guard.
+   */
+  if (only && selected.length !== only.length) {
+    const missing = only.filter(name => !(name in BASELINE))
+
+    return [`--only named no gate called ${missing.join(', ')}`]
+  }
+
+  return selected.flatMap(([name, baseline]) => checkGate(root, name, baseline))
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const index = process.argv.indexOf('--root')
   const root = resolve(index === -1 ? process.cwd() : process.argv[index + 1])
-  const errors = checkAll(root)
+  const onlyIndex = process.argv.indexOf('--only')
+  const only =
+    onlyIndex === -1
+      ? undefined
+      : process.argv[onlyIndex + 1].split(',').map(entry => entry.trim()).filter(Boolean)
+  const errors = checkAll(root, only)
 
   if (errors.length > 0) {
     for (const error of errors) console.error(`error: ${error}`)
     process.exit(1)
   }
 
-  console.log('gate baseline holds: every gate still asserts at least as much as the migration did')
+  console.log(
+    only
+      ? `gate baseline holds for ${only.join(', ')}`
+      : 'gate baseline holds: every gate still asserts at least as much as the migration did',
+  )
 }

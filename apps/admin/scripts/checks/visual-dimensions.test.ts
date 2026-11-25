@@ -63,6 +63,25 @@ describe('the four dimensions stay separate', () => {
     ).toBe('INCOMPLETE')
   })
 
+  it('is incomplete when the screenshot ran against nothing', () => {
+    /*
+     * The defect this case was written for: `REFERENCE_UNAVAILABLE` fell
+     * through every guard and reached `PASS`. A comparison that had no
+     * reference is the clearest possible "no basis", and it was being reported
+     * as the strongest possible "no problem".
+     */
+    expect(
+      overallStatus(
+        with_({
+          screenshot: {
+            verdict: 'REFERENCE_UNAVAILABLE',
+            detail: 'the reference image is not present',
+          },
+        }),
+      ),
+    ).toBe('INCOMPLETE')
+  })
+
   it('passes only when all four agree', () => {
     expect(overallStatus(base)).toBe('PASS')
   })

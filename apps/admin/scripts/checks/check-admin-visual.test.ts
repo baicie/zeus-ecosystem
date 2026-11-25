@@ -89,3 +89,55 @@ describe('visual comparison', () => {
     expect(compare(empty, empty).kind).toBe('same')
   })
 })
+
+describe('the readiness signal does not name a language', () => {
+  /*
+   * The defect this pins: `ready` waited on headings by English name, and the
+   * reference build renders Chinese. Six scenarios timed out, captured anyway,
+   * and were reported as unusable — the gate refused the comparison for a
+   * reason that was its own.
+   *
+   * The assertion is on the source of the scenario table, because the failure
+   * is a string in a wait call rather than anything a pure function returns.
+   * It is a lint with a reason attached: a future scenario that waits on
+   * `/foo/i` reintroduces exactly this bug, and it will be invisible until
+   * someone runs the gate against a build in another language.
+   */
+  it('does not wait on English heading text', async () => {
+    const source = await import('node:fs').then(fs =>
+      fs.readFileSync(new URL('./check-admin-visual.ts', import.meta.url), 'utf8'),
+    )
+
+    /* Comments explain the bug and necessarily mention the old pattern. */
+    const code = source
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .split('\n')
+      .filter(line => !line.trim().startsWith('//'))
+      .join('\n')
+
+    const textWaits = [...code.matchAll(/getByRole\('heading',\s*\{\s*name:\s*\/[^/]+\/i\s*\}/g)]
+
+    expect(
+      textWaits.map(match => match[0]),
+      'a readiness wait that matches English heading text cannot be satisfied by a build in another language',
+    ).toEqual([])
+  })
+
+  it('does not wait on the interface language anywhere in the gate', async () => {
+    /*
+     * The login helper is the one legitimate place: it must accept either
+     * language because the reference renders Chinese and the candidate does
+     * not. Everywhere else, a `/email|邮箱/i` style alternation means the
+     * harness is guessing at the product's language rather than sidestepping
+     * the question.
+     */
+    const source = await import('node:fs').then(fs =>
+      fs.readFileSync(new URL('./check-admin-visual.ts', import.meta.url), 'utf8'),
+    )
+
+    const signIn = source.slice(source.indexOf('async function signIn'), source.indexOf('async function signIn') + 800)
+    const outside = source.replace(signIn, '')
+
+    expect(outside).not.toMatch(/邮箱|密码|登录/)
+  })
+})

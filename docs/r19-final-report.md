@@ -92,6 +92,18 @@ Release Candidate  BLOCKED
 `infra/contracts/published-pair.json` 对照，不一致就拒绝安装。写这个检查时立刻发现
 `@zeus-js/devtools-consumer` 根本没被列进去——在任何测试跑之前。
 
+改完后实跑了一次矩阵——这是它第一次真正用 0.0.6：
+
+```
+PASS  install published packages
+PASS  typecheck published types
+PASS  import Core at runtime
+PASS  import the compat layer at runtime
+PASS  production build
+PASS  invoke the published CLI
+matrix PASS: 0.2.0-rc.5 + 0.1.0-beta.35 via pnpm
+```
+
 `compatibility-matrix.json` 的说明也改写了，但**证据日期仍是旧的**，所以
 `scope.compilerCompatibility` 保持 `partial`：改叙述而不动证据日期，等于声称有
 不存在的证据。

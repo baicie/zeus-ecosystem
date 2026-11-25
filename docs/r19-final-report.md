@@ -272,7 +272,7 @@ registry**。没有 `--push` 时 `build-image.mjs` 只记 image ID 不记 digest
 
 ## 六、这一轮修掉的缺陷
 
-按发现方式分组。前四个是我自己踩的，后五个是独立核查找出来的。
+按发现方式分组。前五个是我自己踩的，后十二个是独立核查找出来的。
 
 ### 我自己踩的
 
@@ -291,6 +291,11 @@ registry**。没有 `--push` 时 `build-image.mjs` 只记 image ID 不记 digest
 10. **候选聚合读不到 provenance 报告**（找 `temp/provenance-report.json`，实际是 `per-product`）→ 已修
 11. **清理检查放宽了清单定义**（搜全树 vs 清单原话的两行）→ 已修
 12. **矩阵脚本钉着 `0.0.5`，其测试断言同一个常量** → 已修，并加契约对照
+13. **`overallStatus` 被 import 后零次调用** → 视觉门禁的通过判定不看截图维度，`roles` 的像素回归仍判 `passed: true`。已接线
+14. **canary 改写版本后不重生成包表** → `write-package-table.spec.ts` 每次 canary 都失败。已在 canary 流程里加生成步骤（zeus#416）
+15. **清理检查把「读不到」报成「干净」** → `?? []` 让 UNKNOWN 分支不可达。已修
+16. **`ci-ownership.md` 的 41/26 不是断言数** → 41 是 `gallery-` 出现次数，26 对不上任何东西。已改成实测表述
+17. **文档七类失效陈述** → provenance 数字、INCOMPLETE 项数、前置条件条数、devtools「未接入」、AI「未演练」、`IMAGE_VALIDATED` 引用不存在的文件、AI 视觉参考「还没做」
 
 ---
 

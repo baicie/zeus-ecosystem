@@ -8,7 +8,8 @@
     "start": "tsx src/server.ts",
     "check": "tsc -p tsconfig.json --noEmit",
     "test": "node ../ai-workbench/scripts/run-with-sqlite.mjs node_modules/vitest/vitest.mjs run",
-    "bundle": "esbuild src/server.ts --bundle --format=esm --platform=node --target=node22 \"--external:node:*\" --outfile=dist/server.js"
+    "bundle": "esbuild src/server.ts --bundle --format=esm --platform=node --target=node22 \"--external:node:*\" --outfile=dist/server.js",
+    "check:protocol": "tsx scripts/checks/check-ai-host-protocol.ts"
   },
   "dependencies": {
     "@zeus-web/ai-adapters": "0.1.0-beta.35",

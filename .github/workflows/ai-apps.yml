@@ -120,6 +120,13 @@ jobs:
         working-directory: apps/admin
         run: pnpm test:server
 
+      # Protocol, origin, persistence across a real process restart, and the
+      # readiness question `/health` cannot answer. The gate starts the host as
+      # a child process so the restart is real.
+      - name: Host protocol acceptance
+        working-directory: apps/ai-host
+        run: pnpm check:protocol
+
       - name: Build admin
         working-directory: apps/admin
         run: pnpm exec vite build

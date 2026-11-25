@@ -36,7 +36,7 @@ Release Candidate  BLOCKED
 
 | 项 | 裁决 | 依据 |
 | --- | --- | --- |
-| **A** 包表生成器 | ✅ DELIVERED | `write-package-table.ts` 只重写版本单元格；`check:package-table` 在 precheck 里（`scripts/release.config.ts:118`）；测试保留未删 |
+| **A** 包表生成器 | ✅ DELIVERED → 连带修一处流程缺口 | 生成器只重写版本单元格、测试保留、main CI 已恢复。但 refuter 发现 **canary 改写版本后不重生成包表**，导致 `write-package-table.spec.ts` 每次都失败——见下文 |
 | **B** vite-plugin 独立版本线 | ⚠️ PARTIAL → 已修 | npm 上 `0.0.6`，SLSA provenance 与 tag 一致，隔离安装的 tarball integrity 与 lockfile 逐字节相符，registry 安装物上 HMR 14/14。但**矩阵脚本钉的还是 `0.0.5`**，其测试断言同一个常量——`check:matrix` 一直绿，验的是旧插件 |
 | **C** Admin DevTools | ⚠️ PARTIAL | 四道守卫全部实测成立（devDependency、双重守卫、动态 import、66 chunk 中 0 个含它）。但**冷加载时面板是空的**：`render()` 早于 consumer 连接，85 个事件在 hook 安装前就发出去了 |
 | **D** Provenance | ⚠️ PARTIAL → 已修 | 真拉取（56/56 VERIFIED，单包 2.2–10.6 秒，篡改 payload 被 sigstore 拒绝）。但**commit 绑定在 CLI 路径上是死代码**——见下文，已修复 |
@@ -78,6 +78,26 @@ Release Candidate  BLOCKED
 运行时 hook 与 390px 的 `body` padding。
 
 **未修**——改渲染顺序是产品行为变更，不是一处文档修正。已记入 `apps/admin/MIGRATION.md`。
+
+### A：生成器对了，canary 流程没跟上
+
+refuter 确认 A 的 `DELIVERED` 成立：只重写 `cells[3]`、7 条 + 2 条测试都在树里、
+`check:package-table` 接线属实、main CI 在 `6e623d5f` 全绿。
+
+但它指出了一件 A 没有覆盖的事：**canary dry-run 在
+`write-package-table.spec.ts` 上失败 3/7，而 RC 的 precheck 通过。**
+
+根因是两条契约的读取方式不同：
+
+- `package-table.spec.ts` 通过 `git archive HEAD` 读**提交的源码**——暂存区的改写碰不到它，所以它通过
+- `write-package-table.spec.ts` 读**工作树**——`release:version-packages` 把 manifest 改成
+  canary 版本后，表还是旧版本，所以它失败
+
+`check:package-table` 在 RC 的 precheck 里，**不在 `CANARY_PRECHECK_COMMANDS` 里**，
+这就是缺陷从单测冒出来、而不是从一个离原因更近的检查冒出来的原因。
+
+**已修**（zeus#416）：canary 在版本改写后重新生成包表。是生成不是校验——改写正是
+让两者不一致的原因，在那里放 `--check` 会让脚本与自己刚产出的树争吵。
 
 ### B：矩阵验的是旧插件
 

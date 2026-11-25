@@ -489,6 +489,17 @@ async function main(): Promise<void> {
   const image = value('--reference') ?? REFERENCE_IMAGE
   const writeBaseline = args.includes('--write-baseline')
 
+  /*
+   * Before anything can return early.
+   *
+   * `REFERENCE_UNAVAILABLE` and `REFERENCE_MISMATCH` both write a report and
+   * both return before the collection step, which is where this call used to
+   * live — so on a runner without the image the gate crashed with ENOENT on the
+   * very file that was supposed to explain why it could not compare. A verdict
+   * that cannot be recorded is not a verdict.
+   */
+  fs.mkdirSync(ARTIFACTS, { recursive: true })
+
   let identity: string | null = null
 
   try {

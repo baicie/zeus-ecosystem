@@ -262,13 +262,35 @@ viewer 能打开 `/admin/settings`，这是有意的：该页同时承载工作�
 
 ### 正式交付准备度
 
-- provenance：**63/63 已验证**（本轮新增）
-- Release Candidate 聚合：**未建**
-- 生产切换 runbook：已写，**未执行**
+- provenance：**63/63 已验证**
+- Release Candidate 聚合：**已建**，`check:candidate` 读十二个维度，各给 `PASS` / `INCOMPLETE` / `BLOCKED`。
+  当前 `BLOCKED`——两项阻塞都是「只能由人或本仓库之外的授权回答」：
+  `design-review`（需要人看截图）与 `production-authorization`（没有生产权限）。
+  `INCOMPLETE` 的六项里，`build` 与 `image-delivery` 是同一件事：**没有任何镜像被推送到
+  registry**，本地镜像 ID 不是 digest，也就无法做回滚目标。
+- 生产切换 runbook：已写，**未执行**；`check:cutover-preflight` 逐条读八项前置条件，
+  当前 3 项 MET、2 项 UNMET、4 项 UNKNOWN。`UNKNOWN` 不是「大概可以」——
+  `tested-backup` 未知意味着切换开始时没有回滚。
+- Phase 7 清理：`check:cleanup` 读五项前置条件，当前 `BLOCKED`；
+  `vitest.config.ts` 仍包含 `examples/admin/server/**`，且 0 个应用 `PRODUCTION_ACCEPTED`。
 
 ### 生产验收完成状态
 
 `PRODUCTION_ACCEPTED`：**0 个应用**。本仓库没有生产凭据，也没有执行过任何生产操作。
+
+### 聚合的三个判据各守什么
+
+`release-candidate.mjs` 的十二条维度不是清单，而是「这条证据读得出、且读得出的是这个
+commit」。三条判据值得单独说，因为它们各自防一种「看起来绿」：
+
+- **跨版本必须真跨版本。** 先查两侧镜像 ID 不同，再查有没有数据越过版本边界。
+  只查第一条会放过「两个不同构建、每步都过、但没搬过任何数据」的运行——那是重启，
+  不是升级。两种报告族的字段拼写不同（`imageId` / `imageIds`），只认一种会把另一种
+  报成「没记录镜像」。
+- **门禁计数按各自形态读。** 四类报告四种形状；一条规则会把 14 场景的浏览器运行
+  读成「14 项，低于 42」，把 8 场景的视觉运行读成 0。
+- **空维度列表不是 READY。** `[].every(...)` 为真，这个仓库已经因此产出过一次
+  「跑了零个门禁却报成功」。现在实现与测试都钉死为 `INCOMPLETE`。
 
 ### 旧实现清理完成度
 

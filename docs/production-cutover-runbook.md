@@ -7,6 +7,41 @@ follow, written down before anyone is under pressure to improvise one.
 code. That refusal is not a comment to be worked around; a production change
 needs a separate authorization this repository does not have.
 
+## Where this stands, measured
+
+`scripts/release/cutover-preflight.mjs` reads the eight prerequisites below and
+names which hold. It is a preflight, not a plan: it names no image and no
+environment, and it cannot be turned into one.
+
+```bash
+node scripts/release/cutover-preflight.mjs --unit admin   # or --unit ai
+```
+
+Measured at `aa590b3`, both units:
+
+```
+UNMET    images-with-digests        0/1 (admin), 0/2 (ai) carry a registry digest
+UNMET    image-delivery-evidence    0 products have BUILD_PASS + STARTUP_PASS + HEALTH_PASS
+MET      complete-unit              the unit and its order are declared
+UNKNOWN  previous-image-set         the rehearsal baseline is a local image ID, not a digest
+MET      rehearsed                  data was read across the version boundary
+UNKNOWN  data-compatibility         nobody established whether the old version reads the new one's writes
+MET      browser-gates              the local gate reports passed
+UNKNOWN  browser-gates-on-commit    the CI conclusion needs a token this script does not have
+UNKNOWN  tested-backup              nothing here can see the production host
+```
+
+Two of the eight are `UNMET` for the same underlying reason: **no image from
+this repository has ever been pushed to a registry**. `build-image.mjs` records
+an image ID and no digest when `--push` is absent, and a tag or a local ID
+cannot name a rollback target. That is the first thing a real cutover needs and
+the first thing missing.
+
+The four `UNKNOWN` are not soft passes. `previous-image-set` is unknown because
+the rehearsal used a local baseline; `tested-backup` is unknown because this
+repository has never touched the production host. A cutover that begins with
+either still unknown begins without a rollback.
+
 ## Prerequisites
 
 Every one of these must be true before a cutover starts. A cutover that begins

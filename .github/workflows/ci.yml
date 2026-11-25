@@ -32,3 +32,28 @@ jobs:
           package-manager-cache: false
       - name: Validate boundaries and regression tests
         run: npm run check
+
+      # The three readiness documents, generated from what is actually on disk.
+      #
+      # They are read-only and always exit 0 here: their verdicts are the
+      # output, and this repository is `BLOCKED` on purpose — no image has been
+      # pushed, no application is in production, and Phase 7 cannot start.
+      # A job that failed on those verdicts would be red on every commit for a
+      # reason nobody can fix in a commit, which is how a check becomes noise.
+      #
+      # What the job does enforce is that the documents can still be produced:
+      # a reader that throws on a changed report shape fails here rather than
+      # the first time somebody needs the answer during a cutover.
+      - name: Produce the release candidate and the two preflights
+        run: |
+          node scripts/release/release-candidate.mjs --allow-not-ready --out temp/release-candidate.json
+          node scripts/release/cutover-preflight.mjs --unit admin --allow-not-ready
+          node scripts/release/cleanup-preflight.mjs --allow-not-ready
+
+      - name: Preserve the readiness documents
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: readiness-node-${{ matrix.node }}
+          path: temp/release-candidate.json
+          if-no-files-found: warn

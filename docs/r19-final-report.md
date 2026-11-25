@@ -16,8 +16,8 @@
 
 ```
 工程实现        12/12 有交付物
-独立核查         8 项已裁决：5 DELIVERED、3 PARTIAL
-                 B/G/H/K/L 五项由我本地实测判定（核查代理未在时限内返回）
+独立核查         9 项已裁决：5 DELIVERED、4 PARTIAL
+                 G/H/K/L 四项由我本地实测判定（核查代理未在时限内返回）
 生产验收         0/3  应用 PRODUCTION_ACCEPTED
 Release Candidate  BLOCKED
 ```
@@ -36,7 +36,7 @@ Release Candidate  BLOCKED
 | 项 | 裁决 | 依据 |
 | --- | --- | --- |
 | **A** 包表生成器 | ✅ DELIVERED | `write-package-table.ts` 只重写版本单元格；`check:package-table` 在 precheck 里（`scripts/release.config.ts:118`）；测试保留未删 |
-| **B** vite-plugin 独立版本线 | ✅ 已发布 | npm 上 `0.0.6`；4 个 manifest（2 app + 2 fixture）全部钉该版本；lockfile 已重生成 |
+| **B** vite-plugin 独立版本线 | ⚠️ PARTIAL → 已修 | npm 上 `0.0.6`，SLSA provenance 与 tag 一致，隔离安装的 tarball integrity 与 lockfile 逐字节相符，registry 安装物上 HMR 14/14。但**矩阵脚本钉的还是 `0.0.5`**，其测试断言同一个常量——`check:matrix` 一直绿，验的是旧插件 |
 | **C** Admin DevTools | ⚠️ PARTIAL | 四道守卫全部实测成立（devDependency、双重守卫、动态 import、66 chunk 中 0 个含它）。但**冷加载时面板是空的**：`render()` 早于 consumer 连接，85 个事件在 hook 安装前就发出去了 |
 | **D** Provenance | ⚠️ PARTIAL → 已修 | 真拉取（56/56 VERIFIED，单包 2.2–10.6 秒，篡改 payload 被 sigstore 拒绝）。但**commit 绑定在 CLI 路径上是死代码**——见下文，已修复 |
 | **E** AI 跨版本演练 | ✅ DELIVERED | 15 步全绿，镜像不同、数据真穿越。**但 `sqlite3 .backup` 从未执行过**：镜像里没有 `sqlite3`，记录为 `no-sqlite3` |
@@ -77,6 +77,24 @@ Release Candidate  BLOCKED
 运行时 hook 与 390px 的 `body` padding。
 
 **未修**——改渲染顺序是产品行为变更，不是一处文档修正。已记入 `apps/admin/MIGRATION.md`。
+
+### B：矩阵验的是旧插件
+
+`published-consumer-matrix.mjs:57` 硬编码 `'@zeus-js/vite-plugin': '0.0.5'`，而
+`scripts/__tests__/published-consumer-matrix.test.mjs:50` 断言这个值等于 `0.0.5`。
+
+插件早一天就升到了 `0.0.6`，本仓每个 manifest 与 lockfile 都更新了，**唯独这个常量没有**。
+所以 `check:matrix` 一直通过，而它实际安装并检验的是没有任何其他地方在用的版本。
+
+断言一个常量等于同一个常量，证明的是常量没变，发现不了它已经错了。
+
+**已修**：常量更新为 `0.0.6`，并加 `checkIndependentVersions` 与
+`infra/contracts/published-pair.json` 对照，不一致就拒绝安装。写这个检查时立刻发现
+`@zeus-js/devtools-consumer` 根本没被列进去——在任何测试跑之前。
+
+`compatibility-matrix.json` 的说明也改写了，但**证据日期仍是旧的**，所以
+`scope.compilerCompatibility` 保持 `partial`：改叙述而不动证据日期，等于声称有
+不存在的证据。
 
 ### G：两类偏好没有真正分开
 
@@ -169,6 +187,7 @@ registry**。没有 `--push` 时 `build-image.mjs` 只记 image ID 不记 digest
 9. **`overallVerdict([])` 返回 `READY`**（`[].every()` 为真）→ 已修
 10. **候选聚合读不到 provenance 报告**（找 `temp/provenance-report.json`，实际是 `per-product`）→ 已修
 11. **清理检查放宽了清单定义**（搜全树 vs 清单原话的两行）→ 已修
+12. **矩阵脚本钉着 `0.0.5`，其测试断言同一个常量** → 已修，并加契约对照
 
 ---
 
@@ -184,6 +203,8 @@ registry**。没有 `--push` 时 `build-image.mjs` 只记 image ID 不记 digest
 | `sqlite3 .backup` 从未执行 | 基线镜像没有 `sqlite3`；要执行得先改镜像 |
 | provenance 无 CI 入口 | 需要网络与 token，未接入任何 workflow |
 | 报告产物不入库 | `temp/` 被 gitignore；`PASS` 是本机状态而非仓库证据 |
+| `compatibility-matrix.json` 的证据日期 | 引用的是 0.0.6 发布前的运行；改叙述不动证据，所以 `compilerCompatibility` 保持 `partial` |
+| `zeus-ui` 的两个 example 仍钉 `0.0.5` | 跨仓改动需要单独的 PR 与推送授权 |
 
 最后一条尤其重要：`check:candidate` 的 `provenance PASS` 读的是本机 `temp/` 里的
 报告。新 clone 或 CI 上同一命令会得到 `INCOMPLETE`。

@@ -433,6 +433,70 @@ const SCENARIOS: ReadonlyArray<{
     },
   },
   {
+    name: 'the audit log shows events the product actually recorded',
+    async run(page, _context, _server) {
+      await signIn(page, ADMIN)
+      await page.goto('/admin/audit')
+
+      await page.getByRole('heading', { name: /audit/i }).first().waitFor({ timeout: 20_000 })
+
+      /*
+       * The sign-in itself is an audited event, so the table cannot legitimately
+       * be empty here. Asserting on a row — rather than on the table element —
+       * is what separates "the page renders" from "the log has entries".
+       */
+      const row = page.getByRole('row').filter({ hasText: /sign|login|in/i }).first()
+
+      await row.waitFor({ timeout: 20_000 })
+
+      return `audit rows present: ${await page.getByRole('row').count()}`
+    },
+  },
+  {
+    name: 'the roles page shows the capability matrix',
+    async run(page) {
+      await signIn(page, ADMIN)
+      await page.goto('/admin/roles')
+
+      await page.getByRole('heading', { name: /roles/i }).first().waitFor({ timeout: 20_000 })
+
+      /*
+       * The matrix is what this page is for. A roles page that renders its
+       * heading and nothing else would pass a looser check.
+       */
+      const matrix = page.getByRole('table').first()
+
+      await matrix.waitFor({ timeout: 20_000 })
+
+      const headers = await matrix.getByRole('columnheader').allInnerTexts()
+
+      if (headers.length < 2) throw new Error(`the matrix has ${headers.length} column(s)`)
+
+      return `capability matrix: ${headers.filter(Boolean).join(', ').slice(0, 80)}`
+    },
+  },
+  {
+    name: 'the reports page renders its figures',
+    async run(page) {
+      await signIn(page, ADMIN)
+      await page.goto('/admin/reports')
+
+      await page.getByRole('heading', { name: /report/i }).first().waitFor({ timeout: 20_000 })
+
+      const text = await page.locator('main, body').first().innerText()
+
+      /*
+       * A report page whose numbers failed to load shows the heading and a
+       * blank body, which is what this asserts against.
+       */
+      if (text.replace(/\s/g, '').length < 120) {
+        throw new Error(`the reports page body is ${text.length} characters`)
+      }
+
+      return `${text.length} characters of report content`
+    },
+  },
+  {
     name: 'the settings page saves a change that survives a reload',
     async run(page) {
       await signIn(page, ADMIN)

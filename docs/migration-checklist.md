@@ -106,6 +106,31 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 
 ## 明确的阻塞
 
+**0. 本机无法安装浏览器，截图比对未执行。**
+`playwright install chromium` 在这个网络下停在 0%（159.6 MiB 一个字节也没下来），
+直接 `curl` CDN 同样中断。**这不是代码问题，也不是 CI 问题**——CI 的
+`ubuntu-24.04` runner 有缓存，`Admin / Browser gates` 与 `AI Workbench / Browser gates`
+都在那里跑过。
+
+因此本轮视觉验收的完成情况是：
+
+| 维度 | 状态 |
+| --- | --- |
+| Functional Parity | ✅ 已在 CI 与本地跑过 |
+| Structural Parity | ✅ 已在本地跑过（8 场景） |
+| Screenshot Regression | ⬜ **本机无法执行**；代码与基线已就位 |
+| Design Review | ⬜ 需要人 |
+
+基线与门禁都已提交：`apps/admin/visual-baselines/reference.json`（按 digest 固定）、
+`apps/ai-workbench/visual-baselines/reference.json`（`CANDIDATE`，重建自 zeus-ui 源码）。
+缺的是执行环境，不是实现。
+
+
+**0b. Admin 权限的浏览器验收同样待执行。** 权限模型与服务端契约都有测试守着
+（10 条），但"viewer 看到 disabled 的保存按钮"这件事只有浏览器能证明。待执行场景：
+viewer 打开 settings 后 workspace 字段与保存按钮禁用、语言与主题仍可切换；
+访问 audit/upload/roles 得到 403；直接 POST `/api/settings` 被服务端拒绝。
+
 **1. AI 侧没有视觉参考，但参考源是可恢复的。**
 我之前的结论写错了：AI Workbench 从未以独立镜像发布过，**不等于**没有可信的
 参考源。旧实现完整存在于 `zeus-ui/examples/ai-workbench`，最近的改动是 `9c90d0b`

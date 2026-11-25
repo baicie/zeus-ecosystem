@@ -16,8 +16,8 @@
 
 ```
 工程实现        12/12 有交付物
-独立核查         10 项已裁决：5 DELIVERED、4 PARTIAL、1 项 DELIVERED 但清单有实质错误
-                 H/L 两项由我本地实测判定（核查代理未在时限内返回）
+独立核查         11 项已裁决：5 DELIVERED、5 PARTIAL、1 项 DELIVERED 但清单有实质错误
+                 L 一项由我本地实测判定（核查代理未在时限内返回）
 生产验收         0/3  应用 PRODUCTION_ACCEPTED
                 但 AI Workbench 的**旧实现**正在生产：zeus-ui 的
                 ai-workbench-image.yml 于 2026-11-24 部署成功
@@ -44,7 +44,7 @@ Release Candidate  BLOCKED
 | **E** AI 跨版本演练 | ✅ DELIVERED | 15 步全绿，镜像不同、数据真穿越。**但 `sqlite3 .backup` 从未执行过**：镜像里没有 `sqlite3`，记录为 `no-sqlite3` |
 | **F** 视觉四维分离 | ✅ DELIVERED | 四维度各自独立；结构 8/8；像素 1/8；`DesignReview` 如实为 `REVIEW_REQUIRED` |
 | **G** 页面级权限 | ⚠️ PARTIAL → 已修两处 | 权限门槛 16/16 成立。但**个人主题被页面覆盖**、**`<select>` 显示错误值**——两处已修；**逐字输入丢字符未修**，见下文 |
-| **H** CI 收敛 | ✅ DELIVERED | `docs/ci-ownership.md` 记录三个仓库的归属；`check:admin` 保留而非机械删除 |
+| **H** CI 收敛 | ⚠️ PARTIAL | 审计交付完整（`ci-ownership.md`、`check:admin` 存续并实测阻塞合并）。但**CI 没有收敛**：`Playground Image` 因 TCR 的 100-tag 上限失败，修复 `92c01cdd` 躺在未合并的 `chore/remove-legacy-admin-ci` 分支上；`ci-ownership.md` 的 41/26 断言数无法复现 |
 | **I** RC 聚合 | ✅ DELIVERED | 12 维度，`check:candidate` 可重跑 |
 | **J** 生产切换准备 | ✅ DELIVERED | 9 项前置条件，`check:cutover-preflight` 不指定镜像与环境 |
 | **K** 旧实现清理准备 | ⚠️ DELIVERED 但清单有实质错误 | 脚本零 `rmSync`、五项前置实测。但清单把 AI 旧实现的位置写错了，且漏了它正在生产上跑——见第七节 |
@@ -52,9 +52,9 @@ Release Candidate  BLOCKED
 
 ---
 
-## 三、独立核查推翻的四个结论
+## 三、独立核查推翻的五个结论
 
-这是本轮最有价值的部分。四个 PARTIAL 都不是「没做完」，而是**做完了但有一处不成立**。
+这是本轮最有价值的部分。五个 PARTIAL 都不是「没做完」，而是**做完了但有一处不成立**。
 
 ### D：commit 绑定没有接上
 
@@ -109,6 +109,35 @@ matrix PASS: 0.2.0-rc.5 + 0.1.0-beta.35 via pnpm
 `compatibility-matrix.json` 的说明也改写了，但**证据日期仍是旧的**，所以
 `scope.compilerCompatibility` 保持 `partial`：改叙述而不动证据日期，等于声称有
 不存在的证据。
+
+### H：CI 没有收敛，修复挂在未合并的分支上
+
+审计部分交付完整：`docs/ci-ownership.md` 记录了三个仓库的归属，`check:admin` 在
+`zeus` 上存续（`package.json:79`）、实测经 ci-gate 阻塞合并。任务明确禁止「为了绿灯
+删除关键测试」，这一条守住了。
+
+但「CI 收敛」没有达成：
+
+**`Playground Image` 持续失败，原因不在代码。** 最新失败（`45615118985`）是：
+
+```
+denied: The repository zeus123/zeus-playground's tag has reached its limit(100).
+```
+
+TCR 的 tag 预算用完了。修复 `92c01cdd`（`fix(ci): stop filling the domestic
+registry's 100-tag limit`）**不在 main 上**，只存在于
+`chore/remove-legacy-admin-ci` 分支，与另外 7 个提交一起未合并。
+
+而且即使合了，当前状态也需要操作者先删远端 tag 或重建仓库释放槽位——仓库里没有
+删 tag 的脚本，也没有授权说明。
+
+**`ci-ownership.md` 的 41/26 断言数无法复现。** 核查解析出的最接近解释是
+41 = `gallery-` 出现行数、26 = 画廊块 `expect` 数，两者都不是产品页断言；
+文件里「ARIA 覆盖」的说法用 `grep -ci aria` 得到 0。这两个数字需要重新统计或标注来源。
+
+**`check:admin` 的抽取没有发生。** `examples/admin`（3.9M）仍在，
+`vitest.config.ts` 仍包含 `examples/admin/server`，仓库里没有 admin fixture。
+所以「把 `check:admin` 搬出框架仓」这件事只做了审计与决定，没有做迁移。
 
 ### G：两类偏好没有真正分开
 
@@ -295,6 +324,20 @@ npm run check:cutover-preflight -- --unit admin
 npm run check:cleanup -- --zeus ../zeus
 ```
 
-三个仓库 main 的 CI 均绿（`zeus-ui` 的 `Zeus Canary Compatibility` 与 `zeus` 的
-`Release Canary` 是**定时任务**，自 11-24 起失败，与 R19 改动无关：一个是
-`@typescript-eslint/rule-tester` 的 peer 依赖，一个是发布环境依赖）。
+### 三个仓库的 CI 实况
+
+`zeus-ecosystem` 全绿。`zeus` 的 `CI` 在 `6e623d5f` 上绿，但 `Playground Image`
+因 TCR 的 100-tag 上限失败、`Release Canary` 失败。
+
+`zeus-ui` 的 `Zeus Canary Compatibility` 失败，原因是 peer 依赖——已核实：
+
+```
+@antfu/eslint-config 9.0.0 → eslint-plugin-command 3.5.2
+  ✕ missing peer @typescript-eslint/rule-tester@"*"
+vitepress 1.6.4 → @docsearch/react 3.8.2
+  ✕ missing peer search-insights@">= 1 < 3"
+```
+
+这些都是**既有问题**，与 R19 的改动无关，但「三仓 main CI 均绿」这句话是错的。
+准确的说法是：本轮改动所触及的工作流（`zeus-ecosystem` 的全部、`zeus` 的 `CI`）
+是绿的，其余存在与本轮无关的失败。

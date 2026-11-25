@@ -46,7 +46,7 @@ Release Candidate  BLOCKED
 | **I** RC 聚合 | ✅ DELIVERED | 12 维度，`check:candidate` 可重跑 |
 | **J** 生产切换准备 | ✅ DELIVERED | 9 项前置条件，`check:cutover-preflight` 不指定镜像与环境 |
 | **K** 旧实现清理准备 | ✅ DELIVERED | 5 项前置条件，脚本内**零个 `rmSync`** |
-| **L** 文档校准 | ✅ DELIVERED | 四条不一致已修；「本机无法安装浏览器」明确标注为错误并更正 |
+| **L** 文档校准 | ✅ DELIVERED | 两处明确标注更正（「本机无法安装浏览器」与 vite-plugin 错配），另有维度分离等结构性改写。**不是四条都带更正标记**——我先前在报告里写多了 |
 
 ---
 

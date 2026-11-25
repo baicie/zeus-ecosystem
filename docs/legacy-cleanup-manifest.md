@@ -19,9 +19,9 @@ migration exists to remove.
 | Kind | Location in `zeus` | Disposition |
 | --- | --- | --- |
 | Application source | `examples/admin/`, `examples/ai-workbench/` | Delete with Phase 7 |
-| Deployment workflow | `.github/workflows/admin-image.yml` | Replace, then delete |
-| Product acceptance | `.github/workflows/product-acceptance.yml` | Replace, then delete |
-| Pages deployment | `.github/workflows/demos-pages.yml`, `playground-pages.yml` | Keep if they serve the playground |
+| Deployment workflow | `.github/workflows/admin-image.yml` | **Deleted 2026-11-25** |
+| Product acceptance | `.github/workflows/product-acceptance.yml` | **Deleted 2026-11-25** |
+| Pages deployment | `.github/workflows/demos-pages.yml` | **Deleted 2026-11-25**; `playground-pages.yml` kept |
 | Release scripts | `scripts/release/deployment-*.ts`, `admin-db.ts`, `admin-demo-snapshot.ts` | Audit individually — some are host-deployment, not app |
 | Browser fixtures | `examples/ai-workbench` gates | Already replaced by `apps/ai-workbench/scripts/checks` |
 | Visual reference | `examples/admin` at a recorded commit | **Keep until visual parity is accepted** |
@@ -33,13 +33,32 @@ migration exists to remove.
 | `examples/admin` at commit `132c777e` | It is the source of the visual reference. The published image is the reference now, but the commit is how the image is explained |
 | `ghcr.io/baicie/zeus-admin:main` | The rollback target named in the rehearsal. Deleting it removes the only previously-deployed artefact this repository has |
 | Any `deployment-*.ts` the production host still runs | Unknown without host access; marked here rather than guessed |
-| `.github/workflows/demos-pages.yml` | Serves pages this repository's documentation links to |
+| `examples/admin/server` | `check:admin` imports it and drives the app in three engines — it is the only browser coverage of the old app that still runs |
+| `scripts/release/verify-ui-provenance.ts` | The check is intact; only its `ci.yml` caller went with the image workflow. The migrated Admin runs the same binding through `zeus-ecosystem/scripts/release/build-image.mjs` |
+
+## What was deleted on 2026-11-25
+
+Three workflows, by the repository owner's decision, recorded here because it is
+the one deletion in this file that happened before `PRODUCTION_ACCEPTED`:
+
+| Workflow | Why it was safe |
+| --- | --- |
+| `admin-image.yml` | Built the legacy image and mirrored it to TCR. **Its `deploy` job had never run**: the last 30 runs show `Mirror to TCR: skipped` (unconfigured) and `Deploy: skipped`, because the job requires a successful mirror. Deleting it removed a build, not a deployment path. |
+| `product-acceptance.yml` | Timed out or failed since 2026-11-17 and its assertions were about the legacy app. |
+| `demos-pages.yml` | Published the legacy demo site; nothing in the current delivery chain reads it. |
+
+`ci.yml`'s `Verify UI provenance` step went with them — it built
+`examples/admin/dist` and bound it to a lockfile. The migrated Admin writes a
+`build-info.json` through `zeus-ecosystem/scripts/release/build-image.mjs`, so
+the binding is checked where that artefact is produced.
+
+`check:admin` stays: it starts the legacy app itself and drives it in three
+engines, and it is the only browser coverage of that app left.
 
 ## What can be deleted now
 
-Nothing. Every entry above is either the rollback path, the visual reference, or
-a workflow with no verified replacement. A cleanup that starts before
-`PRODUCTION_ACCEPTED` deletes the only way back.
+Three workflows were, above. The rest is the rollback path and the visual
+reference, and those wait for `PRODUCTION_ACCEPTED`.
 
 ## Prerequisites, restated precisely
 

@@ -91,3 +91,29 @@ test('is READY only when everything is MET', () => {
     'READY',
   )
 })
+
+test('an unreadable tree is UNKNOWN, not a clean one', async () => {
+  /*
+   * The defect this pins: `LEGACY_PATHS.flatMap(n => findReferences(...) ?? [])`
+   * coalesced "git could not read the tree" into "git found nothing", so the
+   * UNKNOWN branch below it was unreachable. Pointing `--zeus` at a directory
+   * that is not a checkout reported MET — the opposite of what the module's own
+   * header promises: "an unread tree is not a clean tree".
+   */
+  const { mkdtempSync, rmSync } = await import('node:fs')
+  const { tmpdir } = await import('node:os')
+  const { join } = await import('node:path')
+  const { cleanupPreflight } = await import('../release/cleanup-preflight.mjs')
+
+  const notACheckout = mkdtempSync(join(tmpdir(), 'zeus-not-a-repo-'))
+
+  try {
+    const result = cleanupPreflight(process.cwd(), { zeus: notACheckout })
+    const entry = result.prerequisites.find(item => item.id === 'build-config-clean')
+
+    assert.equal(entry.status, 'UNKNOWN')
+    assert.match(entry.detail, /could not be read/)
+  } finally {
+    rmSync(notACheckout, { recursive: true, force: true })
+  }
+})

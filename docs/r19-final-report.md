@@ -19,6 +19,8 @@
 独立核查         9 项已裁决：5 DELIVERED、4 PARTIAL
                  G/H/K/L 四项由我本地实测判定（核查代理未在时限内返回）
 生产验收         0/3  应用 PRODUCTION_ACCEPTED
+                但 AI Workbench 的**旧实现**正在生产：zeus-ui 的
+                ai-workbench-image.yml 于 2026-11-24 部署成功
 Release Candidate  BLOCKED
 ```
 
@@ -45,7 +47,7 @@ Release Candidate  BLOCKED
 | **H** CI 收敛 | ✅ DELIVERED | `docs/ci-ownership.md` 记录三个仓库的归属；`check:admin` 保留而非机械删除 |
 | **I** RC 聚合 | ✅ DELIVERED | 12 维度，`check:candidate` 可重跑 |
 | **J** 生产切换准备 | ✅ DELIVERED | 9 项前置条件，`check:cutover-preflight` 不指定镜像与环境 |
-| **K** 旧实现清理准备 | ✅ DELIVERED | 5 项前置条件，脚本内**零个 `rmSync`** |
+| **K** 旧实现清理准备 | ⚠️ DELIVERED 但清单有实质错误 | 脚本零 `rmSync`、五项前置实测。但清单把 AI 旧实现的位置写错了，且漏了它正在生产上跑——见第七节 |
 | **L** 文档校准 | ✅ DELIVERED | 两处明确标注更正（「本机无法安装浏览器」与 vite-plugin 错配），另有维度分离等结构性改写。**不是四条都带更正标记**——我先前在报告里写多了 |
 
 ---
@@ -203,6 +205,63 @@ registry**。没有 `--push` 时 `build-image.mjs` 只记 image ID 不记 digest
 
 ---
 
+## 六点五、清理清单的两个实质错误
+
+K 的核查发现清单本身有两处会让 Phase 7 删错东西的事实错误。都已核实。
+
+### AI 旧实现的位置写错了
+
+清单写 `examples/ai-workbench` 在 `zeus`，并在 per-repository split 里说
+`zeus-ui`「nothing to delete」。
+
+实测：`zeus` 从未有过 `examples/ai-workbench`。真正的旧树在
+**`zeus-ui/examples/ai-workbench`**（30 个跟踪文件）与 `zeus-ui/examples/ai-host`，
+且 `zeus-ui/vitest.config.ts:330` 与 7 个 `check:ai-workbench-*` 脚本仍依赖它。
+
+`LEGACY_PATHS` 把 `examples/ai-workbench` 挂在 `zeus` 下，永远扫不到。
+
+**照这份清单执行 Phase 7，只会删 `examples/admin`，AI 侧旧树没有任何前置条件覆盖。**
+
+### AI 旧实现正在生产上跑
+
+这是本轮最需要你知道的一条。
+
+`zeus-ui/.github/workflows/ai-workbench-image.yml` 的最新运行 `45359330517`
+（2026-11-24）三个 job 全部成功：
+
+```
+success  Build and publish to GHCR
+success  Mirror to TCR
+success  Deploy          ← Rolling update containers
+```
+
+构建源是 `examples/ai-workbench/Dockerfile`（workflow 第 160 行）。
+
+而生态仓 `apps/ai-workbench` 的 `app-images.yml` **不 push 也不 deploy**，
+`release-candidate` 记录 0/3 镜像已推送。
+
+所以 AI 侧不是「观察期还没开始」，而是**线上跑的就是旧实现**。清单的
+「不能删除」表只记了 Admin 的回滚镜像，漏了这一条。
+
+我先前在报告里写「三个应用都没有生产部署」，这是错的：迁移后的三个应用都没有
+部署，但 AI 侧的**旧实现**已经部署了一年多。
+
+### 清单自相矛盾
+
+顶层表把 `examples/admin/` 整体标为「Delete with Phase 7」，而
+「What cannot be deleted yet」说 `examples/admin/server` 因 `check:admin` 必须保留。
+`check:admin` 硬 import `examples/admin/server/{auth,index}` 并构建 `examples/admin/dist`。
+
+「删除 examples/admin」与「check:admin 保留」不能同时成立。Phase 7 之前必须二选一。
+
+### 工具的两处死代码
+
+- `build-config-clean` 的 `UNKNOWN` 分支不可达：`?? []` 让 `references` 永不为
+  `undefined`，所以 `--zeus` 指向不存在的路径也报 `MET`——与文件头「an unread tree
+  is not a clean tree」相反。
+- 因 `production-accepted` 恒不到 `MET`、`observation-window` 恒为 `UNKNOWN`，
+  `overallCleanup` 的 `READY` 分支不可达：这个工具**在结构上不可能报 READY**。
+
 ## 七、留下的、明确不修的
 
 诚实列出比粉饰有用。
@@ -215,6 +274,7 @@ registry**。没有 `--push` 时 `build-image.mjs` 只记 image ID 不记 digest
 | `sqlite3 .backup` 从未执行 | 基线镜像没有 `sqlite3`；要执行得先改镜像 |
 | provenance 无 CI 入口 | 需要网络与 token，未接入任何 workflow |
 | 报告产物不入库 | `temp/` 被 gitignore；`PASS` 是本机状态而非仓库证据 |
+| AI 旧实现正在生产 | 见下方「清单的两个实质错误」 |
 | `compatibility-matrix.json` 的证据日期 | 引用的是 0.0.6 发布前的运行；改叙述不动证据，所以 `compilerCompatibility` 保持 `partial` |
 | `zeus-ui` 的两个 example 仍钉 `0.0.5` | 跨仓改动需要单独的 PR 与推送授权 |
 

@@ -211,20 +211,32 @@ export function cleanupPreflight(ecosystemRoot, options = {}) {
       'no zeus checkout supplied; the manifest names this as the measurable prerequisite (`grep -rn "examples/admin" package.json vitest.config.ts` must return nothing)',
     )
   } else {
-    const references = LEGACY_PATHS.flatMap(needle => findReferences(zeusRoot, needle) ?? [])
+    /*
+     * `findReferences` returns `undefined` when git cannot read the tree at
+     * all, and `[]` when it read it and found nothing. Coalescing those two to
+     * `[]` made the UNKNOWN branch below unreachable: pointing `--zeus` at a
+     * directory that is not a checkout reported MET, which is the opposite of
+     * what the module promises ("an unread tree is not a clean tree").
+     */
+    const perPath = LEGACY_PATHS.map(needle => ({ needle, found: findReferences(zeusRoot, needle) }))
+    const unreadable = perPath.find(entry => entry.found === undefined)
 
-    if (references === undefined || references.length === 0) {
+    if (unreadable) {
       add(
         'build-config-clean',
-        references === undefined ? 'UNKNOWN' : 'MET',
-        references === undefined
-          ? `${zeusRoot} is not a git checkout`
-          : 'neither package.json nor vitest.config.ts references the legacy app',
+        'UNKNOWN',
+        `${zeusRoot} could not be read as a git checkout, so nothing was compared`,
+      )
+    } else if (perPath.every(entry => entry.found.length === 0)) {
+      add(
+        'build-config-clean',
+        'MET',
+        'neither package.json nor vitest.config.ts references the legacy app',
       )
     } else {
       const byKind = new Map()
 
-      for (const file of references) {
+      for (const file of perPath.flatMap(entry => entry.found)) {
         const kind = classifyReference(file)
 
         byKind.set(kind, [...new Set([...(byKind.get(kind) ?? []), file])])

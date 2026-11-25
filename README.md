@@ -121,6 +121,7 @@ containers, and removes only what it created.
 
 ## Documentation
 
+- [Delivery status](docs/delivery-status.md) — the three generated documents in prose: what is blocked, and by whom
 - [Dependency policy](docs/dependency-policy.md)
 - [Compatibility matrix](docs/compatibility-matrix.json)
 - [Migration checklist](docs/migration-checklist.md) — the status vocabulary above
@@ -128,5 +129,20 @@ containers, and removes only what it created.
 - [Legacy cleanup manifest](docs/legacy-cleanup-manifest.md) — what Phase 7 will delete, and what it cannot
 - [App inventory](docs/demo-catalog.md)
 - [Architecture](docs/architecture.md)
+
+## Readiness
+
+Three scripts read what is on disk and act on none of it:
+
+```bash
+npm run check:candidate                  # twelve dimensions → PASS / INCOMPLETE / BLOCKED
+npm run check:cutover-preflight -- --unit admin
+npm run check:cleanup -- --zeus ../zeus
+```
+
+They report `BLOCKED` today, and that is the honest answer: no image from this
+repository has been pushed to a registry, no application is in production, and
+one build-configuration reference to the legacy app remains. A script that
+reported anything else would be describing a different repository.
 
 No production changes are permitted before explicit release/deployment approval.

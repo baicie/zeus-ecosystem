@@ -23,7 +23,7 @@
     "@zeus-web/ai-wc": "0.1.0-beta.35"
   },
   "devDependencies": {
-    "@zeus-js/vite-plugin": "0.0.5",
+    "@zeus-js/vite-plugin": "0.0.6",
     "typescript": "5.9.3",
     "vite": "8.3.8",
     "vitest": "4.1.9",

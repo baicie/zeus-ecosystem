@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { test } from 'node:test'
 
 import {
@@ -56,7 +57,17 @@ test('rejects an independent package pinned to the Core version', () => {
   })
 
   assert.equal(errors.length, 1)
-  assert.match(errors[0], /0\.0\.5/)
+
+  /*
+   * The expected version is read from the contract, not typed here. It was
+   * `0.0.5` in this assertion, and the plugin moving to `0.0.6` failed a test
+   * whose subject — "the error names the right line" — had not changed.
+   */
+  const { independent } = JSON.parse(
+    readFileSync(resolve(import.meta.dirname, '../../infra/contracts/published-pair.json'), 'utf8'),
+  )
+
+  assert.match(errors[0], new RegExp(independent['@zeus-js/vite-plugin'].replace(/\./g, '\\.')))
 })
 
 test('checks every dependency field, not only dependencies', () => {

@@ -30,9 +30,30 @@ const ZEUS_SCOPES = ['@zeus-js/', '@zeus-web/']
  * here, rather than inferring it, means adding another independent package is
  * a deliberate act.
  */
-const INDEPENDENT_VERSIONS = {
-  '@zeus-js/vite-plugin': '0.0.5',
+/**
+ * Packages on their own version line, read from the contract.
+ *
+ * This was a hardcoded table, and it went stale the moment `vite-plugin` moved
+ * to 0.0.6 — the check then reported the *fixture* as wrong for carrying the
+ * published version. A version that has to be typed into a second file is a
+ * version that will disagree with the first; `published-pair.json` already
+ * records which packages sit outside the Core line and at what version, so this
+ * reads it instead of repeating it.
+ */
+function readIndependentVersions(root) {
+  const contractPath = resolve(root, 'infra/contracts/published-pair.json')
+
+  if (!existsSync(contractPath)) return {}
+
+  try {
+    const contract = JSON.parse(readFileSync(contractPath, 'utf8'))
+    return contract.independent ?? {}
+  } catch {
+    return {}
+  }
 }
+
+const INDEPENDENT_VERSIONS = readIndependentVersions(resolve(import.meta.dirname, '..'))
 
 export function listFixtures(root) {
   const directory = resolve(root, FIXTURES_ROOT)

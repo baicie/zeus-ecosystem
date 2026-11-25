@@ -207,8 +207,19 @@ export function SettingsPage() {
                     )
                   }}
                 >
-                  <option value="zh-CN">简体中文</option>
-                  <option value="en">English</option>
+                  {/*
+                    `selected` on the option carries the state, not `value` on
+                    the <select>. A `<select>` has no `value` content attribute,
+                    so a binding compiled to `setAttribute('value', …)` writes
+                    to something the element ignores — measured: saving
+                    `theme: dark` and reloading still displayed `light`.
+                  */}
+                  <option value="zh-CN" selected={i18n.locale() === 'zh-CN'}>
+                    简体中文
+                  </option>
+                  <option value="en" selected={i18n.locale() === 'en'}>
+                    English
+                  </option>
                 </select>
                 <p class="field-hint">{t('settings.personalLanguageHint')}</p>
               </div>
@@ -229,8 +240,12 @@ export function SettingsPage() {
                     patch('locale', value)
                   }}
                 >
-                  <option value="zh-CN">简体中文</option>
-                  <option value="en">English</option>
+                  <option value="zh-CN" selected={locale() === 'zh-CN'}>
+                    简体中文
+                  </option>
+                  <option value="en" selected={locale() === 'en'}>
+                    English
+                  </option>
                 </select>
                 <p class="field-hint">{t('settings.workspaceLanguageHint')}</p>
               </div>
@@ -250,8 +265,12 @@ export function SettingsPage() {
                     patch('theme', value)
                   }}
                 >
-                  <option value="light">{t('settings.themeLight')}</option>
-                  <option value="dark">{t('settings.themeDark')}</option>
+                  <option value="light" selected={theme() === 'light'}>
+                    {t('settings.themeLight')}
+                  </option>
+                  <option value="dark" selected={theme() === 'dark'}>
+                    {t('settings.themeDark')}
+                  </option>
                 </select>
                 <p class="field-hint">{t('settings.themeHint')}</p>
               </div>

@@ -40,8 +40,30 @@ import { Icon } from '../shell/icon'
 import { decorateUserGrid } from '../shell/grid-decorations'
 import { changePersonalLocale, i18n, t, type Locale } from '../i18n'
 import { useSession } from '../session'
+import { readThemePreference } from '../theme-storage'
 
+/**
+ * Applies the workspace theme as a *default*, never over a personal choice.
+ *
+ * ## What this was doing
+ *
+ * It wrote `data-theme` unconditionally, so opening Settings replaced whatever
+ * the reader had chosen from the header with the workspace's value. Measured:
+ * pick `dark` from the header, open `/admin/settings`, and `<html data-theme>`
+ * becomes `light` — and it stayed `light` after client-side navigation away.
+ * Only a hard reload restored it.
+ *
+ * That is the exact thing the capability split was supposed to prevent: the
+ * page keeps the reader's own preferences usable and refuses the workspace
+ * one, and then the workspace value overwrote the personal one on load.
+ *
+ * `readThemePreference()` is the personal choice, stored under
+ * `zeus-admin.theme`; `'system'` means the reader has not chosen and the
+ * workspace default may apply.
+ */
 export function applyTheme(theme: WorkspaceSettings['theme']): void {
+  if (readThemePreference() !== 'system') return
+
   document.documentElement.dataset.theme = theme
 }
 

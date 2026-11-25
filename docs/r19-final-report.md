@@ -10,14 +10,14 @@
 | --- | --- | --- |
 | `baicie/zeus` | `6e623d5f` | `release: vite-plugin@0.0.6 (#415)`，main CI 绿 |
 | `baicie/zeus-ui` | `4e7e429f` | 本轮未改动；工作区有两个未跟踪的 `Dockerfile.baseline-*` |
-| `baicie/zeus-ecosystem` | `9406647e` | 本轮全部改动落在这里 |
+| `baicie/zeus-ecosystem` | `f92e5a0c` | 本轮全部改动落在这里 |
 
 ## 一、结论
 
 ```
 工程实现        12/12 有交付物
-独立核查         9 项已裁决：5 DELIVERED、4 PARTIAL
-                 G/H/K/L 四项由我本地实测判定（核查代理未在时限内返回）
+独立核查         10 项已裁决：5 DELIVERED、4 PARTIAL、1 项 DELIVERED 但清单有实质错误
+                 H/L 两项由我本地实测判定（核查代理未在时限内返回）
 生产验收         0/3  应用 PRODUCTION_ACCEPTED
                 但 AI Workbench 的**旧实现**正在生产：zeus-ui 的
                 ai-workbench-image.yml 于 2026-11-24 部署成功
@@ -52,9 +52,9 @@ Release Candidate  BLOCKED
 
 ---
 
-## 三、独立核查推翻的三个结论
+## 三、独立核查推翻的四个结论
 
-这是本轮最有价值的部分。三个 PARTIAL 都不是「没做完」，而是**做完了但有一处不成立**。
+这是本轮最有价值的部分。四个 PARTIAL 都不是「没做完」，而是**做完了但有一处不成立**。
 
 ### D：commit 绑定没有接上
 

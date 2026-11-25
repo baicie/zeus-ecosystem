@@ -13,7 +13,7 @@ packages:
 # node_modules, so the dependency graph it records is the one a real consumer
 # would get.
 
-# `@zeus-js/vite-plugin@0.0.5` depends on `@zeus-js/compiler-native@0.1.1-beta.20`,
+# `@zeus-js/vite-plugin` depends on `@zeus-js/compiler-native`,
 # whose platform binaries are optional dependencies. pnpm skipped them here —
 # the package resolves but `requireNative` cannot find its `.node` file — so the
 # build failed on a dependency that npm would have installed.

@@ -23,7 +23,7 @@
         "productionAcceptance": "not-run"
       },
       "scopeNotes": {
-        "compilerCompatibility": "The published pair is installed and built through @zeus-js/vite-plugin@0.0.5, which declares compiler-native@0.1.1-beta.20 while the rc.5 packages declare 0.2.0-rc.5. Both resolve and work, but two compiler versions are present in one consumer tree, and 0.1.1-beta.20 does not return hmrPlan from transformModule({hmr:true}) — so the plugin's HMR patch path never runs for these consumers. scripts/check/check-vite-plugin-compiler-contract.ts (zeus#406) measures this; the fix needs a plugin release, which is PUBLISH_BLOCKED.",
+        "compilerCompatibility": "The published pair is installed and built through @zeus-js/vite-plugin@0.0.6, which declares compiler-native@0.2.0-rc.5 — the same line the rc.5 packages use, so a consumer tree carries one compiler version and the plugin returns hmrPlan from transformModule({hmr:true}). The 0.0.5-era mismatch (compiler-native@0.1.1-beta.20 alongside 0.2.0-rc.5, and no hmrPlan) is resolved. CAVEAT: the evidence runs cited on this entry predate the 0.0.6 release; they describe the pair as it was verified then, not the current plugin. Re-verification with post-0.0.6 runs is outstanding, which is why scope.compilerCompatibility stays 'partial'.",
         "visualCompatibility": "No published reference build of the consumer fixtures exists to compare against. Admin has one (see docs/migration-checklist.md); the fixtures do not.",
         "productionAcceptance": "No production deployment has happened. docs/migration-checklist.md records no application at PRODUCTION_ACCEPTED."
       }

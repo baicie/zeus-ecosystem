@@ -8,7 +8,7 @@ framework and Zeus UI.
 ## Status
 
 The validated pair is **Core `0.2.0-rc.5` + UI `0.1.0-beta.35`**, with
-`@zeus-js/vite-plugin` on its own `0.0.5` line.
+`@zeus-js/vite-plugin` on its own `0.0.6` line.
 
 Three applications live here, all built from published packages only:
 

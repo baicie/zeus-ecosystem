@@ -54,7 +54,68 @@ export const CORE_DEPENDENCIES = [
  * own expectation, not the Core version.
  */
 export const INDEPENDENT_VERSIONS = {
-  '@zeus-js/vite-plugin': '0.0.5',
+  '@zeus-js/vite-plugin': '0.0.6',
+  '@zeus-js/devtools-consumer': '0.1.1-beta.15',
+}
+
+/**
+ * Re-reads the independent versions from the contract.
+ *
+ * The constant above was `0.0.5` long after the plugin moved to `0.0.6`, and
+ * its test asserted `0.0.5` — so `check:matrix` stayed green while installing
+ * a version the repository no longer uses. A test that asserts a constant
+ * equals the same constant proves the constant did not change, not that it is
+ * right.
+ *
+ * `published-pair.json` records the independent line and its version, and
+ * `check-published-fixtures.mjs` already reads it there. This is the same
+ * question, so it gets the same answer, and a drift between the two is what
+ * `checkIndependentVersions` below reports.
+ */
+export function readIndependentVersions(root) {
+  const file = join(root, 'infra/contracts/published-pair.json')
+
+  if (!existsSync(file)) return undefined
+
+  try {
+    return JSON.parse(readFileSync(file, 'utf8')).independent
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * Compares the constant against the contract.
+ *
+ * Returns the disagreements rather than picking a winner: the caller is a
+ * check, and a check that silently prefers one source cannot report that the
+ * two disagree.
+ */
+export function checkIndependentVersions(root) {
+  const contract = readIndependentVersions(root)
+
+  if (!contract) return ['infra/contracts/published-pair.json is missing or unreadable']
+
+  const errors = []
+
+  for (const [name, version] of Object.entries(INDEPENDENT_VERSIONS)) {
+    if (contract[name] === undefined) {
+      errors.push(`${name} is listed here but not in the contract's independent map`)
+      continue
+    }
+
+    if (contract[name] !== version) {
+      errors.push(`${name} is ${version} here and ${contract[name]} in the contract`)
+    }
+  }
+
+  for (const name of Object.keys(contract)) {
+    if (INDEPENDENT_VERSIONS[name] === undefined) {
+      errors.push(`${name} is in the contract's independent map but not here`)
+    }
+  }
+
+  return errors
 }
 
 export const UI_DEPENDENCIES = [
@@ -516,6 +577,21 @@ function finish(evidence, options, directory) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   try {
+    /*
+     * Fail before installing anything if the pinned versions disagree with the
+     * contract.
+     *
+     * The alternative — installing a stale version and reporting the result as
+     * the matrix — is what happened when this constant said `0.0.5` for a day
+     * after the plugin moved to `0.0.6`.
+     */
+    const drift = checkIndependentVersions(process.cwd())
+
+    if (drift.length > 0) {
+      for (const error of drift) console.error(`error: ${error}`)
+      process.exit(1)
+    }
+
     const evidence = runMatrix(parseOptions(process.argv.slice(2)))
 
     for (const step of evidence.steps) {

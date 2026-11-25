@@ -199,10 +199,15 @@ Chromium 143.0.7499.4（正是 lockfile 钉的 build）安装成功，本机可�
 SLSA provenance 已验证。**Admin 的 `?devtools` 面板还没接**——那是 `apps/admin` 的一处
 DEV-only 改动，不在本轮范围内。
 
-**3. `vite-plugin` 的编译器版本线错配。** `@zeus-js/vite-plugin@0.0.5` 硬依赖
-`compiler-native@0.1.1-beta.20`，而 rc.5 包依赖 `0.2.0-rc.5`。已加
-`check:vite-plugin-contract` 门禁（zeus#406），它会向插件实际解析到的编译器
-提问它返回什么。修复版本需要发布，同样 `PUBLISH_BLOCKED`。
+**3. `vite-plugin` 的编译器版本线错配——已解除。** `0.0.5` 硬依赖
+`compiler-native@0.1.1-beta.20`，而 rc.5 包依赖 `0.2.0-rc.5`。`0.0.6` 已发布并修掉，
+生态仓的应用与 fixture 全部升级，lockfile 重生成后只含 `0.2.0-rc.5`。
+`check:vite-plugin-contract` 门禁（zeus#406）仍在，它向插件实际解析到的编译器提问。
+
+**3b. `compatibility-matrix.json` 的证据仍是升级前的。** 该文件的
+`scopeNotes.compilerCompatibility` 还描述 0.0.5 时代，`verifiedAt` 与引用的两次 CI
+运行都早于 0.0.6 发布。契约检查只校验结构与 tag 身份，不会发现证据日期早于发布。
+这一条需要重新取证据，不是改个版本号。
 
 **4. `live` 门禁没有真实凭据。** 运行器、限额、脱敏与配置校验都在
 （`apps/ai-workbench/scripts/checks/check-ai-workbench-live.ts`），无凭据时报告

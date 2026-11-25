@@ -17,7 +17,7 @@ Every Zeus dependency is an exact published version, installed from
 | --- | --- |
 | `@zeus-js/*` | `0.2.0-rc.5` |
 | `@zeus-web/*` | `0.1.0-beta.35` |
-| `@zeus-js/vite-plugin` | `0.0.5` — its own line, not the Core version |
+| `@zeus-js/vite-plugin` | `0.0.6` — its own line, not the Core version |
 
 Forbidden, and checked by `pnpm check:published-fixtures`:
 

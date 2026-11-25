@@ -55,9 +55,13 @@ install and build under npm and pnpm on Node 22 and 24.
 
 Two version lines remain independent by design:
 
-- `@zeus-js/vite-plugin` is `0.0.5`, not the Core version. Pinning it to Core
+- `@zeus-js/vite-plugin` is `0.0.6`, not the Core version. Pinning it to Core
   fails with `ERR_PNPM_NO_MATCHING_VERSION`.
-- `@zeus-js/vite-plugin@0.0.5` itself depends on `@zeus-js/compiler-native`
-  `0.1.1-beta.20`, while the rc.5 packages depend on `0.2.0-rc.5`. Both resolve
-  and the plugin loads the older one. Nothing in this repository can fix that;
-  it needs a vite-plugin release on the rc line.
+- `@zeus-js/devtools-consumer` is `0.1.1-beta.15` on the same independent line.
+- Both are recorded under `independent` in `infra/contracts/published-pair.json`,
+  and `check:matrix` refuses to install anything when its pinned copy disagrees
+  with that contract.
+
+`0.0.6` also fixed a compiler-line mismatch: `0.0.5` depended on
+`@zeus-js/compiler-native@0.1.1-beta.20` while the rc.5 packages depend on
+`0.2.0-rc.5`, so two versions coexisted and the plugin loaded the older one.

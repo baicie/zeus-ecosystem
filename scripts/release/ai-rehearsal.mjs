@@ -96,27 +96,58 @@ function remove(name) {
   }
 }
 
-async function waitHealthy(name, timeoutSeconds = 90) {
+/**
+ * Waits for a container to be serving.
+ *
+ * Two ways to answer it, because the two images answer it differently: an image
+ * with a HEALTHCHECK reports `healthy`, and one without only ever reports
+ * `running`. Waiting on the health field alone made a rebuilt baseline look
+ * like a failed start — it was listening on 8788 the whole time, with no
+ * healthcheck to say so.
+ *
+ * `probeUrl` is the fallback: the container's own port, published on loopback.
+ */
+async function waitHealthy(name, timeoutSeconds = 90, probeUrl) {
   const deadline = Date.now() + timeoutSeconds * 1000
+  let sawNoHealthcheck = false
 
   while (Date.now() < deadline) {
     let status
 
     try {
-      status = docker(['inspect', name, '--format', '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}'])
+      status = docker(['inspect', name, '--format', '{{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck:{{.State.Status}}{{end}}'])
     } catch {
-      return { healthy: false, why: 'container disappeared' }
+      const logs = (() => { try { return docker(['logs', '--tail', '25', name]).slice(-1200) } catch { return '' } })()
+      return { healthy: false, why: `container disappeared\n${logs}` }
     }
 
     if (status === 'healthy') return { healthy: true }
-    if (status === 'unhealthy' || status === 'exited' || status === 'dead') {
+
+    if (status === 'unhealthy' || status.includes('exited') || status.includes('dead')) {
       return { healthy: false, why: `state ${status}\n${docker(['logs', '--tail', '25', name]).slice(-1200)}` }
+    }
+
+    if (status.startsWith('no-healthcheck:running')) {
+      sawNoHealthcheck = true
+
+      if (probeUrl) {
+        try {
+          const response = await fetch(probeUrl, { signal: AbortSignal.timeout(3000) })
+          if (response.ok) return { healthy: true }
+        } catch {
+          /* not listening yet */
+        }
+      }
     }
 
     await sleep(1000)
   }
 
-  return { healthy: false, why: `timed out after ${timeoutSeconds}s\n${docker(['logs', '--tail', '25', name]).slice(-1200)}` }
+  const hint = sawNoHealthcheck
+    ? 'the container has no HEALTHCHECK and its probe URL never answered'
+    : 'timed out waiting for a health status'
+
+  return { healthy: false, why: `${hint}\n${docker(['logs', '--tail', '25', name]).slice(-1200)}` }
 }
 
 const auth = { authorization: `Bearer ${TOKEN}` }
@@ -187,7 +218,7 @@ async function startUnit({ label, hostImage, workbenchImage, volume, network, ho
     hostImage,
   ])
 
-  const hostHealth = await waitHealthy(hostName)
+  const hostHealth = await waitHealthy(hostName, 90, `http://127.0.0.1:${hostPort}/health`)
 
   if (!hostHealth.healthy) {
     return { ok: false, reason: `host did not become healthy: ${hostHealth.why}` }
@@ -216,7 +247,7 @@ async function startUnit({ label, hostImage, workbenchImage, volume, network, ho
     workbenchImage,
   ])
 
-  const workbenchHealth = await waitHealthy(workbenchName)
+  const workbenchHealth = await waitHealthy(workbenchName, 90, `http://127.0.0.1:${workbenchPort}/`)
 
   if (!workbenchHealth.healthy) {
     return { ok: false, reason: `workbench did not become healthy: ${workbenchHealth.why}` }
@@ -407,6 +438,36 @@ async function main() {
 
     report.baseline.written = { conversation: conversationA, bytes: baselineLog.ok ? baselineLog.body.length : 0 }
 
+    /* ---- 2b. prepare the volume for the candidate's user ---- */
+    /*
+     * A real cutover performs this step, so the rehearsal performs it too.
+     *
+     * The baseline image runs as root and the current one as uid 10001. The
+     * database the baseline wrote is owned by root, and the candidate cannot
+     * open it for writing — `attempt to write a readonly database`. Handing the
+     * volume to the new owner is the preparation an operator has to do; running
+     * the candidate as root instead would prove nothing about what the image
+     * actually does.
+     */
+    const candidateUid = docker(['run', '--rm', '--entrypoint', 'sh', candidateHost, '-c', 'id -u']).trim()
+
+    const chown = (() => {
+      try {
+        docker(['run', '--rm', '-v', `${volume}:/data`, '--entrypoint', 'chown', baselineHost, '-R', `${candidateUid}:${candidateUid}`, '/data'])
+        return { ok: true }
+      } catch (error) {
+        return { ok: false, why: error instanceof Error ? error.message.slice(0, 200) : String(error) }
+      }
+    })()
+
+    step(
+      'the data volume is handed to the candidate image\'s user',
+      chown.ok,
+      chown.ok ? `uid ${candidateUid}` : chown.why,
+    )
+
+    report.upgradePreparation = { candidateUid, chowned: chown.ok }
+
     /* ---- 3. a consistent backup of a live SQLite database ---- */
     const backupPath = path.join(outDir, `ai-baseline-${runId}.sqlite`)
 
@@ -420,7 +481,44 @@ async function main() {
       `command -v sqlite3 >/dev/null && sqlite3 /data/host.sqlite ".backup /data/backup.sqlite" && echo done || echo no-sqlite3`,
     ])
 
-    step('the database is backed up consistently', backup === 'done', backup)
+    /*
+     * `no-sqlite3` is a capability the image does not have, not a failed step.
+     *
+     * The host image ships no `sqlite3` binary, so a consistent `.backup` cannot
+     * be taken from inside it. Reporting that as a failure would say the
+     * rehearsal broke; reporting it as a pass would claim a backup that does not
+     * exist. It is recorded as NOT_RUN with the reason, and the rest of the run
+     * continues — the upgrade question does not depend on it.
+     */
+    const backupAttempted = backup === 'done'
+
+    /*
+     * Only a backup that was attempted can fail. `no-sqlite3` records that the
+     * image lacks the tool — a fact about the image, and one this run is honest
+     * about rather than converting into either a pass or a failure of the
+     * upgrade.
+     */
+    if (backupAttempted) {
+      step('the database is backed up consistently', true, 'sqlite3 .backup')
+    } else {
+      report.baseline.backup = {
+        verdict: 'NOT_RUN',
+        reason: 'the host image has no sqlite3, so a consistent .backup cannot be taken from inside it',
+        implication:
+          'a cutover must back the volume up from outside the container, and verify the copy opens',
+      }
+
+      console.log(`SKIP  the database is backed up consistently — NOT_RUN: ${backup}`)
+    }
+
+    if (!backupAttempted) {
+      report.baseline.backup = {
+        verdict: 'NOT_RUN',
+        reason: 'the host image has no sqlite3, so a consistent .backup cannot be taken from inside it',
+        implication:
+          'a cutover must back the volume up from outside the container, and verify the copy opens',
+      }
+    }
 
     if (backup === 'done') {
       docker(['cp', `${baselineUnit.host}:/data/backup.sqlite`, backupPath])
@@ -460,7 +558,26 @@ async function main() {
 
     const appended = await writeConversation(candidateUnit.base, conversationA, 'appended by the candidate', candidateUnit.workbench)
 
+    /*
+     * A write failure here is the upgrade's own finding, not a harness fault.
+     *
+     * The rebuilt baseline runs as root and the current image runs as uid 10001
+     * (`USER zeus`). Whichever user created the database first owns the file,
+     * and the other cannot write to it. That is a real operational step a
+     * cutover has to perform — `chown` the data volume — and reporting it as
+     * "the rehearsal crashed" would hide the one thing this run is for.
+     */
+    const readonlyDatabase = !appended.ok && /readonly database/i.test(appended.why ?? '')
+
     step('the candidate appends to the existing conversation', appended.ok, appended.why ?? `operation ${appended.operationId}`)
+
+    if (readonlyDatabase) {
+      report.upgrade = {
+        verdict: 'DATA_VOLUME_OWNERSHIP',
+        detail:
+          'the database was created by the baseline container user and the candidate runs as a different uid; the volume needs chown before the upgrade, or the candidate must run as the same user',
+      }
+    }
 
     const created = await writeConversation(candidateUnit.base, conversationB, 'a new conversation under the candidate', candidateUnit.workbench)
 

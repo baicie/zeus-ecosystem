@@ -118,8 +118,8 @@ importers:
         specifier: 0.1.1-beta.15
         version: 0.1.1-beta.15
       '@zeus-js/vite-plugin':
-        specifier: 0.0.5
-        version: 0.0.5(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+        specifier: 0.0.6
+        version: 0.0.6(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
       esbuild:
         specifier: 0.28.2
         version: 0.28.2
@@ -896,6 +896,12 @@ packages:
 
   '@zeus-js/vite-plugin@0.0.5':
     resolution: {integrity: sha512-jOdFGP/GO5Hs7cxldnHbKD2w7dITysSLAjSEYt/K4aXna7ClAL7c6Dh2XP9MLcITDaAHXmFbI4oliODS0dFq+Q==}
+    engines: {node: ^22.18.0 || >=24.11.0}
+    peerDependencies:
+      vite: ^8.2.1
+
+  '@zeus-js/vite-plugin@0.0.6':
+    resolution: {integrity: sha512-pFJTPzzRmBg6ZXj7j/rB1Ts9HRGNs8VSWTJ1+jO+zgxNdDIOwcGwgAEQEppc8Z70SMdC0eZD2+LWq8BPSFc7mw==}
     engines: {node: ^22.18.0 || >=24.11.0}
     peerDependencies:
       vite: ^8.2.1
@@ -2399,6 +2405,12 @@ snapshots:
     dependencies:
       '@babel/parser': 8.1.3
       '@zeus-js/compiler-native': 0.1.1-beta.20
+      vite: 8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4)
+
+  '@zeus-js/vite-plugin@0.0.6(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))':
+    dependencies:
+      '@babel/parser': 8.1.3
+      '@zeus-js/compiler-native': 0.2.0-rc.5
       vite: 8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4)
 
   '@zeus-js/web-c-runtime@0.2.0-rc.5':

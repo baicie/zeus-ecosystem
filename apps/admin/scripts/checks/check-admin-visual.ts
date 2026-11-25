@@ -157,7 +157,18 @@ const SCENARIOS: readonly Scenario[] = [
  * same UI differ by a pixel or two from font hinting alone, and a diff that
  * reports 0.3% on every page trains a reader to ignore it.
  */
-export async function pageContent(page: Page): Promise<{ text: string; landmarks: string[]; screenshot: Buffer }> {
+export interface CapturedPage {
+  readonly text: string
+  readonly landmarks: string[]
+  readonly screenshot: Buffer
+  /** sha256 of the PNG, so a baseline can be checked byte for byte. */
+  readonly screenshotSha256: string
+  /** Which engine produced it: a Chromium baseline is not a Firefox one. */
+  readonly browser: string
+  readonly browserVersion: string
+}
+
+export async function pageContent(page: Page): Promise<CapturedPage> {
   /*
    * One entry per element, not `innerText` split on newlines.
    *
@@ -198,7 +209,26 @@ export async function pageContent(page: Page): Promise<{ text: string; landmarks
 
   const screenshot = await page.screenshot({ fullPage: true })
 
-  return { text, landmarks, screenshot }
+  /*
+   * The hash, the engine and its version travel with the capture.
+   *
+   * A screenshot is only comparable to one taken by the same browser at the
+   * same version; comparing a Chromium capture to a Firefox baseline would
+   * report every page as different. `approvalStatus` is deliberately absent
+   * here — it is a person's judgement, recorded in the baseline by whoever
+   * reviewed it, never set by this script.
+   */
+  const { createHash } = await import('node:crypto')
+  const browserVersion = page.context().browser()?.version() ?? 'unknown'
+
+  return {
+    text,
+    landmarks,
+    screenshot,
+    screenshotSha256: createHash('sha256').update(screenshot).digest('hex'),
+    browser: 'chromium',
+    browserVersion,
+  }
 }
 
 /**
@@ -309,11 +339,19 @@ async function startReference(image: string): Promise<{ origin: string; stop(): 
   }
 }
 
+interface CapturedRecord {
+  readonly text: string
+  readonly landmarks: string[]
+  readonly screenshotSha256?: string
+  readonly browser?: string
+  readonly browserVersion?: string
+}
+
 async function collect(
   browser: Browser,
   origin: string,
   prefix: string,
-): Promise<Record<string, { text: string; landmarks: string[] }>> {
+): Promise<Record<string, CapturedRecord>> {
   const context = await browser.newContext({
     baseURL: origin,
     viewport: { width: 1440, height: 900 },
@@ -333,7 +371,7 @@ async function collect(
     reducedMotion: 'reduce',
   })
   const page = await context.newPage()
-  const collected: Record<string, { text: string; landmarks: string[] }> = {}
+  const collected: Record<string, CapturedRecord> = {}
 
   fs.mkdirSync(ARTIFACTS, { recursive: true })
 
@@ -351,7 +389,13 @@ async function collect(
     const content = await pageContent(page)
 
     fs.writeFileSync(path.join(ARTIFACTS, `${prefix}-${scenario.name}.png`), content.screenshot)
-    collected[scenario.name] = { text: content.text, landmarks: content.landmarks }
+      collected[scenario.name] = {
+      text: content.text,
+      landmarks: content.landmarks,
+      screenshotSha256: content.screenshotSha256,
+      browser: content.browser,
+      browserVersion: content.browserVersion,
+    }
   }
 
   await context.close()
@@ -589,7 +633,7 @@ async function main(): Promise<void> {
   const reference = await startReference(image)
   const browser = await chromium.launch()
 
-  let referenceContent: Record<string, { text: string; landmarks: string[] }>
+  let referenceContent: Record<string, CapturedRecord>
 
   try {
     referenceContent = await collect(browser, reference.origin, 'reference')
@@ -599,7 +643,7 @@ async function main(): Promise<void> {
 
   const server = await startAdminServer({ adminDir: APP, port: await freePort(5700) })
 
-  let candidateContent: Record<string, { text: string; landmarks: string[] }>
+  let candidateContent: Record<string, CapturedRecord>
 
   try {
     candidateContent = await collect(browser, server.origin, 'candidate')

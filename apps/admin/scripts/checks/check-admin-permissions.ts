@@ -266,20 +266,34 @@ async function checkAdminStillWorks(page: Page): Promise<void> {
   )
 
   /*
-   * And the save actually reaches the server. Enabling a control that silently
-   * does nothing is the other half of the same failure.
+   * And the save actually reaches the server.
+   *
+   * Enabling a control that silently does nothing is the other half of the
+   * same failure, and the page's own "Settings saved" message is not proof: it
+   * is rendered by the same code that would fail to send the request. The
+   * assertion therefore reads the value back from the API, in the page, with
+   * the page's own session.
    */
-  await workspaceName.fill('Zeus Admin (permission check)')
+  const wanted = 'Zeus Admin (permission check)'
+
+  await workspaceName.fill(wanted)
   await save.click()
 
   const status = page.getByTestId('settings-status')
 
   await status.waitFor({ timeout: 20_000 })
 
+  const readBack = await page.evaluate(async () => {
+    const answer = await fetch('/api/settings')
+    const body = (await answer.json()) as { settings?: { workspaceName?: string } }
+
+    return body.settings?.workspaceName ?? null
+  })
+
   record(
     'an administrator save reaches the server',
-    (await status.count()) > 0,
-    `the page reports: ${(await status.innerText()).slice(0, 80)}`,
+    readBack === wanted,
+    `the API returns ${JSON.stringify(readBack)}, the page said it saved ${JSON.stringify(wanted)}`,
   )
 
   /* Put it back, so a later run against the same database sees the default. */

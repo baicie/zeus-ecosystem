@@ -17,7 +17,8 @@
     "check:matrix": "node scripts/published-consumer-matrix.mjs",
     "check:published-fixtures": "node scripts/check-published-fixtures.mjs",
     "test:e2e:published": "playwright test",
-    "check:admin-browser": "pnpm --filter @zeus-ecosystem/admin run check:browser"
+    "check:admin-browser": "pnpm --filter @zeus-ecosystem/admin run check:browser",
+    "check:admin-visual": "pnpm --filter @zeus-ecosystem/admin run check:visual"
   },
   "devDependencies": {
     "@playwright/test": "1.57.0",

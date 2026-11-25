@@ -271,12 +271,27 @@ jobs:
           ZEUS_ADMIN_BROWSERS: chromium,firefox,webkit
         run: pnpm run check:admin-browser
 
+      # Visual parity against the published reference image.
+      #
+      # It fails the job when a page loses a landmark, because that is a
+      # regression nobody needs to adjudicate. It does not fail on a translated
+      # page or on content the candidate added, and it never approves a
+      # difference as intentional — that needs a person looking at the images.
+      #
+      # No `continue-on-error`: a gate that is allowed to fail silently is a
+      # gate nobody reads, and the whole point of this one is that its verdict is
+      # visible.
+      - name: Admin visual parity against the reference image
+        run: pnpm run check:admin-visual
+
       - name: Preserve browser evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: admin-browser-gates
-          path: apps/admin/temp/admin-browser
+          path: |
+            apps/admin/temp/admin-browser
+            apps/admin/temp/admin-visual
           if-no-files-found: warn
 
   required:

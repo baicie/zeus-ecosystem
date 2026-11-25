@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "check": "tsc --noEmit",
     "test:server": "node scripts/run-with-sqlite.mjs node_modules/vitest/vitest.mjs run",
-    "check:browser": "tsx scripts/checks/check-admin-browser.ts"
+    "check:browser": "tsx scripts/checks/check-admin-browser.ts",
+    "check:visual": "tsx scripts/checks/check-admin-visual.ts"
   },
   "dependencies": {
     "@zeus-js/i18n": "0.2.0-rc.5",

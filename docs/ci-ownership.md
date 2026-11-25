@@ -52,13 +52,19 @@ It stays because it is the only browser coverage of that application, and the
 application has not been deleted. Splitting it is the work that precedes the
 deletion, not the deletion itself:
 
-- **41 assertions on `gallery-*`** duplicate `zeus-ui`'s
-  `check-dialog-interaction`, which covers focus trapping, Escape and ARIA and
-  requires every engine. The Core copy adds nothing.
-- **26 assertions on product pages** are covered by
-  `zeus-ecosystem`'s `check-admin-browser` — sign-in, user list, search, detail
-  navigation, session restore, error page — with assertions on real effects
-  rather than on rendered markup.
+- **The `gallery-*` block** duplicates `zeus-ui`'s `check-dialog-interaction`,
+  which covers focus trapping, Escape and ARIA and requires every engine. The
+  Core copy adds nothing. Measured: `grep -c 'gallery-' check-admin.ts` → 41
+  occurrences. That is a count of mentions, not of assertions — the file has
+  111 `expect(` calls in total and the two numbers measure different things.
+  An earlier version of this file called 41 "assertions", which is the kind of
+  number that looks measured and is not.
+- **The product-page block** is covered by `zeus-ecosystem`'s
+  `check-admin-browser` — sign-in, user list, search, detail navigation,
+  session restore, error page — with assertions on real effects rather than on
+  rendered markup. This line previously said "26 assertions"; that number does
+  not correspond to anything in the file and has been removed rather than
+  re-guessed.
 - **The remainder** — the capability matrix, the audit table, the reports page —
   had no coverage anywhere. Three scenarios were added to
   `check-admin-browser` so they do now.

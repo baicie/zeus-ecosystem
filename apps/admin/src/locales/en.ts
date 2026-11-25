@@ -363,6 +363,7 @@ export const en = {
   'settings.workspaceName': 'Workspace name',
   'settings.workspaceNameHint':
     'Shown in the sidebar and on the sign-in page, up to 80 characters.',
+  'settings.workspaceNameAdminOnly': 'Only an administrator can change the workspace name. Your language and theme are yours.',
   'settings.theme': 'Theme',
   'settings.themeLight': 'Light',
   'settings.themeDark': 'Dark',

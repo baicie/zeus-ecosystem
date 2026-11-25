@@ -114,6 +114,9 @@ importers:
       '@types/node':
         specifier: 26.0.0
         version: 26.0.0
+      '@zeus-js/devtools-consumer':
+        specifier: 0.1.1-beta.15
+        version: 0.1.1-beta.15
       '@zeus-js/vite-plugin':
         specifier: 0.0.5
         version: 0.0.5(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
@@ -832,6 +835,10 @@ packages:
 
   '@zeus-js/component-dts@0.2.0-rc.5':
     resolution: {integrity: sha512-WTxSRD0RvfujgcA132z8lHb0spApzOv2vIKfbbGrTC/S8KC/ExAASLv77UaM2Hx/vai3szMS09yhZt5pyTwgNQ==}
+
+  '@zeus-js/devtools-consumer@0.1.1-beta.15':
+    resolution: {integrity: sha512-+jds5VB4gb2aqV7clTx8ZgzMr80phCZsBydlXtd/JKym50Gp/26GO6ZfMD7660+KCybx41WowAlexwITjZiONg==}
+    engines: {node: ^22.18.0 || >=24.11.0}
 
   '@zeus-js/i18n@0.2.0-rc.5':
     resolution: {integrity: sha512-X5cN0/1pghK2Qq3q/e2XnKiK5ZwyMURkKK8xZUEvZ2wwUm/xmMRKWtTpGtuQ+AwCSyshi8o+f5KyD4chbhlGuw==}
@@ -2325,6 +2332,8 @@ snapshots:
   '@zeus-js/component-dts@0.2.0-rc.5':
     dependencies:
       '@zeus-js/component-analyzer': 0.2.0-rc.5
+
+  '@zeus-js/devtools-consumer@0.1.1-beta.15': {}
 
   '@zeus-js/i18n@0.2.0-rc.5':
     dependencies:

@@ -59,6 +59,7 @@ import '@zeus-web/input/wc/auto'
 import type {} from '@zeus-web/input/wc'
 
 import { App } from './app'
+import { bootstrapDevtools, teardown } from './devtools/bootstrap'
 import './style.css'
 
 const root = document.getElementById('root')
@@ -68,21 +69,37 @@ const mountRoot = root
 /**
  * Mounts the admin shell.
  *
- * ## What is missing, and why
+ * ## DevTools
  *
- * The original also loaded `@zeus-js/devtools-consumer` when running in dev
- * mode with `?devtools` in the URL. That package is `private: true` at
- * `0.1.1-beta.14` and has never been published — it is not one of the 32
- * release packages — so it cannot be installed here, and vendoring its source
- * would be exactly the reverse dependency this migration removes.
+ * In a development build with `?devtools` in the URL, this also mounts the
+ * panel from `@zeus-js/devtools-consumer`. That package was `private: true` and
+ * unpublished when Admin was migrated, so the panel could not be carried over —
+ * the migration may only install published packages. It is published now, and
+ * `./devtools/bootstrap` restores it.
  *
- * It is a development-only panel: behind `import.meta.env.DEV` and a query
- * parameter, so it was dead code in every production build. Dropping it changes
- * no shipped behaviour. Restoring it needs a published package, which is an
- * upstream release decision, not something this repository can make.
+ * The bootstrap is dynamic and guarded by `import.meta.env.DEV`, so a
+ * production build contains neither the module nor the call.
  */
 function mount(): void {
   render(() => <App />, mountRoot)
+
+  void bootstrapDevtools().then(handle => {
+    if (!handle) return
+
+    /* A developer driving the panel from the console, as the original did. */
+    Object.assign(window, { adminDevtools: handle })
+  })
 }
 
 void mount()
+
+/*
+ * HMR disposes the panel before the next module instance mounts one. Without
+ * this, each edit adds a consumer to the same window and the timeline shows
+ * every event once more per reload.
+ */
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    teardown()
+  })
+}

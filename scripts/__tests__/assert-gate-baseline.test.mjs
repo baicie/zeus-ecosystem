@@ -116,5 +116,45 @@ test('counts a flat checks list, which is how CSP reports', () => {
 })
 
 test('aggregates every gate', () => {
-  assert.equal(checkAll(mkdtempSync(join(tmpdir(), 'zeus-empty-'))).length, 3)
+  /*
+   * Derived from `BASELINE`, not typed in.
+   *
+   * A hardcoded 3 was correct until the permission gate joined the list, at
+   * which point the test failed for having been right before — a count that
+   * has to be updated whenever the thing it counts grows is a count that
+   * eventually describes the test rather than the code.
+   */
+  const root = mkdtempSync(join(tmpdir(), 'zeus-empty-'))
+
+  roots.push(root)
+
+  assert.equal(checkAll(root).length, Object.keys(BASELINE).length)
+})
+
+test('checks only the gates it was asked for', () => {
+  /*
+   * Each CI job can only read the reports it wrote, so the checker is invoked
+   * with a subset. A version that ignored `--only` would report the other
+   * jobs' missing files as failures and the fix would look like deleting the
+   * entries.
+   */
+  const root = mkdtempSync(join(tmpdir(), 'zeus-empty-'))
+
+  roots.push(root)
+
+  const errors = checkAll(root, ['permissions'])
+
+  assert.equal(errors.length, 1)
+  assert.match(errors[0], /^permissions: no report/)
+})
+
+test('refuses an --only name that matches no gate', () => {
+  /*
+   * A typo that selects nothing and reports success is the `[].every(...)`
+   * defect again: green, and it checked nothing.
+   */
+  const errors = checkAll(mkdtempSync(join(tmpdir(), 'zeus-empty-')), ['p0', 'permisions'])
+
+  assert.equal(errors.length, 1)
+  assert.match(errors[0], /no gate called permisions/)
 })

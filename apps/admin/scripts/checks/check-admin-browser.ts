@@ -345,16 +345,21 @@ const SCENARIOS: ReadonlyArray<{
     name: 'a viewer sees a narrower navigation than an administrator',
     async run(page) {
       /*
-       * Measured, and this is what the product does today: a viewer can open
-       * `/admin/settings` and its navigation still offers Settings. The
-       * migration did not introduce that — `examples/admin` in the framework
-       * repository has the same behaviour — so it is a pre-existing product
-       * gap, not a regression, and this check records it rather than asserting
-       * a boundary the product does not draw.
+       * A viewer *can* open `/admin/settings`, and that is deliberate: the page
+       * holds both workspace settings (an administrator's) and the reader's own
+       * language and theme. Gating the page whole would take the second away to
+       * protect the first.
        *
-       * What *is* enforced is the API: a viewer's write to `/api/users` is
-       * rejected. The scenario below asserts the narrower navigation, which the
-       * app does implement, and the report names the gap separately.
+       * What changed is that the workspace controls inside it are now disabled
+       * and say why. The boundary itself is asserted deeper, in
+       * `check-admin-permissions.ts`: the accessibility tree, the 403 error
+       * pages, and the server refusing the write the disabled control would
+       * have sent.
+       *
+       * This scenario stays at the navigation level on purpose — a viewer's
+       * sidebar must not offer the administrator-only pages even though the
+       * router would refuse them. Hiding an entry is a courtesy; the refusal is
+       * the control, and both are checked.
        */
       await signIn(page, VIEWER)
       await page.goto('/admin/settings')
@@ -430,6 +435,78 @@ const SCENARIOS: ReadonlyArray<{
       if (text.trim().length < 10) throw new Error('the page is blank')
 
       return text.split('\n').find(line => line.trim().length > 3)?.slice(0, 60) ?? 'error page shown'
+    },
+  },
+  {
+    name: 'the audit log shows events the product actually recorded',
+    async run(page, _context, _server) {
+      await signIn(page, ADMIN)
+      await page.goto('/admin/audit')
+
+      await page.getByRole('heading', { name: /audit/i }).first().waitFor({ timeout: 20_000 })
+
+      /*
+       * The sign-in itself is an audited event, so the table cannot legitimately
+       * be empty here. Asserting on a row — rather than on the table element —
+       * is what separates "the page renders" from "the log has entries".
+       *
+       * Measured, the rows read `"11/25/2026, 02:37 PM\tlogin\tada\t\nsuccess"`,
+       * so `/\blogin\b/` looks like the tighter assertion. It does not match:
+       * Playwright applies `hasText` to the element's text with its own
+       * normalisation, and against this table the word boundary did not hold.
+       * The pattern below is the one that was measured to work; the tighter
+       * version was reverted rather than left in on the assumption that it
+       * should.
+       */
+      const row = page.getByRole('row').filter({ hasText: /sign|login|in/i }).first()
+
+      await row.waitFor({ timeout: 20_000 })
+
+      return `audit rows present: ${await page.getByRole('row').count()}`
+    },
+  },
+  {
+    name: 'the roles page shows the capability matrix',
+    async run(page) {
+      await signIn(page, ADMIN)
+      await page.goto('/admin/roles')
+
+      await page.getByRole('heading', { name: /roles/i }).first().waitFor({ timeout: 20_000 })
+
+      /*
+       * The matrix is what this page is for. A roles page that renders its
+       * heading and nothing else would pass a looser check.
+       */
+      const matrix = page.getByRole('table').first()
+
+      await matrix.waitFor({ timeout: 20_000 })
+
+      const headers = await matrix.getByRole('columnheader').allInnerTexts()
+
+      if (headers.length < 2) throw new Error(`the matrix has ${headers.length} column(s)`)
+
+      return `capability matrix: ${headers.filter(Boolean).join(', ').slice(0, 80)}`
+    },
+  },
+  {
+    name: 'the reports page renders its figures',
+    async run(page) {
+      await signIn(page, ADMIN)
+      await page.goto('/admin/reports')
+
+      await page.getByRole('heading', { name: /report/i }).first().waitFor({ timeout: 20_000 })
+
+      const text = await page.locator('main, body').first().innerText()
+
+      /*
+       * A report page whose numbers failed to load shows the heading and a
+       * blank body, which is what this asserts against.
+       */
+      if (text.replace(/\s/g, '').length < 120) {
+        throw new Error(`the reports page body is ${text.length} characters`)
+      }
+
+      return `${text.length} characters of report content`
     },
   },
   {

@@ -349,6 +349,7 @@ export const zhCN = {
   'settings.sectionUpload': '上传',
   'settings.workspaceName': '工作空间名称',
   'settings.workspaceNameHint': '显示在侧栏与登录页的名称，最长 80 个字符。',
+  'settings.workspaceNameAdminOnly': '只有管理员可以修改工作区名称。语言与主题是你自己的设置。',
   'settings.theme': '主题',
   'settings.themeLight': '浅色',
   'settings.themeDark': '深色',

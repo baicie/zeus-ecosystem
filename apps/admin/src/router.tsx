@@ -7,6 +7,7 @@ import type { ZeusQueryClient } from '@zeus-js/query'
 import type { Accessor } from '@zeus-js/zeus'
 import type { SessionUser } from './routes'
 
+import { canEnterRoute } from './permissions'
 import { ErrorPage } from './pages/error'
 
 /**
@@ -103,7 +104,7 @@ export function createAdminRouter(options: AdminRouterOptions): ZeusRouter {
               id: 'upload',
               path: 'upload',
               loader: () => {
-                if (options.role() !== 'admin') {
+                if (!canEnterRoute(options.role(), 'upload')) {
                   throw new Response('此页面需要管理员权限。', { status: 403 })
                 }
                 return null
@@ -117,7 +118,7 @@ export function createAdminRouter(options: AdminRouterOptions): ZeusRouter {
               id: 'roles',
               path: 'roles',
               loader: () => {
-                if (options.role() !== 'admin') {
+                if (!canEnterRoute(options.role(), 'roles')) {
                   throw new Response('此页面需要管理员权限。', { status: 403 })
                 }
                 return null
@@ -147,7 +148,7 @@ export function createAdminRouter(options: AdminRouterOptions): ZeusRouter {
               id: 'audit',
               path: 'audit',
               loader: () => {
-                if (options.role() !== 'admin') {
+                if (!canEnterRoute(options.role(), 'audit')) {
                   throw new Response('此页面需要管理员权限。', { status: 403 })
                 }
                 return null
@@ -207,7 +208,7 @@ export function createAdminRouter(options: AdminRouterOptions): ZeusRouter {
               id: 'reports',
               path: 'reports',
               loader: async ({ request }) => {
-                if (options.role() !== 'admin') {
+                if (!canEnterRoute(options.role(), 'reports')) {
                   throw new Response('此页面需要管理员权限。', { status: 403 })
                 }
                 return queryClient.query<AdminSummary>({

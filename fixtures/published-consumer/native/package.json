@@ -15,7 +15,7 @@
     "@zeus-js/runtime-dom": "0.2.0-rc.5",
     "@zeus-js/web-c-runtime": "0.2.0-rc.5",
     "@zeus-js/web-c": "0.2.0-rc.5",
-    "@zeus-js/vite-plugin": "0.0.5",
+    "@zeus-js/vite-plugin": "0.0.6",
     "@zeus-web/button": "0.1.0-beta.35",
     "@zeus-web/input": "0.1.0-beta.35",
     "@zeus-web/dialog": "0.1.0-beta.35",

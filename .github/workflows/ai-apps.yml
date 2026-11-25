@@ -225,8 +225,15 @@ jobs:
         working-directory: apps/ai-workbench
         run: pnpm exec vitest run __tests__/live-gate.spec.ts
 
-      - name: Assert the gates still assert what they did
-        run: node scripts/checks/assert-gate-baseline.mjs
+      # Only the gates whose reports this job produces.
+      #
+      # The baseline checker reads report files, and a job can only read what
+      # it wrote. The permission gate runs in `admin-browsers`, so its floor is
+      # asserted there rather than here — a checker that looked for a file
+      # another job writes would fail every time, and the obvious fix would be
+      # to delete the entry.
+      - name: Assert the AI gates still assert what they did
+        run: node scripts/checks/assert-gate-baseline.mjs --only p0,byok,csp
 
       - name: Preserve browser evidence
         if: always()
@@ -308,6 +315,33 @@ jobs:
       - name: Admin visual parity against the reference image
         run: pnpm run check:admin-visual -- --require-reference
 
+      # The permission model, proven against a rendered page and a real server.
+      #
+      # `permissions.test.ts` pins the capability table and the server's
+      # `requireRole` call sites to each other; both are static. The three
+      # claims that need a browser are that a viewer's workspace controls are
+      # disabled, that a viewer's own language and theme still work, and that
+      # the server refuses the write a disabled control would have sent. The
+      # third is the boundary — a disabled button is a courtesy, the 403 is the
+      # control — and a gate that only checked the button would pass a product
+      # whose API was open.
+      - name: Admin page permissions (browser)
+        run: pnpm --filter @zeus-ecosystem/admin run check:permissions
+
+      # The permission floor, next to the job that produces the report.
+      - name: Assert the permission gate still asserts what it did
+        run: node scripts/checks/assert-gate-baseline.mjs --only permissions
+
+      # The gate scripts' own unit tests.
+      #
+      # These were run by hand during the migration and by nothing in CI. The
+      # screenshot classifier decides what counts as a regression and the
+      # capability table decides what a role may do; both are pure functions
+      # with tests, and untested tests are a claim rather than a check.
+      - name: Gate script unit tests
+        working-directory: apps/admin
+        run: pnpm run test:checks
+
       - name: Preserve browser evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -316,6 +350,7 @@ jobs:
           path: |
             apps/admin/temp/admin-browser
             apps/admin/temp/admin-visual
+            apps/admin/temp/admin-permissions
           if-no-files-found: warn
 
   required:

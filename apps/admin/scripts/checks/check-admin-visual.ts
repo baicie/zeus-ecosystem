@@ -45,6 +45,8 @@ import { pathToFileURL } from 'node:url'
 import { chromium, type Browser, type Page } from '@playwright/test'
 
 import { ADMIN, freePort, startAdminServer } from './support/server'
+import { comparePngs, screenshotVerdict, DEFAULT_SCREENSHOT_THRESHOLD } from './screenshot-diff'
+import { overallStatus, type VisualEvidence } from './visual-dimensions'
 
 const APP = path.resolve(import.meta.dirname, '../..')
 const ARTIFACTS = path.join(APP, 'temp/admin-visual')
@@ -77,6 +79,78 @@ interface Scenario {
 }
 
 /**
+ * Waits for a page's structure, not its words.
+ *
+ * ## The defect this replaces
+ *
+ * `ready` used to wait on a heading by name — `/settings/i`, `/roles/i` — which
+ * is an English string. The reference build renders Chinese regardless of every
+ * language input that can be set from outside, so six of the eight scenarios
+ * timed out their readiness wait, the capture happened anyway, and the report
+ * called the result `UNUSABLE`. The gate was right to refuse the comparison and
+ * wrong about why: the pages were fine, the wait was in the wrong language.
+ *
+ * Counting landmarks answers the same question — "has the page finished
+ * arriving" — with a predicate that does not name a language. Measured on the
+ * reference build, each page's landmark counts are stable within 300ms and
+ * distinct from the shell alone, so a threshold on them is a real readiness
+ * signal rather than a sleep with extra steps.
+ *
+ * ## Why this polls instead of using `waitForFunction`
+ *
+ * Two attempts failed, both for reasons that are about the toolchain rather
+ * than the question:
+ *
+ *  - **A callback function.** `waitForFunction` serialises it and runs it in
+ *    the page. This gate runs under `tsx`, and esbuild rewrites named functions
+ *    to call a `__name(...)` helper that exists in Node and not in the browser:
+ *    every call threw `ReferenceError: __name is not defined`. The landmark
+ *    counts were right the whole time; the predicate reading them was broken.
+ *  - **A string of JavaScript.** That fixes the helper, and the app's CSP
+ *    blocks it: `script-src 'self'` refuses `eval`, which is what evaluating a
+ *    string amounts to. The gate would be asserting against a page it had to
+ *    weaken to measure.
+ *
+ * `page.evaluate` passes a *value* into a function the browser already has, so
+ * neither problem applies. Polling is the cost, and 100ms against a page that
+ * settles in about 300ms is cheap.
+ */
+async function readyByLandmarks(
+  page: Page,
+  expected: { headings?: number; tables?: number; forms?: number },
+): Promise<void> {
+  const deadline = Date.now() + 20_000
+
+  while (Date.now() < deadline) {
+    const seen = await page.evaluate(() => ({
+      headings: document.querySelectorAll('h1, h2, h3').length,
+      tables: document.querySelectorAll('table, [role="grid"]').length,
+      forms: document.querySelectorAll('form').length,
+    }))
+
+    if (
+      seen.headings >= (expected.headings ?? 0) &&
+      seen.tables >= (expected.tables ?? 0) &&
+      seen.forms >= (expected.forms ?? 0)
+    ) {
+      return
+    }
+
+    await page.waitForTimeout(100)
+  }
+
+  const seen = await page.evaluate(() => ({
+    headings: document.querySelectorAll('h1, h2, h3').length,
+    tables: document.querySelectorAll('table, [role="grid"]').length,
+    forms: document.querySelectorAll('form').length,
+  }))
+
+  throw new Error(
+    `the page did not reach the expected structure within 20s: wanted ${JSON.stringify(expected)}, found ${JSON.stringify(seen)}`,
+  )
+}
+
+/**
  * The pages the migration had to preserve.
  *
  * `ready` waits for content the scenario is about, so a screenshot is never
@@ -88,7 +162,7 @@ const SCENARIOS: readonly Scenario[] = [
     name: 'overview',
     path: '/admin',
     ready: async page => {
-      await page.getByRole('heading', { name: /overview/i }).first().waitFor({ timeout: 20_000 })
+      await readyByLandmarks(page, { headings: 8 })
       await page.waitForTimeout(600)
     },
   },
@@ -96,6 +170,11 @@ const SCENARIOS: readonly Scenario[] = [
     name: 'users',
     path: '/admin/users',
     ready: async page => {
+      /*
+       * An email is not a translated string: the seeded rows carry the same
+       * `@example.test` addresses in both builds, which makes this the one
+       * readiness wait that was language-independent all along.
+       */
       await page.getByRole('row').filter({ hasText: '@example.test' }).first().waitFor({ timeout: 20_000 })
       await page.waitForTimeout(600)
     },
@@ -104,7 +183,8 @@ const SCENARIOS: readonly Scenario[] = [
     name: 'roles',
     path: '/admin/roles',
     ready: async page => {
-      await page.getByRole('heading', { name: /roles/i }).first().waitFor({ timeout: 20_000 })
+      /* A capability matrix: headings and a table, whatever the language. */
+      await readyByLandmarks(page, { headings: 4 })
       await page.waitForTimeout(600)
     },
   },
@@ -112,7 +192,8 @@ const SCENARIOS: readonly Scenario[] = [
     name: 'settings',
     path: '/admin/settings',
     ready: async page => {
-      await page.getByRole('heading', { name: /settings/i }).first().waitFor({ timeout: 20_000 })
+      /* The workspace form is the thing this page exists for. */
+      await readyByLandmarks(page, { headings: 3, forms: 1 })
       await page.waitForTimeout(600)
     },
   },
@@ -120,7 +201,7 @@ const SCENARIOS: readonly Scenario[] = [
     name: 'audit',
     path: '/admin/audit',
     ready: async page => {
-      await page.getByRole('heading', { name: /audit/i }).first().waitFor({ timeout: 20_000 })
+      await readyByLandmarks(page, { headings: 2, tables: 1 })
       await page.waitForTimeout(600)
     },
   },
@@ -128,7 +209,7 @@ const SCENARIOS: readonly Scenario[] = [
     name: 'reports',
     path: '/admin/reports',
     ready: async page => {
-      await page.getByRole('heading', { name: /report/i }).first().waitFor({ timeout: 20_000 })
+      await readyByLandmarks(page, { headings: 6 })
       await page.waitForTimeout(600)
     },
   },
@@ -136,7 +217,7 @@ const SCENARIOS: readonly Scenario[] = [
     name: 'upload',
     path: '/admin/upload',
     ready: async page => {
-      await page.getByRole('heading', { name: /upload/i }).first().waitFor({ timeout: 20_000 })
+      await readyByLandmarks(page, { headings: 3, forms: 1 })
       await page.waitForTimeout(600)
     },
   },
@@ -157,7 +238,31 @@ const SCENARIOS: readonly Scenario[] = [
  * same UI differ by a pixel or two from font hinting alone, and a diff that
  * reports 0.3% on every page trains a reader to ignore it.
  */
-export async function pageContent(page: Page): Promise<{ text: string; landmarks: string[]; screenshot: Buffer }> {
+export interface CapturedPage {
+  readonly text: string
+  readonly landmarks: string[]
+  readonly screenshot: Buffer
+  /** sha256 of the PNG, so a baseline can be checked byte for byte. */
+  readonly screenshotSha256: string
+  /** Which engine produced it: a Chromium baseline is not a Firefox one. */
+  readonly browser: string
+  readonly browserVersion: string
+  /**
+   * What the page actually is, as the app reports it.
+   *
+   * Added after a run compared five reference pages that were all the sign-in
+   * card: the reference session had been dropped, every navigation landed on
+   * the login form, and the gate — which waited for headings that the login
+   * page does not have — timed out its `ready`, captured anyway, and reported
+   * the resulting pixel difference as a regression. The captures were of the
+   * wrong page and nothing in the record said so.
+   */
+  readonly signedIn: boolean
+  /** The path the browser ended up on, which a redirect also reveals. */
+  readonly pathname: string
+}
+
+export async function pageContent(page: Page): Promise<CapturedPage> {
   /*
    * One entry per element, not `innerText` split on newlines.
    *
@@ -198,23 +303,72 @@ export async function pageContent(page: Page): Promise<{ text: string; landmarks
 
   const screenshot = await page.screenshot({ fullPage: true })
 
-  return { text, landmarks, screenshot }
+  /*
+   * The hash, the engine and its version travel with the capture.
+   *
+   * A screenshot is only comparable to one taken by the same browser at the
+   * same version; comparing a Chromium capture to a Firefox baseline would
+   * report every page as different. `approvalStatus` is deliberately absent
+   * here — it is a person's judgement, recorded in the baseline by whoever
+   * reviewed it, never set by this script.
+   */
+  const { createHash } = await import('node:crypto')
+  const browserVersion = page.context().browser()?.version() ?? 'unknown'
+
+  /*
+   * What the page is, recorded with the capture.
+   *
+   * The shell renders a `<nav>` and the login card does not, so a navigation
+   * landmark is the cheapest reliable statement that a session was live. The
+   * pathname catches the other half: a router that redirects an unauthenticated
+   * visit lands on `/`, which the scenario did not ask for.
+   */
+  const signedIn = (await page.getByRole('navigation').count()) > 0
+  const pathname = new URL(page.url()).pathname
+
+  return {
+    text,
+    landmarks,
+    screenshot,
+    screenshotSha256: createHash('sha256').update(screenshot).digest('hex'),
+    browser: 'chromium',
+    browserVersion,
+    signedIn,
+    pathname,
+  }
 }
 
 /**
  * Forces the interface language before the app boots.
  *
- * `bootstrapLocale()` reads `navigator.languages`, then the workspace default,
- * then English. Pinning the browser locale is not enough: the reference image
- * and this build resolve differently, so the first comparison reported every
- * navigation label as a difference — a comparison of translations, not of
- * layouts. The stored per-account preference wins over everything, so writing
- * it is what makes the comparison about the interface.
+ * ## What was measured
  *
- * The same two keys are written for both builds: this is the one piece of state
- * the candidate is allowed to share with the reference, because the question is
- * "does the migrated UI look like the old one", not "did the default language
- * change".
+ * The two builds decide their language differently, and neither input that can
+ * be set from outside reaches both:
+ *
+ * | input                          | reference (`faf238d3`) | candidate |
+ * | ------------------------------ | ---------------------- | --------- |
+ * | `navigator.languages`          | ignored                | consulted |
+ * | `accept-language`              | ignored                | consulted |
+ * | workspace locale via the API   | stored, not rendered   | consulted |
+ * | `localStorage` per-account key | absent from that build | honoured  |
+ *
+ * Driven with `locale: 'en-US'`, both a browser language of `en-US` and one of
+ * `zh-CN`, the reference renders `lang="zh-CN"` and Chinese headings. That is
+ * not a harness mistake — it is what that build does, and it is why every
+ * scenario came back `STRUCTURE_MATCHES_TRANSLATED`.
+ *
+ * ## The consequence
+ *
+ * A pixel comparison across two languages measures the translation. So the
+ * gate does not compare pixels when the structural result says the pages are
+ * translated; it records `NOT_RUN` and says why. The alternative — inventing a
+ * padded ratio — would put a number on a difference nobody can act on.
+ *
+ * `pinLocale` still writes the per-account key, because it is the one input the
+ * candidate honours and pinning it makes the candidate's rendering deterministic
+ * run to run. It cannot make the reference render English, and this comment
+ * exists so nobody assumes it does.
  */
 async function pinLocale(page: Page): Promise<void> {
   await page.addInitScript(() => {
@@ -222,9 +376,7 @@ async function pinLocale(page: Page): Promise<void> {
       /*
        * `PREFERENCE_PREFIX` in `i18n.ts` is `zeus-admin.locale.` — hyphens, not
        * dots. A wrong key stores a value nobody reads, and the page silently
-       * falls back to `navigator.languages`, which is how the first run
-       * compared a Chinese reference against an English candidate and called
-       * every label a difference.
+       * falls back to `navigator.languages`.
        */
       localStorage.setItem('zeus-admin.locale.ada', 'en')
       localStorage.setItem('zeus-admin.locale.grace', 'en')
@@ -284,17 +436,52 @@ async function startReference(image: string): Promise<{ origin: string; stop(): 
    * one. The wait is on the port answering, not on a fixed sleep.
    */
   const deadline = Date.now() + 90_000
+  let healthy = false
 
   while (Date.now() < deadline) {
     try {
       const response = await fetch(`${origin}/api/health`)
 
-      if (response.ok) break
+      if (response.ok) {
+        healthy = true
+        break
+      }
     } catch {
       // Not up yet.
     }
 
     await new Promise(resolve => setTimeout(resolve, 500))
+  }
+
+  /*
+   * A container that never became healthy must fail here, with what Docker
+   * says is wrong.
+   *
+   * The loop above used to fall out of its deadline and return an origin
+   * anyway, so every scenario after it timed out its readiness wait and the
+   * report described the *pages* as unusable. Under emulation on Apple silicon
+   * the reference takes tens of seconds to open its port, and when it took
+   * longer than the deadline the gate blamed the pages. `docker logs` is the
+   * thing that says which it was.
+   */
+  if (!healthy) {
+    let logs = ''
+
+    try {
+      logs = execFileSync('docker', ['logs', '--tail', '40', name], { encoding: 'utf8' })
+    } catch {
+      logs = '(docker logs unavailable)'
+    }
+
+    try {
+      execFileSync('docker', ['rm', '-f', name], { stdio: 'pipe' })
+    } catch {
+      // Already gone.
+    }
+
+    throw new Error(
+      `the reference container ${name} never answered ${origin}/api/health within 90s:\n${logs}`,
+    )
   }
 
   return {
@@ -309,11 +496,33 @@ async function startReference(image: string): Promise<{ origin: string; stop(): 
   }
 }
 
+interface CapturedRecord {
+  readonly text: string
+  readonly landmarks: string[]
+  readonly screenshotSha256?: string
+  readonly browser?: string
+  readonly browserVersion?: string
+  /** Whether a session was live when this page was captured. */
+  readonly signedIn?: boolean
+  /** Where the browser actually was — a redirect shows up here. */
+  readonly pathname?: string
+  /** Whether the scenario's own readiness wait succeeded. */
+  readonly ready?: boolean
+  /**
+   * The PNG itself, kept in memory only.
+   *
+   * The baseline on disk records the hash, not the bytes: a baseline file that
+   * carried every screenshot would be tens of megabytes of binary in git, and
+   * the images are already written to `temp/admin-visual` on each run.
+   */
+  readonly screenshot?: Buffer
+}
+
 async function collect(
   browser: Browser,
   origin: string,
   prefix: string,
-): Promise<Record<string, { text: string; landmarks: string[] }>> {
+): Promise<Record<string, CapturedRecord>> {
   const context = await browser.newContext({
     baseURL: origin,
     viewport: { width: 1440, height: 900 },
@@ -333,7 +542,7 @@ async function collect(
     reducedMotion: 'reduce',
   })
   const page = await context.newPage()
-  const collected: Record<string, { text: string; landmarks: string[] }> = {}
+  const collected: Record<string, CapturedRecord> = {}
 
   fs.mkdirSync(ARTIFACTS, { recursive: true })
 
@@ -342,16 +551,49 @@ async function collect(
   for (const scenario of SCENARIOS) {
     await page.goto(scenario.path)
 
+    /*
+     * Re-sign in when the session was dropped.
+     *
+     * The reference container runs under emulation and its in-memory session
+     * store is slower than the driver; a run against it lost the session after
+     * two pages, after which every navigation returned the sign-in card and
+     * the gate compared five identical login screenshots as if they were the
+     * pages it asked for. Re-authenticating before each scenario is the fix;
+     * the scenario's own `ready` wait is not, because it times out silently.
+     */
+    if ((await page.getByRole('navigation').count()) === 0) {
+      await signIn(page)
+      await page.goto(scenario.path)
+    }
+
+    let ready = false
+
     try {
       await scenario.ready(page)
+      ready = true
     } catch {
-      // A page that never becomes ready is recorded as such below.
+      // Recorded as not-ready below rather than thrown.
     }
 
     const content = await pageContent(page)
 
     fs.writeFileSync(path.join(ARTIFACTS, `${prefix}-${scenario.name}.png`), content.screenshot)
-    collected[scenario.name] = { text: content.text, landmarks: content.landmarks }
+
+    collected[scenario.name] = {
+      text: content.text,
+      landmarks: content.landmarks,
+      screenshotSha256: content.screenshotSha256,
+      browser: content.browser,
+      browserVersion: content.browserVersion,
+      signedIn: content.signedIn,
+      pathname: content.pathname,
+      ready,
+      /*
+       * Held for the pixel comparison below, never written into the baseline.
+       * The baseline records the digest; the images live in `temp/`.
+       */
+      screenshot: content.screenshot,
+    }
   }
 
   await context.close()
@@ -589,7 +831,7 @@ async function main(): Promise<void> {
   const reference = await startReference(image)
   const browser = await chromium.launch()
 
-  let referenceContent: Record<string, { text: string; landmarks: string[] }>
+  let referenceContent: Record<string, CapturedRecord>
 
   try {
     referenceContent = await collect(browser, reference.origin, 'reference')
@@ -599,7 +841,7 @@ async function main(): Promise<void> {
 
   const server = await startAdminServer({ adminDir: APP, port: await freePort(5700) })
 
-  let candidateContent: Record<string, { text: string; landmarks: string[] }>
+  let candidateContent: Record<string, CapturedRecord>
 
   try {
     candidateContent = await collect(browser, server.origin, 'candidate')
@@ -609,21 +851,146 @@ async function main(): Promise<void> {
   }
 
   const comparisons = SCENARIOS.map(scenario => {
-    const result = compare(referenceContent[scenario.name], candidateContent[scenario.name])
+    const left = referenceContent[scenario.name]
+    const right = candidateContent[scenario.name]
 
-    return { scenario: scenario.name, ...result }
+    /*
+     * A capture that is not the page is not a comparison.
+     *
+     * Both sides are checked before anything is classified, because a login
+     * card compared against a settings page produces a `critical` structural
+     * result and a real pixel ratio — the numbers are finite and meaningless.
+     * This is what happened on the first run that produced pixels: the
+     * reference lost its session after two pages, five captures were the
+     * sign-in form, and the gate reported three regressions and 1.7–4.7%
+     * differences that described nothing but the session loss.
+     */
+    const unusable = [
+      !left?.signedIn && 'the reference was not signed in',
+      !right?.signedIn && 'the candidate was not signed in',
+      left?.ready === false && 'the reference page did not become ready',
+      right?.ready === false && 'the candidate page did not become ready',
+    ].filter((entry): entry is string => typeof entry === 'string')
+
+    if (unusable.length > 0) {
+      return {
+        scenario: scenario.name,
+        kind: 'UNUSABLE' as const,
+        detail: `no comparison was made: ${unusable.join('; ')}`,
+        structural: {
+          verdict: 'NOT_RUN' as const,
+          detail: 'the capture was not of the page this scenario names',
+        },
+        screenshot: {
+          verdict: 'NOT_RUN' as const,
+          detail: 'the capture was not of the page this scenario names',
+        },
+      }
+    }
+
+    const result = compare(left, right)
+
+    /*
+     * The screenshot dimension, per scenario.
+     *
+     * The two builds render different interface languages, which is a real
+     * difference and one the structural dimension already names. Comparing
+     * pixels across a translation would report every label as a changed pixel
+     * and tell a reader nothing — so the pixel comparison is only meaningful
+     * where the text agrees. Where the structural result says the pages are
+     * translated, the screenshot verdict is `NOT_RUN` with the reason, rather
+     * than a number produced by comparing two languages.
+     *
+     * That keeps the four dimensions honest: a dimension that could not answer
+     * its question says so, and `overallStatus` reports INCOMPLETE rather than
+     * letting the other three carry it to PASS.
+     */
+    const structural = {
+      verdict:
+        result.kind === 'critical'
+          ? ('REGRESSION' as const)
+          : result.kind === 'CANDIDATE_ADDED'
+            ? ('CANDIDATE_ADDED' as const)
+            : ('PASS' as const),
+      detail: result.detail,
+    }
+
+    let screenshot: VisualEvidence['screenshot']
+
+    if (!left?.screenshot || !right?.screenshot) {
+      screenshot = { verdict: 'NOT_RUN', detail: 'one side produced no capture' }
+    } else if (result.kind === 'STRUCTURE_MATCHES_TRANSLATED') {
+      screenshot = {
+        verdict: 'NOT_RUN',
+        detail:
+          'the two builds render different interface languages; a pixel comparison across a translation measures the translation, not the layout',
+      }
+    } else {
+      const comparison = comparePngs(left.screenshot, right.screenshot)
+      const verdict = screenshotVerdict(comparison, DEFAULT_SCREENSHOT_THRESHOLD)
+
+      /*
+       * The diff image is written next to the two captures. A ratio tells a
+       * reviewer that something moved; the image tells them what.
+       */
+      if (comparison.diff) {
+        fs.writeFileSync(
+          path.join(ARTIFACTS, `diff-${scenario.name}.png`),
+          comparison.diff,
+        )
+      }
+
+      screenshot = {
+        verdict: verdict.verdict,
+        differenceRatio: comparison.differenceRatio,
+        threshold: DEFAULT_SCREENSHOT_THRESHOLD,
+        detail: verdict.detail,
+      }
+    }
+
+    return {
+      scenario: scenario.name,
+      ...result,
+      structural,
+      screenshot,
+    }
   })
 
   for (const entry of comparisons) {
     console.log(`${entry.kind === 'same' ? 'SAME' : entry.kind.toUpperCase().padEnd(8)}  ${entry.scenario} — ${entry.detail}`)
+    console.log(`          screenshot: ${entry.screenshot.verdict} — ${entry.screenshot.detail}`)
   }
 
   const baselinePath = path.join(BASELINES, 'reference.json')
+
+  /*
+   * The baseline never carries image bytes.
+   *
+   * `JSON.stringify` on a `Buffer` produces `{"type":"Buffer","data":[...]}` —
+   * a few hundred thousand integers per scenario, in a file whose whole purpose
+   * is to be readable in a diff. The digest is what the baseline records; the
+   * images are in `temp/admin-visual` for whoever reviews them.
+   */
+  const withoutImages = Object.fromEntries(
+    Object.entries(referenceContent).map(([name, record]) => [
+      name,
+      {
+        text: record.text,
+        landmarks: record.landmarks,
+        screenshotSha256: record.screenshotSha256,
+        browser: record.browser,
+        browserVersion: record.browserVersion,
+        signedIn: record.signedIn,
+        pathname: record.pathname,
+      },
+    ]),
+  )
+
   const document = {
     schema: 'zeus.ecosystem.admin-visual-reference/v1',
     reference: { image, imageId: identity },
     capture: { viewport: { width: 1440, height: 900 }, locale: 'en-US', timezone: 'UTC' },
-    scenarios: referenceContent,
+    scenarios: withoutImages,
   }
 
   if (writeBaseline) {
@@ -649,6 +1016,13 @@ async function main(): Promise<void> {
      * `STRUCTURE_MATCHES_TRANSLATED` passes: the two builds render different
      * languages, and a translated page with the same landmarks is parity. It is
      * named in the report so nobody reads it as "identical".
+     *
+     * `UNUSABLE` does not pass. A capture that was not the page — a dropped
+     * session, a readiness wait that timed out — is not a comparison, and the
+     * previous version of this predicate had no case for it: an unusable
+     * scenario was neither `same` nor `minor` and so failed by falling through,
+     * which happened to be right for the wrong reason. Naming it here makes the
+     * reason explicit and keeps the aggregate reporting honest.
      */
     passed: comparisons.every(
       entry =>
@@ -661,9 +1035,16 @@ async function main(): Promise<void> {
 
   fs.writeFileSync(path.join(ARTIFACTS, 'report.json'), `${JSON.stringify(report, null, 2)}\n`)
 
-  const failing = comparisons.filter(entry => entry.kind === 'major' || entry.kind === 'critical')
+  const failing = comparisons.filter(
+    entry => entry.kind === 'major' || entry.kind === 'critical' || entry.kind === 'UNUSABLE',
+  )
+
+  const screenshotRan = comparisons.filter(entry => entry.screenshot.verdict !== 'NOT_RUN').length
 
   console.log(`\n${comparisons.length - failing.length}/${comparisons.length} scenarios match the reference`)
+  console.log(
+    `screenshot dimension: ${screenshotRan}/${comparisons.length} scenarios compared pixels (the rest were not comparable)`,
+  )
   console.log(`report: ${path.join(ARTIFACTS, 'report.json')}`)
 
   if (failing.length > 0 && !writeBaseline) process.exit(1)

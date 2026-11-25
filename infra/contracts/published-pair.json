@@ -17,7 +17,8 @@
     "commit": "9c90d0b350626b71ed735acfb0e2e05383c5c402"
   },
   "independent": {
-    "@zeus-js/vite-plugin": "0.0.5"
+    "@zeus-js/vite-plugin": "0.0.6",
+    "@zeus-js/devtools-consumer": "0.1.1-beta.15"
   },
   "compatibility": {
     "status": "validated",

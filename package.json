@@ -18,10 +18,13 @@
     "check:published-fixtures": "node scripts/check-published-fixtures.mjs",
     "test:e2e:published": "playwright test",
     "check:admin-browser": "pnpm --filter @zeus-ecosystem/admin run check:browser",
-    "check:admin-visual": "pnpm --filter @zeus-ecosystem/admin run check:visual"
+    "check:admin-visual": "pnpm --filter @zeus-ecosystem/admin run check:visual",
+    "check:provenance": "tsx scripts/release/verify-provenance.mjs",
+    "check:provenance:offline": "tsx scripts/release/verify-provenance.mjs --product admin --offline"
   },
   "devDependencies": {
     "@playwright/test": "1.57.0",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "sigstore": "4.1.1"
   }
 }

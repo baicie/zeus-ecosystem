@@ -36,11 +36,19 @@ import { adminApi, isDemoBuild } from '../admin-api'
 import { Icon } from '../shell/icon'
 import { decorateUserGrid } from '../shell/grid-decorations'
 import { changePersonalLocale, i18n, t, type Locale } from '../i18n'
+import { capabilitiesFor } from '../permissions'
 import { useSession } from '../session'
 import { applyTheme, errorMessage } from './shared'
 
 export function SettingsPage() {
   const session = useSession()
+  /*
+   * The workspace name is an administrator's decision; language and theme are
+   * the reader's. The page therefore stays available to every role and only the
+   * controls the server would reject are disabled — hiding the whole page would
+   * take a person's own preferences away to protect a workspace setting.
+   */
+  const canManageWorkspace = capabilitiesFor(session.user?.role ?? 'viewer').manageWorkspace
   const [settings, setSettings] = createSignal<WorkspaceSettings | undefined>(
     undefined,
   )
@@ -163,6 +171,7 @@ export function SettingsPage() {
                 <input
                   id="workspace-name"
                   class="input"
+                  disabled={!canManageWorkspace}
                   value={settings()!.workspaceName}
                   onInput={event =>
                     patch(
@@ -171,7 +180,11 @@ export function SettingsPage() {
                     )
                   }
                 />
-                <p class="field-hint">{t('settings.workspaceNameHint')}</p>
+                <p class="field-hint">
+                  {canManageWorkspace
+                    ? t('settings.workspaceNameHint')
+                    : t('settings.workspaceNameAdminOnly')}
+                </p>
               </div>
               <div class="settings-field-group">
                 <label class="field-label" for="personal-locale">
@@ -207,6 +220,7 @@ export function SettingsPage() {
                   id="workspace-locale"
                   class="select"
                   data-testid="workspace-locale"
+                  disabled={!canManageWorkspace}
                   value={locale()}
                   onChange={event => {
                     const value = (event.currentTarget as HTMLSelectElement)
@@ -227,6 +241,7 @@ export function SettingsPage() {
                 <select
                   id="workspace-theme"
                   class="select"
+                  disabled={!canManageWorkspace}
                   value={theme()}
                   onChange={event => {
                     const value = (event.currentTarget as HTMLSelectElement)
@@ -241,7 +256,11 @@ export function SettingsPage() {
                 <p class="field-hint">{t('settings.themeHint')}</p>
               </div>
               <div class="settings-actions">
-                <button type="submit" class="btn" disabled={saving()}>
+                <button
+                  type="submit"
+                  class="btn"
+                  disabled={saving() || !canManageWorkspace}
+                >
                   {saving() ? t('users.saving') : t('settings.saveSettings')}
                 </button>
                 <Show when={status()}>

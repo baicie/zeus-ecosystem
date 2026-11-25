@@ -15,8 +15,8 @@ importers:
         specifier: 0.2.0-rc.5
         version: 0.2.0-rc.5
       '@zeus-js/vite-plugin':
-        specifier: 0.0.5
-        version: 0.0.5(vite@8.3.8)
+        specifier: 0.0.6
+        version: 0.0.6(vite@8.3.8)
       '@zeus-js/web-c':
         specifier: 0.2.0-rc.5
         version: 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(lightningcss@1.33.0)(postcss@8.5.33)(rolldown@1.2.19)(vite@8.3.8)
@@ -237,22 +237,10 @@ packages:
       vite:
         optional: true
 
-  '@zeus-js/compiler-native-darwin-arm64@0.1.1-beta.20':
-    resolution: {integrity: sha512-4uA4Uzyhfn5AYfuEIqhcTQL6LNB3A5V1Cef4rNM2eSdDle4TWQuR5t+WP5pZCpw4bIc9MC4wAhwWdiALQ0V9ig==}
-    engines: {node: ^22.18.0 || >=24.11.0}
-    cpu: [arm64]
-    os: [darwin]
-
   '@zeus-js/compiler-native-darwin-arm64@0.2.0-rc.5':
     resolution: {integrity: sha512-kIJqJZy5q3vyFirZnJmANei1bKEYB7h6yrS5du+PmAdmk4vf/9ixlUocg71fl2+mv7e5OwSLl+UI8RsqieIrjQ==}
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [arm64]
-    os: [darwin]
-
-  '@zeus-js/compiler-native-darwin-x64@0.1.1-beta.20':
-    resolution: {integrity: sha512-/NYQSlAiLY9cJjFldQZ9qbQbL3PxBMA2FLbs4GhQW3vNy7rZwncT25AaAgQEhb3pHL1e8oGhGmAijiP+Ihj4XQ==}
-    engines: {node: ^22.18.0 || >=24.11.0}
-    cpu: [x64]
     os: [darwin]
 
   '@zeus-js/compiler-native-darwin-x64@0.2.0-rc.5':
@@ -261,24 +249,10 @@ packages:
     cpu: [x64]
     os: [darwin]
 
-  '@zeus-js/compiler-native-linux-arm64-gnu@0.1.1-beta.20':
-    resolution: {integrity: sha512-N/+rz8qg2EAdSQ9CYmDcnm3ykN8iD3sS0GpwO+4pQP+PvkXopIRwLFGVOUlzQ4+vv23P85Os5RDWC+6uawlTww==}
-    engines: {node: ^22.18.0 || >=24.11.0}
-    cpu: [arm64]
-    os: [linux]
-    libc: [glibc]
-
   '@zeus-js/compiler-native-linux-arm64-gnu@0.2.0-rc.5':
     resolution: {integrity: sha512-WHIVeeNntrpSnKeptF/IrMxIcJUv3wtjiouVDYEhtHxvz14Fe9byaguC0YLqRdL/YfbXaxPpTbSa+H615O5ddw==}
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [arm64]
-    os: [linux]
-    libc: [glibc]
-
-  '@zeus-js/compiler-native-linux-x64-gnu@0.1.1-beta.20':
-    resolution: {integrity: sha512-Bvbc3uQ27nCfBv1eeOjAhwug/mzh901ZkMv4lbq6z78uPId6vtLqoyeCD0a1WmcVPWuTCAPeEHFszMyRUrZb7Q==}
-    engines: {node: ^22.18.0 || >=24.11.0}
-    cpu: [x64]
     os: [linux]
     libc: [glibc]
 
@@ -289,13 +263,6 @@ packages:
     os: [linux]
     libc: [glibc]
 
-  '@zeus-js/compiler-native-linux-x64-musl@0.1.1-beta.20':
-    resolution: {integrity: sha512-BR95luQoCoEAWHyNWPcp7VLEq77LZ3a7nNU1tNz4KXE3Xer2y6MZUFubKOaLd2bNmQKIk6G3BaVZQKRDsTBIjg==}
-    engines: {node: ^22.18.0 || >=24.11.0}
-    cpu: [x64]
-    os: [linux]
-    libc: [musl]
-
   '@zeus-js/compiler-native-linux-x64-musl@0.2.0-rc.5':
     resolution: {integrity: sha512-HUrJEteC+6F6s3pO9zTxcCmg/tKROh7v3PsHNc+m3ydtk38iJCspX7FeLcqluemr+L66oowLseQ3H75g0xor3A==}
     engines: {node: ^22.18.0 || >=24.11.0}
@@ -303,22 +270,10 @@ packages:
     os: [linux]
     libc: [musl]
 
-  '@zeus-js/compiler-native-win32-arm64-msvc@0.1.1-beta.20':
-    resolution: {integrity: sha512-6BVO5udAVlHkvdCvwnP90jVxJ2tcyAz+MSlaY+aj/9xJL3wq61halJPuIZJbOCbBWFylw5TnhSr7w+u1uPy8fw==}
-    engines: {node: ^22.18.0 || >=24.11.0}
-    cpu: [arm64]
-    os: [win32]
-
   '@zeus-js/compiler-native-win32-arm64-msvc@0.2.0-rc.5':
     resolution: {integrity: sha512-GOokrP6fzIFSQCKabmL4cM71ZbW7L2I6keTnSFED3wubo//wLDVC7vh2BzhTS1mF+tfQs3siP81sSD/lSvpRrQ==}
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [arm64]
-    os: [win32]
-
-  '@zeus-js/compiler-native-win32-x64-msvc@0.1.1-beta.20':
-    resolution: {integrity: sha512-qUY1PUvDhSub3Vy+8Jb3FvJ4HbzfXXuoIVLEbnbp8ghs6D1GYoLYKgJ3QB13EtKNdKUzUDvGXA0WcUTMg9ifrQ==}
-    engines: {node: ^22.18.0 || >=24.11.0}
-    cpu: [x64]
     os: [win32]
 
   '@zeus-js/compiler-native-win32-x64-msvc@0.2.0-rc.5':
@@ -326,10 +281,6 @@ packages:
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [x64]
     os: [win32]
-
-  '@zeus-js/compiler-native@0.1.1-beta.20':
-    resolution: {integrity: sha512-sRMOtFJqgnVA0nlK+oUg1IJnruY3D5r+CoMjcr8opW3b6FzWwmyMRTLdnCAyoMr2/m0Pq1z4HZ2zXpcf+CMUfw==}
-    engines: {node: ^22.18.0 || >=24.11.0}
 
   '@zeus-js/compiler-native@0.2.0-rc.5':
     resolution: {integrity: sha512-E+tvTKK70aByOEMAs/f96Y/gU6oS8U0K+mtKk/yknUy/83qK6s5hRFqU8yYhYSPQdS6Vobc4HK/ytlyifGL/ZA==}
@@ -397,7 +348,7 @@ packages:
     resolution: {integrity: sha512-6dzMlSTAIoPVMqzZYbprBR5jltFd6/AIo+Ay0137bJqYrbyqCanTKWX1ZdeBlx8Bujli37i4R4aIbBt+1P/UhQ==}
     peerDependencies:
       '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      vue: 3.5.38
+      vue: '>=3'
     peerDependenciesMeta:
       '@zeus-js/web-c-runtime':
         optional: true
@@ -425,8 +376,8 @@ packages:
   '@zeus-js/signal@0.2.0-rc.5':
     resolution: {integrity: sha512-lczzMkh5IwpzYX7Oaz3oJEWUsIj3JsK2/eH+OfAuw8dEqgGY4lVdlafo0NZwX0Kji2JERV5vgSdT8hSclzrH/g==}
 
-  '@zeus-js/vite-plugin@0.0.5':
-    resolution: {integrity: sha512-jOdFGP/GO5Hs7cxldnHbKD2w7dITysSLAjSEYt/K4aXna7ClAL7c6Dh2XP9MLcITDaAHXmFbI4oliODS0dFq+Q==}
+  '@zeus-js/vite-plugin@0.0.6':
+    resolution: {integrity: sha512-pFJTPzzRmBg6ZXj7j/rB1Ts9HRGNs8VSWTJ1+jO+zgxNdDIOwcGwgAEQEppc8Z70SMdC0eZD2+LWq8BPSFc7mw==}
     engines: {node: ^22.18.0 || >=24.11.0}
     peerDependencies:
       vite: ^8.2.1
@@ -903,57 +854,26 @@ snapshots:
       rolldown: 1.2.19
       vite: 8.3.8
 
-  '@zeus-js/compiler-native-darwin-arm64@0.1.1-beta.20':
-    optional: true
-
   '@zeus-js/compiler-native-darwin-arm64@0.2.0-rc.5':
-    optional: true
-
-  '@zeus-js/compiler-native-darwin-x64@0.1.1-beta.20':
     optional: true
 
   '@zeus-js/compiler-native-darwin-x64@0.2.0-rc.5':
     optional: true
 
-  '@zeus-js/compiler-native-linux-arm64-gnu@0.1.1-beta.20':
-    optional: true
-
   '@zeus-js/compiler-native-linux-arm64-gnu@0.2.0-rc.5':
-    optional: true
-
-  '@zeus-js/compiler-native-linux-x64-gnu@0.1.1-beta.20':
     optional: true
 
   '@zeus-js/compiler-native-linux-x64-gnu@0.2.0-rc.5':
     optional: true
 
-  '@zeus-js/compiler-native-linux-x64-musl@0.1.1-beta.20':
-    optional: true
-
   '@zeus-js/compiler-native-linux-x64-musl@0.2.0-rc.5':
-    optional: true
-
-  '@zeus-js/compiler-native-win32-arm64-msvc@0.1.1-beta.20':
     optional: true
 
   '@zeus-js/compiler-native-win32-arm64-msvc@0.2.0-rc.5':
     optional: true
 
-  '@zeus-js/compiler-native-win32-x64-msvc@0.1.1-beta.20':
-    optional: true
-
   '@zeus-js/compiler-native-win32-x64-msvc@0.2.0-rc.5':
     optional: true
-
-  '@zeus-js/compiler-native@0.1.1-beta.20':
-    optionalDependencies:
-      '@zeus-js/compiler-native-darwin-arm64': 0.1.1-beta.20
-      '@zeus-js/compiler-native-darwin-x64': 0.1.1-beta.20
-      '@zeus-js/compiler-native-linux-arm64-gnu': 0.1.1-beta.20
-      '@zeus-js/compiler-native-linux-x64-gnu': 0.1.1-beta.20
-      '@zeus-js/compiler-native-linux-x64-musl': 0.1.1-beta.20
-      '@zeus-js/compiler-native-win32-arm64-msvc': 0.1.1-beta.20
-      '@zeus-js/compiler-native-win32-x64-msvc': 0.1.1-beta.20
 
   '@zeus-js/compiler-native@0.2.0-rc.5':
     optionalDependencies:
@@ -1038,10 +958,10 @@ snapshots:
     dependencies:
       '@zeus-js/shared': 0.2.0-rc.5
 
-  '@zeus-js/vite-plugin@0.0.5(vite@8.3.8)':
+  '@zeus-js/vite-plugin@0.0.6(vite@8.3.8)':
     dependencies:
       '@babel/parser': 8.1.3
-      '@zeus-js/compiler-native': 0.1.1-beta.20
+      '@zeus-js/compiler-native': 0.2.0-rc.5
       vite: 8.3.8
 
   '@zeus-js/web-c-runtime@0.2.0-rc.5':

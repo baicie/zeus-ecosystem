@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | `baicie/zeus` | `6e623d5f` | `release: vite-plugin@0.0.6 (#415)`，main CI 绿 |
 | `baicie/zeus-ui` | `4e7e429f` | 本轮未改动；工作区有两个未跟踪的 `Dockerfile.baseline-*` |
-| `baicie/zeus-ecosystem` | `7d447406` | 本轮全部改动落在这里 |
+| `baicie/zeus-ecosystem` | `e7d5c4f` | 本轮全部改动落在这里 |
 
 ## 一、结论
 

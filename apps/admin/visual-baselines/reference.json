@@ -1,0 +1,115 @@
+{
+  "schema": "zeus.ecosystem.admin-visual-reference/v1",
+  "reference": {
+    "image": "ghcr.io/baicie/zeus-admin:main",
+    "imageId": "sha256:faf238d3b701ff896a5524225ef92ffdc99aed1828f1ed7088ee6c443096f819"
+  },
+  "capture": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "locale": "en-US",
+    "timezone": "UTC"
+  },
+  "scenarios": {
+    "overview": {
+      "text": "跳到主内容\nZ\nZeus Admin\nNative · Router · Query\nGeneral\n概览\n用户管理\nAdministration\n角色权限\n审计日志\n管理报表\nWorkspace\n文件上传\n设置\nAL\nAda Lovelace\nada@example.test\n概览\n用户\n报表\n设置\nZeus Admin\n/\n概览\n概览\n搜索\n⌘\nK\nAL\n概览\n工作空间的成员、团队与审计摘要，数据由服务端会话校验后返回。\n查看报表\n概览\n成员\n团队成员\n8\n当前工作空间内的全部成员\n团队总数\n5\n成员所属的不同团队\n活跃成员\n4\n状态为 active 的成员\n审计事件\n2\n服务端记录的登录与写操作\n团队分布\n按成员数排序，数据来自成员目录。\n2\n1\n0\n基础设施\n工具链\n平台\n编译器\n运行时\n最新成员\n成员目录中按姓名排序的前几位成员。\nAL\nAda Lovelace\nada@example.test\n平台\nDR\nDennis Ritchie\ndennis@example.test\n运行时\nGH\nGrace Hopper\ngrace@example.test\n编译器\nGV\nGuido van Rossum\nguido@example.test\n工具链\nLT\nLinus Torvalds\nlinus@example.test\n基础设施",
+      "landmarks": [
+        "nav:General概览用户管理Administration角色权限审计日志管理报表W",
+        "nav:概览用户报表设置",
+        "nav:Zeus Admin/概览",
+        "h1:概览",
+        "h2:概览",
+        "h3:团队成员",
+        "h3:团队总数",
+        "h3:活跃成员",
+        "h3:审计事件",
+        "h3:团队分布",
+        "h3:最新成员"
+      ]
+    },
+    "users": {
+      "text": "跳到主内容\nZ\nZeus Admin\nNative · Router · Query\nGeneral\n概览\n用户管理\nAdministration\n角色权限\n审计日志\n管理报表\nWorkspace\n文件上传\n设置\nAL\nAda Lovelace\nada@example.test\n概览\n用户\n报表\n设置\nZeus Admin\n/\n用户管理\n用户管理\n搜索\n⌘\nK\nAL\n用户列表\n在这里管理成员以及他们的角色。\n查看详情\n体验加载失败\n添加成员\n状态\n活跃\n待邀请\n已暂停\n8 位成员\n姓名\n邮箱\n团队\n状态\nAda Lovelace\nada@example.test\n平台\n活跃\nDennis Ritchie\ndennis@example.test\n运行时\n已暂停\nGrace Hopper\ngrace@example.test\n编译器\n活跃\n8\n位成员\n第\n1\n/\n3\n页\n1\n2\n3\n第\n1\n/\n3\n页",
+      "landmarks": [
+        "nav:General概览用户管理Administration角色权限审计日志管理报表W",
+        "nav:概览用户报表设置",
+        "nav:Zeus Admin/用户管理",
+        "h1:用户管理",
+        "h2:用户列表",
+        "div:姓名邮箱团队状态Ada Lovelaceada@example.test平台活跃"
+      ]
+    },
+    "roles": {
+      "text": "跳到主内容\nZ\nZeus Admin\nNative · Router · Query\nGeneral\n概览\n用户管理\nAdministration\n角色权限\n审计日志\n管理报表\nWorkspace\n文件上传\n设置\nAL\nAda Lovelace\nada@example.test\n概览\n用户\n报表\n设置\nZeus Admin\n/\n角色权限\n角色权限\n搜索\n⌘\nK\nAL\n角色与权限\n浏览器的角色只用于界面呈现。每次读写都由服务端 session 重新校验。\n管理员\n1\n位成员\n管理成员、角色、设置与审计记录。\n能力\n用户 CRUD\n角色变更\n审计读取\n上传\n设置写入\n只读成员\n7\n位成员\n只读访问用户、报表与设置。\n能力\n用户读取\n报表读取\n设置读取",
+      "landmarks": [
+        "nav:General概览用户管理Administration角色权限审计日志管理报表W",
+        "nav:概览用户报表设置",
+        "nav:Zeus Admin/角色权限",
+        "h1:角色权限",
+        "h2:角色与权限",
+        "h3:管理员",
+        "h3:只读成员"
+      ]
+    },
+    "settings": {
+      "text": "跳到主内容\nZ\nZeus Admin\nNative · Router · Query\nGeneral\n概览\n用户管理\nAdministration\n角色权限\n审计日志\n管理报表\nWorkspace\n文件上传\n设置\nAL\nAda Lovelace\nada@example.test\n概览\n用户\n报表\n设置\nZeus Admin\n/\n设置\n设置\n搜索\n⌘\nK\nAL\n设置\n管理工作空间的名称、语言与主题；保存后写入服务端 SQLite。\n工作空间\n外观\n上传\n工作空间\n更新工作空间名称与界面语言。这些设置对所有成员生效。\n工作空间名称\n显示在侧栏与登录页的名称，最长 80 个字符。\n语言\n简体中文\nEnglish\n服务端偏好与前端文案的默认语言。\n主题\n浅色\n深色\n保存后写入服务端，刷新或重启后仍然保留。\n保存设置",
+      "landmarks": [
+        "nav:General概览用户管理Administration角色权限审计日志管理报表W",
+        "nav:概览用户报表设置",
+        "nav:Zeus Admin/设置",
+        "h1:设置",
+        "h2:设置",
+        "h3:工作空间",
+        "form:工作空间名称显示在侧栏与登录页的名称，最长 80 个字符。语言简体中文Engli"
+      ]
+    },
+    "audit": {
+      "text": "跳到主内容\nZ\nZeus Admin\nNative · Router · Query\nGeneral\n概览\n用户管理\nAdministration\n角色权限\n审计日志\n管理报表\nWorkspace\n文件上传\n设置\nAL\nAda Lovelace\nada@example.test\n概览\n用户\n报表\n设置\nZeus Admin\n/\n审计日志\n审计日志\n搜索\n⌘\nK\nAL\n审计日志\n登录、越权尝试与写操作由服务端记录在 SQLite 中，并非浏览器内存。\n刷新\n时间\n操作\n对象\n结果\n2026/11/25 03:41:06\nlogin\nada\nsuccess\n2026/11/25 03:41:03\nseed\ndatabase\nsuccess\n共\n2\n条\n第\n1\n/\n1\n页\n第\n1\n/\n1\n页",
+      "landmarks": [
+        "nav:General概览用户管理Administration角色权限审计日志管理报表W",
+        "nav:概览用户报表设置",
+        "nav:Zeus Admin/审计日志",
+        "h1:审计日志",
+        "h2:审计日志",
+        "table:时间操作对象结果2026/11/25 03:41:06loginada succ"
+      ]
+    },
+    "reports": {
+      "text": "跳到主内容\nZ\nZeus Admin\nNative · Router · Query\nGeneral\n概览\n用户管理\nAdministration\n角色权限\n审计日志\n管理报表\nWorkspace\n文件上传\n设置\nAL\nAda Lovelace\nada@example.test\n概览\n用户\n报表\n设置\nZeus Admin\n/\n管理报表\n管理报表\n搜索\n⌘\nK\nAL\n管理报表\n汇总当前工作空间的成员与团队规模。数据由服务端在通过角色校验后返回。\n成员总数\n8\n跨全部团队\n团队总数\n5\n已建立的团队\n审计事件\n2\n服务端记录的操作\n团队分布\n按成员数排序。\n2\n1\n0\n平台\n运行时\n编译器\n工具链\n基础设施",
+      "landmarks": [
+        "nav:General概览用户管理Administration角色权限审计日志管理报表W",
+        "nav:概览用户报表设置",
+        "nav:Zeus Admin/管理报表",
+        "h1:管理报表",
+        "h2:管理报表",
+        "h3:成员总数",
+        "h3:团队总数",
+        "h3:审计事件",
+        "h3:团队分布"
+      ]
+    },
+    "upload": {
+      "text": "跳到主内容\nZ\nZeus Admin\nNative · Router · Query\nGeneral\n概览\n用户管理\nAdministration\n角色权限\n审计日志\n管理报表\nWorkspace\n文件上传\n设置\nAL\nAda Lovelace\nada@example.test\n概览\n用户\n报表\n设置\nZeus Admin\n/\n文件上传\n文件上传\n搜索\n⌘\nK\nAL\n文件上传\n仅接受文本、Markdown、JSON 与 PNG，上限 64 KiB。服务端拒绝路径分隔符与隐藏文件名。\n选择文件\n上传后服务端会返回文件摘要与 SHA-256。\n文件\n上传",
+      "landmarks": [
+        "nav:General概览用户管理Administration角色权限审计日志管理报表W",
+        "nav:概览用户报表设置",
+        "nav:Zeus Admin/文件上传",
+        "h1:文件上传",
+        "h2:文件上传",
+        "form:选择文件上传后服务端会返回文件摘要与 SHA-256。文件上传",
+        "h3:选择文件"
+      ]
+    },
+    "not-found": {
+      "text": "跳到主内容\nZ\nZeus Admin\nNative · Router · Query\nGeneral\n概览\n用户管理\nAdministration\n角色权限\n审计日志\n管理报表\nWorkspace\n文件上传\n设置\nAL\nAda Lovelace\nada@example.test\n概览\n用户\n报表\n设置\nZeus Admin\n/\n页面\n页面\n搜索\n⌘\nK\nAL\n404\n页面不存在\n该页面不存在。\n返回用户列表\n回到概览",
+      "landmarks": [
+        "nav:General概览用户管理Administration角色权限审计日志管理报表W",
+        "nav:概览用户报表设置",
+        "nav:Zeus Admin/页面",
+        "h1:页面",
+        "h2:页面不存在"
+      ]
+    }
+  }
+}

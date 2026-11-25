@@ -1,16 +1,27 @@
 name: Published Core consumer smoke
 
+# No path filter.
+#
+# The previous filter listed only the scripts and the matrix, so a pull request
+# that changed an app's `package.json` — which is exactly when a published-Core
+# consumer breaks — skipped this job entirely. A job that is a required check
+# also must not filter: a required check that does not run blocks the merge it
+# was meant to guard.
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
   pull_request:
-    paths:
-      - 'scripts/core-consumer-smoke.mjs'
-      - 'scripts/check-published-core.mjs'
-      - 'docs/compatibility-matrix.json'
-      - '.github/workflows/core-smoke.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
+
+# Now that this runs on every pull request, a superseded run must not keep
+# holding a runner — and on `main` nothing is cancelled, so a push always gets a
+# complete result.
+concurrency:
+  group: core-smoke-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   core-smoke:

@@ -11,7 +11,8 @@
     "check:p0": "node scripts/run-with-sqlite.mjs scripts/checks/check-ai-workbench-p0.ts",
     "check:byok": "node scripts/run-with-sqlite.mjs scripts/checks/check-ai-workbench-byok.ts",
     "check:csp": "tsx scripts/checks/check-ai-workbench-csp.ts",
-    "check:gates": "pnpm check:byok && pnpm check:csp && pnpm check:p0"
+    "check:gates": "pnpm check:byok && pnpm check:csp && pnpm check:p0",
+    "check:live": "tsx scripts/checks/check-ai-workbench-live.ts"
   },
   "dependencies": {
     "@zeus-js/runtime-dom": "0.2.0-rc.5",

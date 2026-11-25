@@ -33,8 +33,21 @@ PRODUCTION_ACCEPTED    a real deployment was accepted
 LEGACY_REMOVED         the old implementation is gone
 ```
 
-No application is further than `IMAGE_VALIDATED`, and none is
-`PRODUCTION_ACCEPTED` — no production deployment has happened.
+Admin reaches `DEPLOYMENT_REHEARSED` with a real cross-version rehearsal
+against the previously published image; the AI apps reach `IMAGE_VALIDATED`.
+None is `PRODUCTION_ACCEPTED` — no production deployment has happened, and the
+plan script refuses to produce a production plan at all.
+
+## Evidence dimensions
+
+Migration stage answers "how far along is this app". A separate question is
+"what exactly was measured", and `delivery-evidence/v1` records it per image:
+`BUILD_PASS`, `STARTUP_PASS`, `HEALTH_PASS`, `READINESS_PASS`,
+`FUNCTIONAL_PASS`, `VISUAL_PASS`, `PERSISTENCE_PASS`, `CROSS_VERSION_PASS`,
+`ROLLBACK_PASS`, `LIVE_PASS`. Unmeasured stays `NOT_RUN`.
+
+An image that builds, starts and answers its health path is not a product that
+works, and the two were previously the same sentence.
 
 ## Ownership
 
@@ -90,6 +103,8 @@ containers, and removes only what it created.
 - [Dependency policy](docs/dependency-policy.md)
 - [Compatibility matrix](docs/compatibility-matrix.json)
 - [Migration checklist](docs/migration-checklist.md) — the status vocabulary above
+- [Production cutover runbook](docs/production-cutover-runbook.md) — never executed; needs authorization
+- [Legacy cleanup manifest](docs/legacy-cleanup-manifest.md) — what Phase 7 will delete, and what it cannot
 - [App inventory](docs/demo-catalog.md)
 - [Architecture](docs/architecture.md)
 

@@ -1,0 +1,40 @@
+{
+  "schema": "zeus.ecosystem.ai-visual-reference/v1",
+  "applicationId": "ai-workbench",
+  "reference": {
+    "kind": "rebuilt-from-source",
+    "sourceRepository": "baicie/zeus-ui",
+    "sourcePath": "examples/ai-workbench",
+    "sourceCommit": "4e7e429",
+    "note": "Rebuilt rather than pulled. No published AI Workbench image exists, and the published pair that does exist carries a workbench whose nginx forwards /ai-host/ without stripping the prefix. A reference does not have to be a registry artefact: trusted source plus a reproducible build is one.",
+    "images": {
+      "workbench": {
+        "image": "zeus-ai-workbench:baseline",
+        "imageId": "sha256:2af30fd08126def1ce6132e7fc15ab933c35762bcea3c5e4c05652add2b0e093"
+      },
+      "host": {
+        "image": "zeus-ai-host:baseline",
+        "imageId": "sha256:aab348f87b3fc7aa758ac508546a4e4a3600bbb4546d148347a89b160ede8e39"
+      }
+    },
+    "runtime": {
+      "mode": "replay",
+      "provider": "fixture",
+      "origin": "http://127.0.0.1:18880"
+    }
+  },
+  "capture": {
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 1
+    },
+    "locale": "en-US",
+    "timezone": "UTC",
+    "colorScheme": "light",
+    "reducedMotion": "reduce"
+  },
+  "approvalStatus": "CANDIDATE",
+  "approvalNote": "CANDIDATE: this records the reference as built. Nobody has compared the migrated workbench against it, so it is not an approved baseline — that requires a person looking at both sets of screenshots.",
+  "scenarios": []
+}

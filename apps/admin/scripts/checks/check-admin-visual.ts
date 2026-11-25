@@ -1024,12 +1024,31 @@ async function main(): Promise<void> {
      * which happened to be right for the wrong reason. Naming it here makes the
      * reason explicit and keeps the aggregate reporting honest.
      */
+    /*
+     * The screenshot dimension is part of the verdict, not decoration.
+     *
+     * `overallStatus` in `visual-dimensions.ts` says a regression in any of the
+     * first three dimensions fails the scenario, and this gate imported it and
+     * never called it. The predicate below looked only at `entry.kind`, so
+     * `roles` — whose pixels differ by 1.68%, over the 1% threshold — was
+     * recorded as `screenshot.verdict: 'REGRESSION'` in the report while the
+     * report said `passed: true` and the process exited 0. A reader of the
+     * report and a reader of its verdict got different answers.
+     *
+     * `CANDIDATE_ADDED` is the one case where a pixel difference is expected:
+     * the candidate has content the reference did not, so the pixels differ
+     * because something was added. That is not a regression and the structural
+     * dimension already names it. Every other scenario must not regress.
+     */
     passed: comparisons.every(
       entry =>
-        entry.kind === 'same' ||
-        entry.kind === 'minor' ||
-        entry.kind === 'STRUCTURE_MATCHES_TRANSLATED' ||
-        entry.kind === 'CANDIDATE_ADDED',
+        (entry.kind === 'same' ||
+          entry.kind === 'minor' ||
+          entry.kind === 'STRUCTURE_MATCHES_TRANSLATED' ||
+          entry.kind === 'CANDIDATE_ADDED') &&
+        (entry.screenshot.verdict !== 'REGRESSION' ||
+          entry.kind === 'CANDIDATE_ADDED') &&
+        entry.screenshot.verdict !== 'REFERENCE_UNAVAILABLE',
     ),
   }
 

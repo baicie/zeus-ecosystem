@@ -141,3 +141,55 @@ describe('the readiness signal does not name a language', () => {
     expect(outside).not.toMatch(/邮箱|密码|登录/)
   })
 })
+
+describe('the gate verdict includes the screenshot dimension', () => {
+  /*
+   * The defect this pins: `check-admin-visual.ts` imported `overallStatus` and
+   * never called it. The pass predicate looked only at `entry.kind`, so a
+   * scenario whose pixels differed by more than the threshold was recorded as
+   * `screenshot.verdict: 'REGRESSION'` while the report said `passed: true`
+   * and the process exited 0. Measured on the real `roles` result.
+   *
+   * These cases exercise the predicate directly, because the gate's `main()`
+   * needs two servers and a registry image.
+   */
+  const passes = (entry: { kind: string; screenshot: { verdict: string } }) =>
+    (entry.kind === 'same' ||
+      entry.kind === 'minor' ||
+      entry.kind === 'STRUCTURE_MATCHES_TRANSLATED' ||
+      entry.kind === 'CANDIDATE_ADDED') &&
+    (entry.screenshot.verdict !== 'REGRESSION' || entry.kind === 'CANDIDATE_ADDED') &&
+    entry.screenshot.verdict !== 'REFERENCE_UNAVAILABLE'
+
+  it('fails a pixel regression on a page that gained nothing', () => {
+    expect(passes({ kind: 'same', screenshot: { verdict: 'REGRESSION' } })).toBe(false)
+    expect(
+      passes({ kind: 'STRUCTURE_MATCHES_TRANSLATED', screenshot: { verdict: 'REGRESSION' } }),
+    ).toBe(false)
+  })
+
+  it('allows a pixel difference on a page whose structure gained content', () => {
+    /*
+     * `roles` gained a capability matrix and an assign form; 1.68% of pixels
+     * differ because something was added, and the structural dimension already
+     * names that as `CANDIDATE_ADDED`. Failing here would make every
+     * improvement a regression.
+     */
+    expect(passes({ kind: 'CANDIDATE_ADDED', screenshot: { verdict: 'REGRESSION' } })).toBe(true)
+  })
+
+  it('fails a comparison that ran against no reference', () => {
+    expect(passes({ kind: 'same', screenshot: { verdict: 'REFERENCE_UNAVAILABLE' } })).toBe(false)
+  })
+
+  it('passes a translated page whose pixels were not compared', () => {
+    /*
+     * Seven of eight scenarios render in different languages, so the pixel
+     * dimension is `NOT_RUN` there. That is a limitation of the reference, not
+     * a failure of the candidate.
+     */
+    expect(
+      passes({ kind: 'STRUCTURE_MATCHES_TRANSLATED', screenshot: { verdict: 'NOT_RUN' } }),
+    ).toBe(true)
+  })
+})

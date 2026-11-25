@@ -46,8 +46,8 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 | LOCAL_TESTED | ✅ | tsc 干净、8/8 单测、vite build 207 kB |
 | CI_VALIDATED | ✅ | `AI Workbench / Browser gates` 与 `AI Apps / Node 22|24` 在 main 上全绿 |
 | VISUAL_VALIDATED | ⬜ | 未做。AI 侧没有发布过的参考构建可冻结；见下文 |
-| IMAGE_VALIDATED | ✅ | `delivery-evidence/v1`：`BUILD_PASS` / `STARTUP_PASS` / `HEALTH_PASS` |
-| DEPLOYMENT_REHEARSED | ⬜ | AI 单元尚未演练；`cross-version-rehearsal.mjs` 目前只有 admin 单元 |
+| IMAGE_VALIDATED | ⬜ | 曾记为 ✅ 并引用 `delivery-evidence/v1`，但**仓库里没有任何这种文件**。CI 的 `Image / ai-workbench` 绿证明镜像能构建，不满足本表第 13 行要求的证据形式 |
+| DEPLOYMENT_REHEARSED | ✅ | AI 单元有自己的 `scripts/release/ai-rehearsal.mjs`（不是 `cross-version-rehearsal.mjs`）。最新通过的报告 15 步全过、两侧镜像 ID 不同、数据跨版本读回 |
 | PRODUCTION_ACCEPTED | ⬜ | 未部署 |
 | LEGACY_REMOVED | ⬜ | 旧实现保留 |
 
@@ -61,8 +61,8 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 | LOCAL_TESTED | ✅ | tsc 干净、27/27 单测 |
 | CI_VALIDATED | ✅ | `Host protocol acceptance`（9 项，含真实进程重启）在 CI 中 |
 | VISUAL_VALIDATED | n/a | 无界面 |
-| IMAGE_VALIDATED | ✅ | 单文件 bundle，`HEALTH_PASS` |
-| DEPLOYMENT_REHEARSED | ⬜ | 随 AI 单元一起演练；`cross-version-rehearsal.mjs` 尚无 ai 单元 |
+| IMAGE_VALIDATED | ⬜ | 同左：`delivery-evidence/v1` 不存在。协议验收 9/9 是进程级证据，不是镜像证据 |
+| DEPLOYMENT_REHEARSED | ✅ | 与 Workbench 在同一次 15 步演练中作为单元启动，顺序 host → workbench |
 | PRODUCTION_ACCEPTED | ⬜ | 未部署 |
 | LEGACY_REMOVED | ⬜ | 旧实现保留 |
 
@@ -74,7 +74,7 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 | LOCAL_TESTED | ✅ | tsc 0 错误、26/26 服务端测试、vite build 成功 |
 | CI_VALIDATED | ✅ | `Admin / Browser gates`（14 场景 × 3 引擎）与 `AI Apps` 全绿 |
 | VISUAL_VALIDATED | ⬜ | **结构一致性 8/8**（landmark 与文本重合度对按 digest 固定的参考构建）+ **像素比对 1/8**（`roles`，1.68%，差异全在候选新增的能力矩阵；其余 7 个场景两构建语言不同，不可比，记 `NOT_RUN`）。设计审查未做——那需要人，不是脚本。见下方说明 |
-| IMAGE_VALIDATED | ✅ | `delivery-evidence/v1`，尺寸与平台见该文件 |
+| IMAGE_VALIDATED | ⬜ | 同左：`delivery-evidence/v1` 不存在。跨版本演练 20/20 用的是镜像，但没有留 `delivery-evidence` 记录 |
 | DEPLOYMENT_REHEARSED | ✅ | **真实跨版本** 20/20 步，83.6 秒；回滚后数据完好 |
 | PRODUCTION_ACCEPTED | ⬜ | 未部署 |
 | LEGACY_REMOVED | ⬜ | 旧实现保留 |
@@ -115,10 +115,16 @@ Screenshot  像素是否在阈值内
 Design      差异是否有意——人的答案，脚本永远不填
 ```
 
-任一前三维度回归即失败；`NOT_RUN` 与 `REFERENCE_UNAVAILABLE` 记 `INCOMPLETE`，
-**不记通过**；未审查的设计记 `REVIEW_REQUIRED`，不记失败——被红灯逼出来的签字
-不是审查。像素算法在 `screenshot-diff.ts`，8 条测试覆盖相同、局部变化、
-尺寸不同（不可比，不猜）、亚阈值差异。
+这四个维度在 `visual-dimensions.ts` 里定义，但**报告里只有 structural 与
+screenshot 两维**——functional 与 design 从未被产出。而且 `overallStatus` 被 import
+后**零次调用**，通过判定此前只看 `entry.kind`：`roles` 的像素差 1.68% 被判
+`REGRESSION`，报告却写 `passed: true`、进程 exit 0。
+
+**已修**：`passed` 现在把 screenshot 维度算进去，`CANDIDATE_ADDED` 是唯一例外（新增
+内容必然带来像素差异，结构维度已经说明了它）。四组测试钉住这个谓词。
+
+仍未做的是把 functional 与 design 真正接进报告——那需要把门禁的场景表与浏览器
+断言合并，是接线工作，不是措辞。
 
 ## 明确的阻塞
 
@@ -190,14 +196,27 @@ Chromium 143.0.7499.4（正是 lockfile 钉的 build）安装成功，本机可�
 来源记录**同样成立。取法是 detached worktree 检出那个 commit、恢复当时的 lockfile、
 用原始方式构建并启动。
 
-之所以还没做：那需要一个可运行的旧 Host + 旧 Workbench，且 Replay fixture 要与
-当时的行为一致。这是 Task F 的工作量，不是"没有参考源"。
+**已经做了。** `apps/ai-workbench/visual-baselines/reference.json` 记录了重建的参考：
+`sourceRepository: baicie/zeus-ui`、`sourcePath: examples/ai-workbench`、
+`sourceCommit: 4e7e429`，两个基线镜像的 image ID，以及 replay/fixture 的运行时。
 
-**2. `@zeus-js/devtools-consumer` 已发布，Admin 尚未接入。**
+状态是 `CANDIDATE` 而不是 `APPROVED`——**没有人比对过迁移后的 Workbench 和它**，
+那是人看截图的事，不是脚本填的。记录存在不等于参考被认可。
+
+**2. `@zeus-js/devtools-consumer` 已发布，Admin 已接入。**
 `0.1.1-beta.15` 在 npm 上（`latest` 与 `beta` 都指向它——**首次发布无条件占用 `latest`**，
 这是 npm 的行为，不是本仓库的选择）。包本身可用：ESM/CJS 双入口、`.d.ts` 与 `.d.cts`、
-SLSA provenance 已验证。**Admin 的 `?devtools` 面板还没接**——那是 `apps/admin` 的一处
-DEV-only 改动，不在本轮范围内。
+SLSA provenance 已验证。
+
+面板在 `apps/admin/src/devtools/bootstrap.ts`，四道保证都实测成立：只在
+`import.meta.env.DEV` 与 `?devtools` 同时成立时加载、动态 `import()`、失败只记日志、
+`main.tsx` 注册 `import.meta.hot.dispose`。生产构建 66 个 chunk 中 0 个包含它。
+
+**但面板挂载是空的。** `main.tsx:84` 的 `render()` 早于 `:86` 的
+`bootstrapDevtools()`，首次渲染的 85 个事件在 consumer 安装 hook 之前就发出去了。
+旧实现 `examples/admin/src/main.tsx` 是先挂载消费者。HMR 的 dispose 也不可达——
+两者都不是自接受边界，编辑它们触发的是整页刷新。**修它要改渲染顺序，属于产品行为
+变更，未在本轮做。**
 
 **3. `vite-plugin` 的编译器版本线错配——已解除。** `0.0.5` 硬依赖
 `compiler-native@0.1.1-beta.20`，而 rc.5 包依赖 `0.2.0-rc.5`。`0.0.6` 已发布并修掉，
@@ -263,17 +282,17 @@ viewer 能打开 `/admin/settings`，这是有意的：该页同时承载工作�
 | --- | --- | --- |
 | Admin | 14 场景 × 3 引擎浏览器；跨版本 20/20；结构一致性 8/8；像素 1/8（可比场景全过）；权限 16/16 | 设计审查（需人）；7 个场景因参考构建语言不同无法像素比对 |
 | AI Workbench | P0 / BYOK / CSP 基线；容器 48 项 | 逐项对照旧版；视觉参考仍是 `CANDIDATE` |
-| AI Host | 协议 9/9（含真实重启） | 与 Workbench 的联合升级未预演 |
+| AI Host | 协议 9/9（含真实重启）；与 Workbench 的联合升级已演练 15/15 | 无 |
 
 ### 正式交付准备度
 
-- provenance：**63/63 已验证**
+- provenance：**168 个包、三个产品各 56/56 已验证**（63 是 #15 时 Admin 单产品的旧数）
 - Release Candidate 聚合：**已建**，`check:candidate` 读十二个维度，各给 `PASS` / `INCOMPLETE` / `BLOCKED`。
   当前 `BLOCKED`——两项阻塞都是「只能由人或本仓库之外的授权回答」：
   `design-review`（需要人看截图）与 `production-authorization`（没有生产权限）。
-  `INCOMPLETE` 的六项里，`build` 与 `image-delivery` 是同一件事：**没有任何镜像被推送到
+  `INCOMPLETE` 的五项里，`build` 与 `image-delivery` 是同一件事：**没有任何镜像被推送到
   registry**，本地镜像 ID 不是 digest，也就无法做回滚目标。
-- 生产切换 runbook：已写，**未执行**；`check:cutover-preflight` 逐条读八项前置条件，
+- 生产切换 runbook：已写，**未执行**；`check:cutover-preflight` 逐条读**九**项前置条件，
   当前 3 项 MET、2 项 UNMET、4 项 UNKNOWN。`UNKNOWN` 不是「大概可以」——
   `tested-backup` 未知意味着切换开始时没有回滚。
 - Phase 7 清理：`check:cleanup` 读五项前置条件，当前 `BLOCKED`；

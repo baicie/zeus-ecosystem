@@ -38,6 +38,19 @@ against the previously published image; the AI apps reach `IMAGE_VALIDATED`.
 None is `PRODUCTION_ACCEPTED` — no production deployment has happened, and the
 plan script refuses to produce a production plan at all.
 
+`VISUAL_VALIDATED` is the one stage nobody has finished, and the reason is
+narrow: the reference build decides its interface language differently from the
+current one, so seven of eight scenarios render in different languages and a
+pixel comparison would measure the translation. The eighth is compared.
+`DesignReview` needs a person looking at the screenshots, and a script that
+filled it in would be recording an opinion nobody holds.
+
+Page permissions, separately, are proven in a browser: `check:permissions`
+drives a viewer's session against a real server and asserts the disabled
+controls, the enabled personal preferences, the 403 error pages, the server
+refusing the write, and — the case that catches a blanket "disable it for
+everyone" — an administrator still able to save.
+
 ## Evidence dimensions
 
 Migration stage answers "how far along is this app". A separate question is
@@ -66,7 +79,15 @@ cross-repository workspace links, source aliases or vendored copies.
 npm run check                    # dependency policy and regression tests
 npm run check:published-fixtures # fixtures use exact published versions only
 npm run check:pair               # install a published pair and inspect the tree
+npm run check:admin-browser      # 14 product scenarios, three engines
+npm run check:admin-visual       # structure + pixels against a pinned reference
+npm run check:permissions        # what a viewer may and may not do, in a browser
 ```
+
+The two gates that need a browser use Playwright. Browsers come from
+`cdn.playwright.dev` by default; where that host is unreachable,
+`PLAYWRIGHT_DOWNLOAD_HOST=https://cdn.npmmirror.com/binaries/playwright`
+installs the same pinned build.
 
 CI runs four workflows:
 

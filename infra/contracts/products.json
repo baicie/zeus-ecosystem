@@ -19,6 +19,11 @@
       "sizePolicy": {
         "note": "nginx plus the built bundle; the nginx base is most of it",
         "maxUnpackedBytes": 125829120
+      },
+      "persistence": {
+        "kind": "browser-storage",
+        "note": "Sidebar state, theme and locale only. Conversation data lives in AI Host; losing this storage loses preferences, not user content.",
+        "serverStateIn": "ai-host"
       }
     },
     {
@@ -39,6 +44,10 @@
       "sizePolicy": {
         "note": "the node base image dominates; the app layer is one bundled file",
         "maxUnpackedBytes": 419430400
+      },
+      "persistence": {
+        "kind": "server-database",
+        "note": "SQLite: conversations, timeline, messages and provider configuration. The workbench holds no durable copy, so this is the only record."
       }
     },
     {
@@ -59,6 +68,10 @@
       "sizePolicy": {
         "note": "node runtime plus the SPA and the API server",
         "maxUnpackedBytes": 524288000
+      },
+      "persistence": {
+        "kind": "server-database",
+        "note": "SQLite under ZEUS_ADMIN_DATA_DIR. A rollback that restores the previous image must also restore the volume, or the older binary meets a newer schema."
       }
     },
     {
@@ -81,6 +94,10 @@
       "sizePolicy": {
         "note": "nginx plus the built bundle. The wasm compiler is 1.55 MB raw but 480 kB gzip and is cached separately by the browser; React and Vue vendor chunks belong to the WebC studio preview, not the main path.",
         "maxUnpackedBytes": 220200960
+      },
+      "persistence": {
+        "kind": "browser-storage",
+        "note": "Projects and files in IndexedDB, settings in LocalStorage, both keyed by the host origin. IndexedDB is per-origin: a rollback that changes the origin shows an empty workspace rather than migrated data, which is why the rehearsal keeps the origin stable."
       }
     }
   ],
@@ -103,6 +120,15 @@
       ],
       "order": [
         "admin"
+      ]
+    },
+    "playground": {
+      "note": "The trusted host and the untrusted sandbox are one deployment: they share an image and the sandbox only means anything from its own origin. Deployed together, rolled back together.",
+      "products": [
+        "playground"
+      ],
+      "order": [
+        "playground"
       ]
     }
   }

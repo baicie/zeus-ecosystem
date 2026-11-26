@@ -38,11 +38,189 @@ function manifestsUnder(dir) {
   return found
 }
 
+/*
+ * Product registry consistency.
+ *
+ * `products.json` carries both a product list and a deployment-unit list, and
+ * the two reference each other. Nothing checked that they agreed, so a product
+ * could be declared without a unit to deploy it in — which is exactly what
+ * happened when the Playground was registered: the product appeared in the
+ * image matrix and in the release candidate's count, and `deploymentUnits` had
+ * no entry for it. The structure check passed.
+ *
+ * Every rule below is one direction of that cross-reference, plus the port and
+ * identity rules that a deployment needs to be meaningful.
+ */
+function validateProducts(root, errors) {
+  const path = join(root, 'infra/contracts/products.json')
+  if (!existsSync(path)) return
+
+  const declaration = readJson(path, errors)
+  if (!declaration) return
+
+  const products = Array.isArray(declaration.products) ? declaration.products : null
+  const units = declaration.deploymentUnits
+
+  if (!products) {
+    errors.push('products.json: products must be an array')
+    return
+  }
+  if (!units || typeof units !== 'object' || Array.isArray(units)) {
+    errors.push('products.json: deploymentUnits must be an object')
+    return
+  }
+
+  /*
+   * Built before the loop: `seen` accumulates as products are visited, so a
+   * forward reference — `ai-workbench` pointing at `ai-host`, which is declared
+   * later — would be reported as missing.
+   */
+  const allIds = new Set(products.map(product => product?.productId).filter(Boolean))
+
+  /* productId is unique, and every product carries the unit it deploys in. */
+  const seen = new Set()
+  for (const product of products) {
+    const id = product?.productId
+    if (typeof id !== 'string' || !id) {
+      errors.push('products.json: a product has no productId')
+      continue
+    }
+    if (seen.has(id)) errors.push(`products.json: duplicate productId ${id}`)
+    seen.add(id)
+
+    if (typeof product.deploymentUnit !== 'string' || !product.deploymentUnit) {
+      errors.push(`${id}: no deploymentUnit`)
+      continue
+    }
+
+    const unit = units[product.deploymentUnit]
+    if (!unit) {
+      errors.push(`${id}: deploymentUnit "${product.deploymentUnit}" is not declared`)
+      continue
+    }
+    if (!Array.isArray(unit.products) || !unit.products.includes(id)) {
+      errors.push(`${id}: unit "${product.deploymentUnit}" does not list this product`)
+    }
+
+    for (const field of ['runtimePort', 'sandboxPort']) {
+      const value = product[field]
+      if (value === undefined) {
+        if (field === 'sandboxPort') continue
+        errors.push(`${id}: no ${field}`)
+        continue
+      }
+      if (!Number.isInteger(value) || value < 1 || value > 65535) {
+        errors.push(`${id}: ${field} ${JSON.stringify(value)} is not a valid port`)
+      }
+    }
+
+    /*
+     * A product that serves two origins serves them from two ports. Equal ports
+     * would put the untrusted sandbox on the trusted host's origin, which is the
+     * one arrangement the whole sandbox model exists to prevent.
+     */
+    /*
+     * Every product has to say how it keeps state, because the acceptance a
+     * product needs depends on it: a server database needs a backup-and-restore
+     * step in a rollback, browser storage is per-origin and survives an image
+     * swap but not an origin change, and `none` means neither applies.
+     *
+     * `ai-workbench` is the case that made this field necessary to think about:
+     * its conversation data lives in AI Host while its preferences live in
+     * LocalStorage. It declares `browser-storage` with a `serverStateIn` pointer
+     * rather than pretending to be one thing.
+     */
+    const PERSISTENCE_KINDS = ['none', 'server-database', 'browser-storage']
+    const persistence = product.persistence
+
+    if (!persistence || typeof persistence !== 'object') {
+      errors.push(`${id}: no persistence declaration`)
+    } else if (!PERSISTENCE_KINDS.includes(persistence.kind)) {
+      errors.push(
+        `${id}: persistence.kind ${JSON.stringify(persistence.kind)} is not one of ${PERSISTENCE_KINDS.join(', ')}`,
+      )
+    } else if (persistence.kind === 'browser-storage' && persistence.serverStateIn) {
+      if (!allIds.has(persistence.serverStateIn)) {
+        errors.push(`${id}: persistence.serverStateIn names "${persistence.serverStateIn}", which is not a declared product`)
+      }
+    }
+
+    if (
+      Number.isInteger(product.sandboxPort) &&
+      product.sandboxPort === product.runtimePort
+    ) {
+      errors.push(
+        `${id}: runtimePort and sandboxPort are both ${product.runtimePort}; the sandbox would share the host origin`,
+      )
+    }
+  }
+
+  /* Every unit lists real products, exactly once, in an order that matches. */
+  for (const [name, unit] of Object.entries(units)) {
+    const listed = Array.isArray(unit.products) ? unit.products : null
+    const order = Array.isArray(unit.order) ? unit.order : null
+
+    if (!listed) {
+      errors.push(`unit ${name}: products must be an array`)
+      continue
+    }
+    if (!order) {
+      errors.push(`unit ${name}: order must be an array`)
+      continue
+    }
+    if (listed.length === 0) {
+      errors.push(`unit ${name}: lists no products`)
+    }
+
+    let membershipBroken = false
+
+    for (const id of listed) {
+      if (!seen.has(id)) {
+        errors.push(`unit ${name}: lists "${id}", which is not a declared product`)
+        membershipBroken = true
+        continue
+      }
+      const product = products.find(entry => entry.productId === id)
+      if (product && product.deploymentUnit !== name) {
+        errors.push(`unit ${name}: lists "${id}", but that product deploys in "${product.deploymentUnit}"`)
+        membershipBroken = true
+      }
+    }
+
+    /*
+     * `order` and `products` disagreeing is reported below, but not when the
+     * membership is already broken — then the disagreement is a second symptom
+     * of the same edit, and the message about `order` hides the real one.
+     */
+    if (membershipBroken) continue
+
+    if (new Set(order).size !== order.length) {
+      errors.push(`unit ${name}: order repeats a product`)
+    }
+    if (order.length !== listed.length) {
+      errors.push(`unit ${name}: order has ${order.length} entries, products has ${listed.length}`)
+    }
+    for (const id of orderedOnly(order, listed)) {
+      errors.push(`unit ${name}: order names "${id}" which products does not`)
+    }
+    for (const id of orderedOnly(listed, order)) {
+      errors.push(`unit ${name}: products names "${id}" which order does not`)
+    }
+  }
+}
+
+/** Items in `left` that `right` does not contain. */
+function orderedOnly(left, right) {
+  return left.filter(item => !right.includes(item))
+}
+
 export function validateRepository(root = DEFAULT_ROOT) {
   const errors = []
   for (const path of REQUIRED) {
     if (!existsSync(join(root, path))) errors.push('Missing ' + path)
   }
+
+  validateProducts(root, errors)
 
   const matrixPath = join(root, 'docs/compatibility-matrix.json')
   if (existsSync(matrixPath)) {

@@ -73,3 +73,149 @@ test('detects malformed manifests and duplicate workspace package names', () => 
   assert.match(errors, /Duplicate workspace/)
   assert.match(errors, /Invalid JSON/)
 })
+
+/*
+ * Product registry cross-references.
+ *
+ * Each case breaks exactly one relationship that `products.json` relies on, so
+ * the failure names the thing that is wrong rather than a downstream symptom.
+ * The Playground was registered as a product with no deployment unit and every
+ * check passed, which is why these exist.
+ */
+function productsFixture(mutate) {
+  const root = fixture()
+  const declaration = {
+    schema: 'zeus.ecosystem.products/v1',
+    products: [
+      {
+        productId: 'admin',
+        deploymentUnit: 'admin',
+        runtimePort: 8787,
+        staticArtifact: true,
+        persistence: { kind: 'server-database' },
+      },
+      {
+        productId: 'playground',
+        deploymentUnit: 'playground',
+        runtimePort: 80,
+        sandboxPort: 81,
+        staticArtifact: true,
+        persistence: { kind: 'browser-storage' },
+      },
+    ],
+    deploymentUnits: {
+      admin: { products: ['admin'], order: ['admin'] },
+      playground: { products: ['playground'], order: ['playground'] },
+    },
+  }
+  mutate?.(declaration)
+  write(root, 'infra/contracts/products.json', declaration)
+  return root
+}
+
+test('accepts a consistent product registry', () => {
+  assert.deepEqual(validateRepository(productsFixture()), [])
+})
+
+test('rejects a product whose deployment unit is not declared', () => {
+  const errors = validateRepository(
+    productsFixture(declaration => {
+      delete declaration.deploymentUnits.playground
+    }),
+  )
+  assert.ok(
+    errors.some(error => error.includes('playground') && error.includes('not declared')),
+    errors.join('\n'),
+  )
+})
+
+test('rejects a unit that lists a product that does not exist', () => {
+  const errors = validateRepository(
+    productsFixture(declaration => {
+      declaration.deploymentUnits.admin.products.push('ghost')
+    }),
+  )
+  assert.ok(errors.some(error => error.includes('ghost')), errors.join('\n'))
+})
+
+test('rejects a unit whose order disagrees with its products', () => {
+  const errors = validateRepository(
+    productsFixture(declaration => {
+      declaration.deploymentUnits.playground.order = []
+    }),
+  )
+  assert.ok(
+    errors.some(error => error.includes('order') && error.includes('products')),
+    errors.join('\n'),
+  )
+})
+
+test('rejects a repeated product in order', () => {
+  const errors = validateRepository(
+    productsFixture(declaration => {
+      declaration.deploymentUnits.admin.order = ['admin', 'admin']
+    }),
+  )
+  assert.ok(errors.some(error => error.includes('repeats')), errors.join('\n'))
+})
+
+test('rejects a duplicate productId', () => {
+  const errors = validateRepository(
+    productsFixture(declaration => {
+      declaration.products.push({ ...declaration.products[0] })
+    }),
+  )
+  assert.ok(errors.some(error => error.includes('duplicate')), errors.join('\n'))
+})
+
+test('rejects a sandbox that shares the host port', () => {
+  const errors = validateRepository(
+    productsFixture(declaration => {
+      const playground = declaration.products.find(p => p.productId === 'playground')
+      playground.sandboxPort = playground.runtimePort
+    }),
+  )
+  assert.ok(
+    errors.some(error => error.includes('share the host origin')),
+    errors.join('\n'),
+  )
+})
+
+test('rejects an impossible port', () => {
+  const errors = validateRepository(
+    productsFixture(declaration => {
+      declaration.products[0].runtimePort = 70000
+    }),
+  )
+  assert.ok(errors.some(error => error.includes('not a valid port')), errors.join('\n'))
+})
+
+test('rejects a product that does not say how it keeps state', () => {
+  const errors = validateRepository(
+    productsFixture(declaration => {
+      delete declaration.products[0].persistence
+    }),
+  )
+  assert.ok(errors.some(error => error.includes('persistence')), errors.join('\n'))
+})
+
+test('rejects an unknown persistence kind', () => {
+  const errors = validateRepository(
+    productsFixture(declaration => {
+      declaration.products[0].persistence = { kind: 'filesystem' }
+    }),
+  )
+  assert.ok(errors.some(error => error.includes('persistence.kind')), errors.join('\n'))
+})
+
+test('rejects browser storage that points at a product that does not exist', () => {
+  const errors = validateRepository(
+    productsFixture(declaration => {
+      declaration.products[1].persistence = {
+        kind: 'browser-storage',
+        serverStateIn: 'ghost',
+      }
+    }),
+  )
+  assert.ok(errors.some(error => error.includes('ghost')), errors.join('\n'))
+})

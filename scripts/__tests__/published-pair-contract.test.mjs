@@ -15,7 +15,7 @@ import {
 } from '../release/build-info.mjs'
 
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -173,10 +173,25 @@ test('a synthetic record is marked, and visibly substituted', () => {
 test('rejects an unknown product', () => {
   assert.throws(() => createBuildInfo({ product: 'nope' }), /unknown product/)
 })
+  /*
+   * Compares against the contract rather than a literal list. The literal went
+   * stale when `playground` was registered, and the same staleness in
+   * `build-info.mjs` is what failed that image build at its evidence step.
+   */
+  test('knows exactly the products the contract declares', () => {
+    const declaration = JSON.parse(
+      readFileSync(join(root, 'infra/contracts/products.json'), 'utf8'),
+    )
+    const declared = declaration.products
+      .map(product => product.productId)
+      .sort()
 
-test('knows the products that exist', () => {
-  assert.deepEqual(Object.keys(PRODUCTS).sort(), ['admin', 'ai-host', 'ai-workbench'])
-})
+    assert.deepEqual(Object.keys(PRODUCTS).sort(), declared)
+    assert.ok(
+      declared.length >= 4,
+      `expected at least four products, found ${declared.length}`,
+    )
+  })
 
 test('the recorded contract matches what is installed', () => {
   const contract = readContract(root)

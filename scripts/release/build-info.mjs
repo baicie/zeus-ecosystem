@@ -36,11 +36,61 @@ const CONTRACT = 'infra/contracts/published-pair.json'
 const FULL_SHA = /^[0-9a-f]{40}$/
 
 /** Where each product's dist lands, relative to the repository root. */
-export const PRODUCTS = {
-  'ai-workbench': { dist: 'apps/ai-workbench/dist', staticArtifact: true },
-  'ai-host': { dist: 'apps/ai-host/dist', staticArtifact: false },
-  admin: { dist: 'apps/admin/dist', staticArtifact: true },
+/*
+ * Derived from `infra/contracts/products.json` rather than written out here.
+ *
+ * It used to be a hand-maintained table with the same three entries, and when a
+ * fourth product was registered the table was not updated — the image built
+ * fine and then failed at the evidence step with `unknown product playground`,
+ * which reads like a broken build rather than a list that lost track.
+ */
+const PRODUCTS_CONTRACT = 'infra/contracts/products.json'
+
+function readProductTable(root) {
+  const file = join(root, PRODUCTS_CONTRACT)
+
+  if (!existsSync(file)) {
+    throw new Error(`${PRODUCTS_CONTRACT} is missing; cannot resolve product declarations`)
+  }
+
+  const declaration = JSON.parse(readFileSync(file, 'utf8'))
+  const table = {}
+
+  for (const product of declaration.products ?? []) {
+    table[product.productId] = {
+      dist: `${product.appPath}/dist`,
+      staticArtifact: product.staticArtifact === true,
+    }
+  }
+
+  return table
 }
+
+/**
+ * Every declared product, keyed by id.
+ *
+ * A getter rather than a constant so the table is read from the contract at
+ * call time: a build that adds a product must not also have to remember this
+ * module.
+ */
+export const PRODUCTS = new Proxy(
+  {},
+  {
+    get(_target, key) {
+      if (typeof key !== 'string') return undefined
+      return readProductTable(process.cwd())[key]
+    },
+    has(_target, key) {
+      return typeof key === 'string' && key in readProductTable(process.cwd())
+    },
+    ownKeys() {
+      return Object.keys(readProductTable(process.cwd()))
+    },
+    getOwnPropertyDescriptor() {
+      return { enumerable: true, configurable: true }
+    },
+  },
+)
 
 function git(root, args) {
   return execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim()

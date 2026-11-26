@@ -84,17 +84,50 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      # CI can only call what each app declares, and they do not declare the same
+      # thing: `ai-host` is a Node service with `bundle`, the other three are
+      # Vite apps with `build`. Calling `run build` unconditionally fails on the
+      # one that has no such script — `ERR_PNPM_RECURSIVE_RUN_NO_SCRIPT` — which
+      # reads like a broken app rather than a naming difference.
+      #
+      # So each script is looked up in the manifest first, and a missing one is
+      # reported by name instead of being skipped silently. `--if-present` would
+      # have made this pass with three of four apps built.
       - name: Typecheck and build every app
         run: |
           set -euo pipefail
+          built=0
           for app in apps/*/; do
             name=$(basename "$app")
-            [ -f "$app/package.json" ] || continue
+            manifest="$app/package.json"
+            [ -f "$manifest" ] || continue
             echo "::group::$name"
-            pnpm --filter "./$app" exec tsc --noEmit
-            pnpm --filter "./$app" run build
+
+            if node -e "process.exit(require('./$manifest').scripts?.check ? 0 : 1)"; then
+              pnpm --filter "./$app" run check
+            else
+              echo "::error::$name declares no 'check' script; add one so its types are gated"
+              exit 1
+            fi
+
+            build_script=$(node -e "
+              const s = require('./$manifest').scripts ?? {}
+              const name = ['build', 'bundle'].find(candidate => s[candidate])
+              if (!name) process.exit(1)
+              process.stdout.write(name)
+            ") || {
+              echo "::error::$name declares neither 'build' nor 'bundle'; it has no build gate"
+              exit 1
+            }
+            pnpm --filter "./$app" run "$build_script"
+            built=$((built + 1))
             echo "::endgroup::"
           done
+          echo "built $built app(s)"
+          [ "$built" -ge 4 ] || {
+            echo "::error::expected at least four apps, built $built"
+            exit 1
+          }
 
       # The Playground's sandbox is a second origin, not a second page. Its asset
       # URLs must stay relative or the Pages base path 404s them, and the build

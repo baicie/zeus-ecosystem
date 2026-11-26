@@ -53,6 +53,31 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 
 **容器内 P0 门禁**是这一行最有力的证据：48 项检查（三引擎 × 16），经 nginx 代理、read-only root、no-new-privileges 运行，全部通过。
 
+### Playground
+
+第四个完整应用。源码已在 `apps/playground`，从发布包构建。
+
+| 阶段 | 状态 | 依据 |
+| --- | --- | --- |
+| SOURCE_MIGRATED | ✅ | 依赖 `@zeus-js/compiler-wasm@0.1.1-beta.20`、`playground-engine@0.2.0-rc.5` 与六个 `0.2.0-rc.5` 运行时包、`vite-plugin@0.0.6`；零 `workspace:` / `file:` / alias |
+| LOCAL_TESTED | ✅ | `tsc --noEmit` 干净；`vite build` 产出四个入口（index / sandbox / webc / host）与 1.55 MB wasm 资源 |
+| CI_VALIDATED | ⬜ | `ci.yml` 新增的 `Apps build` job 会构建它，但尚未在 main 上跑过一次 |
+| VISUAL_VALIDATED | ⬜ | 未做。core 侧的视觉门禁随应用一起待迁 |
+| IMAGE_VALIDATED | ⬜ | `app-images.yml` 的 matrix 已含 `playground`，镜像尚未构建过 |
+| DEPLOYMENT_REHEARSED | ⬜ | 未做 |
+| PRODUCTION_DEPLOYED | ⬜ | 未部署 |
+| PRODUCTION_ACCEPTED | ⬜ | 未验收 |
+
+**源码迁移不等于交付迁移。** 这个应用现在能构建，但没有任何一项交付证据：
+没有跑过 CI、没有构建过镜像、没有部署。core 仓库里的
+`examples/playground-editor` 仍然存在且仍是线上 Playground 的构建来源——
+在 `apps/playground` 通过 CI 并产出过镜像之前，不能删掉它。
+
+**它有两个 origin。** `:80` 是受信 host，`:81` 是 sandbox。沙箱的响应头
+`Content-Security-Policy: sandbox allow-scripts` 才是 opaque origin 的来源；
+两者部署到同一 origin 会静默失去隔离。`products.json` 里记录为
+`sandboxPort` + 说明。
+
 ### AI Host
 
 | 阶段 | 状态 | 依据 |

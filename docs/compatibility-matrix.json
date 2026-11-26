@@ -34,6 +34,20 @@
       "status": "blocked",
       "reason": "Superseded by the validated 0.2.0-rc.5 + 0.1.0-beta.35 pairing below; kept so the history shows this Core version was once accepted alone.",
       "evidence": []
+    },
+    {
+      "core": "0.2.0-rc.5",
+      "ui": "0.1.0-beta.35",
+      "status": "candidate",
+      "reason": "The Playground installs and builds from published packages, including @zeus-js/compiler-wasm@0.1.1-beta.20, which was published specifically so this app could leave the core repository. It has not run in CI or produced an image yet, so it is a candidate rather than validated.",
+      "evidence": [
+        "pnpm install with zero workspace:/file:/alias references",
+        "tsc --noEmit clean",
+        "vite build emits index.html, sandbox.html, webc.html, host.html and a 1.55 MB wasm asset",
+        "sandbox.html asset URLs are relative, which the Pages base path requires"
+      ],
+      "scope": "playground",
+      "scopeNotes": "Only local build evidence. CI has not run against this app, no image exists, and the core repository still builds the production Playground from examples/playground-editor."
     }
   ]
 }

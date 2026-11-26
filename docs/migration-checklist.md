@@ -63,7 +63,7 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 | LOCAL_TESTED | ✅ | `tsc --noEmit` 干净；`vite build` 产出四个入口（index / sandbox / webc / host）与 1.55 MB wasm 资源 |
 | CI_VALIDATED | ✅ | `Apps build` 在 `1551b25` 上通过：四个 app 的 `tsc --noEmit` 与构建全过，且断言了 `sandbox.html` 的资源路径是相对的 |
 | VISUAL_VALIDATED | ⬜ | 未做。core 侧的视觉门禁随应用一起待迁 |
-| IMAGE_VALIDATED | ⬜ | `app-images.yml` 的 matrix 已含 `playground`，镜像尚未构建过 |
+| IMAGE_VALIDATED | ✅ | `Image / playground` 在 `5fe6796` 上通过：构建、启动、健康检查三项 PASS，解包 67.6 MB（预算 220 MB），SBOM 与 evidence 已上传 |
 | DEPLOYMENT_REHEARSED | ⬜ | 未做 |
 | PRODUCTION_DEPLOYED | ⬜ | 未部署 |
 | PRODUCTION_ACCEPTED | ⬜ | 未验收 |

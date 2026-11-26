@@ -45,7 +45,8 @@
         "tsc --noEmit clean",
         "vite build emits index.html, sandbox.html, webc.html, host.html and a 1.55 MB wasm asset",
         "sandbox.html asset URLs are relative, which the Pages base path requires",
-        "CI run 1551b25: Apps build passed for all four apps, including the relative-asset assertion on sandbox.html"
+        "CI run 1551b25: Apps build passed for all four apps, including the relative-asset assertion on sandbox.html",
+        "CI run 5fe6796: Image / playground passed build, startup and health; 67.6 MB unpacked against a 220 MB budget"
       ],
       "scope": "playground",
       "scopeNotes": "CI builds it on every push. No image, no browser matrix and no deployment yet, so it is still a candidate rather than validated."

@@ -308,7 +308,11 @@ viewer 能打开 `/admin/settings`，这是有意的：该页同时承载工作�
   「先上新的、验收、观察，再下旧的」。删除之前必须先把线上镜像按 digest 记录下来，
   否则没有回滚目标（`docs/legacy-cleanup-manifest.md` 只记了 Admin 的）
 - 旧实现引用的工作流全部有替代
-- `zeus` 与 `zeus-ui` 的框架级测试不再依赖 `examples/admin`
+- `zeus` 与 `zeus-ui` 的框架级测试不再依赖旧实现。`zeus` 侧是 `examples/admin`
+  （`vitest.config.ts`）；`zeus-ui` 侧是 `examples/ai-workbench` 与 `examples/ai-host`——
+  实测有 12 处阻塞引用，含两个 workflow、`tsconfig.json`、`vitest.config.ts` 与 9 个
+  `check-ai-workbench-*` 门禁脚本。`pnpm check:cleanup -- --zeus ../zeus --zeus-ui ../zeus-ui`
+  会逐条报出
 
 ## 进度口径
 

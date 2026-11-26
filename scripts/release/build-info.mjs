@@ -67,30 +67,18 @@ function readProductTable(root) {
 }
 
 /**
- * Every declared product, keyed by id.
+ * Every declared product, keyed by id, read from the contract under `root`.
  *
- * A getter rather than a constant so the table is read from the contract at
- * call time: a build that adds a product must not also have to remember this
- * module.
+ * A function rather than a constant, and it takes `root` explicitly. An earlier
+ * version of this was a Proxy that read `process.cwd()` — which is the
+ * repository root when a script is run from there and `apps/playground` when a
+ * bundler runs from inside the app. It failed in the second case with
+ * "infra/contracts/products.json is missing", which is true of that directory
+ * and not true of the repository.
  */
-export const PRODUCTS = new Proxy(
-  {},
-  {
-    get(_target, key) {
-      if (typeof key !== 'string') return undefined
-      return readProductTable(process.cwd())[key]
-    },
-    has(_target, key) {
-      return typeof key === 'string' && key in readProductTable(process.cwd())
-    },
-    ownKeys() {
-      return Object.keys(readProductTable(process.cwd()))
-    },
-    getOwnPropertyDescriptor() {
-      return { enumerable: true, configurable: true }
-    },
-  },
-)
+export function readProducts(root = process.cwd()) {
+  return readProductTable(root)
+}
 
 function git(root, args) {
   return execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim()
@@ -144,8 +132,10 @@ export function createBuildInfo(options) {
     now = () => new Date().toISOString(),
   } = options
 
-  if (!PRODUCTS[product]) {
-    throw new Error(`unknown product ${product}; known: ${Object.keys(PRODUCTS).join(', ')}`)
+  const products = readProducts(root)
+
+  if (!products[product]) {
+    throw new Error(`unknown product ${product}; known: ${Object.keys(products).join(', ')}`)
   }
 
   const errors = []

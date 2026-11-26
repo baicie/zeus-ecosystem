@@ -10,7 +10,7 @@ import {
 import {
   createBuildInfo,
   lockfileSha256,
-  PRODUCTS,
+  readProducts,
   readContract,
 } from '../release/build-info.mjs'
 
@@ -186,7 +186,7 @@ test('rejects an unknown product', () => {
       .map(product => product.productId)
       .sort()
 
-    assert.deepEqual(Object.keys(PRODUCTS).sort(), declared)
+    assert.deepEqual(Object.keys(readProducts(root)).sort(), declared)
     assert.ok(
       declared.length >= 4,
       `expected at least four products, found ${declared.length}`,

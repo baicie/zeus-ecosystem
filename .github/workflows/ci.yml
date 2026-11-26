@@ -57,3 +57,54 @@ jobs:
           name: readiness-node-${{ matrix.node }}
           path: temp/release-candidate.json
           if-no-files-found: warn
+
+  apps:
+    name: Apps build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10.33.4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+          package-manager-cache: false
+
+      # Every app is built here rather than in a per-app workflow: they share one
+      # lockfile and one install, and a per-app workflow would install the same
+      # tree four times.
+      #
+      # This is what P8 asks for and what the Playground had none of when it
+      # arrived — a migrated app with no build gate is an app whose next break
+      # is discovered by whoever deploys it.
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck and build every app
+        run: |
+          set -euo pipefail
+          for app in apps/*/; do
+            name=$(basename "$app")
+            [ -f "$app/package.json" ] || continue
+            echo "::group::$name"
+            pnpm --filter "./$app" exec tsc --noEmit
+            pnpm --filter "./$app" run build
+            echo "::endgroup::"
+          done
+
+      # The Playground's sandbox is a second origin, not a second page. Its asset
+      # URLs must stay relative or the Pages base path 404s them, and the build
+      # silently produces a sandbox that cannot load its own module graph.
+      - name: Playground sandbox assets are relative
+        run: |
+          set -euo pipefail
+          test -f apps/playground/dist/sandbox.html
+          if grep -qE '(src|href)="/assets/' apps/playground/dist/sandbox.html; then
+            echo "::error::sandbox.html references absolute /assets/ URLs; they escape the Pages base path"
+            exit 1
+          fi
+          echo "sandbox asset URLs are relative"

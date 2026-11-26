@@ -1,48 +1,61 @@
-# Static WebC Studio / Native Lab host and sandbox. The same dist is served on
-# two ports so the sandbox always runs on a different origin from the host.
-# The Vite plugin loads the napi native compiler while building the example,
-# so the build stage needs the Rust toolchain and the compiler crate.
-FROM rust:1.95-bookworm AS build
-COPY --from=node:24.18.0-bookworm-slim /usr/local /usr/local
+# Zeus Playground: the editor and the untrusted preview, in one image.
+#
+# ## What this does not do any more
+#
+# The previous Dockerfile started from `rust:1.95-bookworm`, copied `crates/`
+# and `packages/`, installed the wasm32 target and built the compiler from
+# source. That belongs to the core repository. Here every Zeus package comes
+# from npm — including `@zeus-js/compiler-wasm`, whose published tarball carries
+# `zeus-compiler.wasm` — so there is no Rust toolchain in this image and no
+# core source tree to copy.
+#
+# ## Two listeners, one image
+#
+# `:80` serves the trusted host, `:81` the untrusted preview. The sandbox
+# server sends `Content-Security-Policy: sandbox allow-scripts`, which is what
+# makes the browser give that document an opaque origin. Serving both on one
+# origin would silently drop the isolation, so the second listener is part of
+# the product, not a build detail.
+FROM node:24.18.0-bookworm-slim AS build
+
 WORKDIR /app
-RUN corepack enable pnpm
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml tsconfig.json Cargo.toml Cargo.lock ./
-COPY crates ./crates
-COPY packages ./packages
-COPY scripts ./scripts
-COPY examples/playground-editor ./examples/playground-editor
-ARG ZEUS_CORE_COMMIT
-ARG ZEUS_UI_COMMIT
-ARG ZEUS_SOURCE_TREE
-ARG ZEUS_VERSION
-ARG ZEUS_BUILD_TIME
-RUN pnpm install --frozen-lockfile
-RUN rustup target add wasm32-unknown-unknown
-RUN pnpm --filter @zeus-js/compiler-wasm build:wasm
-RUN pnpm --filter @zeus-js/compiler-native build:native
-RUN pnpm build
+
+ARG PNPM_VERSION=10.33.4
+RUN corepack enable && corepack prepare "pnpm@${PNPM_VERSION}" --activate
+
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json .npmrc ./
+COPY apps/playground/package.json apps/playground/package.json
+
+RUN pnpm install --frozen-lockfile --filter @zeus-ecosystem/playground...
+
+COPY apps/playground ./apps/playground
+
+# The sandbox document may be mounted under a path prefix in production, so its
+# asset URLs must be relative; `vite.config.ts` rewrites them at build time.
 ARG VITE_ZEUS_SANDBOX_URL
 ARG VITE_ZEUS_SANDBOX_ORIGIN
 ARG VITE_ZEUS_PLAYGROUND_HOST_ORIGINS
 ENV VITE_ZEUS_SANDBOX_URL=$VITE_ZEUS_SANDBOX_URL \
-  VITE_ZEUS_SANDBOX_ORIGIN=$VITE_ZEUS_SANDBOX_ORIGIN \
-  VITE_ZEUS_PLAYGROUND_HOST_ORIGINS=$VITE_ZEUS_PLAYGROUND_HOST_ORIGINS
-RUN pnpm --filter @zeus-js/example-playground-editor build
-RUN node --import tsx scripts/release/build-info.ts \
-  --product webc-studio,native-lab \
-  --dist examples/playground-editor/dist \
-  --core-commit "$ZEUS_CORE_COMMIT" \
-  --ui-commit "$ZEUS_UI_COMMIT" \
-  --ui-manifest examples/playground-editor/package.json \
-  ${ZEUS_SOURCE_TREE:+--source-tree "$ZEUS_SOURCE_TREE"} \
-  --version "$ZEUS_VERSION" \
-  --built-at "$ZEUS_BUILD_TIME"
+    VITE_ZEUS_SANDBOX_ORIGIN=$VITE_ZEUS_SANDBOX_ORIGIN \
+    VITE_ZEUS_PLAYGROUND_HOST_ORIGINS=$VITE_ZEUS_PLAYGROUND_HOST_ORIGINS
+
+RUN pnpm --filter @zeus-ecosystem/playground exec vite build
+
+# `zeus-compiler.wasm` is a published asset of the compiler package, resolved by
+# `new URL('./zeus-compiler.wasm', import.meta.url)` inside the bundle. If the
+# build stopped emitting it the image would start and fail on first compile, so
+# its presence is asserted here rather than discovered in production.
+RUN test -n "$(ls apps/playground/dist/assets/*.wasm 2>/dev/null)" \
+    || (echo "no .wasm asset in dist: the published compiler package did not resolve" >&2 && exit 1)
 
 FROM nginx:1.29-alpine AS runtime
-ARG ZEUS_CORE_COMMIT
+
+ARG ZEUS_APP_COMMIT
 ARG ZEUS_VERSION
-LABEL org.opencontainers.image.revision=$ZEUS_CORE_COMMIT \
-  org.opencontainers.image.version=$ZEUS_VERSION
-COPY examples/playground-editor/deploy/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/examples/playground-editor/dist /usr/share/nginx/html
+LABEL org.opencontainers.image.revision=$ZEUS_APP_COMMIT \
+      org.opencontainers.image.version=$ZEUS_VERSION
+
+COPY apps/playground/deploy/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/apps/playground/dist /usr/share/nginx/html
+
 EXPOSE 80 81

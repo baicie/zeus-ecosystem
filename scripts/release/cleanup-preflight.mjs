@@ -51,10 +51,53 @@ import { pathToFileURL } from 'node:url'
  */
 export const BUILD_CONFIG_FILES = ['package.json', 'vitest.config.ts']
 
+/**
+ * Paths whose reference to a legacy tree blocks its deletion.
+ *
+ * The manifest states the prerequisite as two files, which is the right
+ * denominator for `zeus`: there, `examples/admin` is referenced from
+ * `package.json` and `vitest.config.ts` and nowhere else that runs.
+ *
+ * `zeus-ui` is not the same shape. Measured, twenty-two files reference the AI
+ * trees, and among them are two workflows (one of which deploys them to
+ * production), `tsconfig.json`, `vitest.config.ts`, and eight
+ * `check-ai-workbench-*` gate scripts. Deleting the trees breaks all of those,
+ * so a rule that only looked for `package.json` would call the tree clean and
+ * be wrong in the direction that matters.
+ */
+export function blocksDeletion(file) {
+  if (BUILD_CONFIG_FILES.includes(file)) return true
+
+  /*
+   * Workflows and tsconfigs always block: deleting a tree they build or deploy
+   * breaks them, and there is no reading of them where the reference is
+   * incidental.
+   *
+   * `scripts/` is different, and the difference is the manifest's: in `zeus`
+   * those are host-deployment scripts it says to audit individually, and
+   * calling them all blockers would make the check unable to say anything but
+   * "blocked". The ones under `scripts/checks/` are the gates — they import
+   * the app to drive it, so they block. The rest are reported for audit.
+   */
+  return file.startsWith('.github/workflows/') || /^tsconfig.*\.json$/.test(file) || file.startsWith('scripts/checks/')
+}
+
 /** Files where a reference is a recorded measurement, not a dependency. */
 export const PROSE_ONLY_FILES = ['crates/zeus_compiler/src/support/nesting.rs']
 
-const LEGACY_PATHS = ['examples/admin', 'examples/ai-workbench']
+/**
+ * The legacy trees, by the repository they actually live in.
+ *
+ * An earlier version listed both under `zeus`, which is where the manifest said
+ * they were. `zeus` has `examples/admin` and has never had
+ * `examples/ai-workbench`; that tree — and `examples/ai-host` with it — is in
+ * `zeus-ui`. Scanning the wrong repository for the AI paths could never find
+ * them, so the check reported the AI side clean by never looking at it.
+ */
+export const LEGACY_TREES = {
+  zeus: ['examples/admin'],
+  'zeus-ui': ['examples/ai-workbench', 'examples/ai-host'],
+}
 
 /**
  * Reads references from a zeus checkout.
@@ -98,7 +141,7 @@ export function findReferences(root, needle) {
  *                                                                  says audit it
  */
 export function classifyReference(file) {
-  if (BUILD_CONFIG_FILES.includes(file)) return 'build-config'
+  if (blocksDeletion(file)) return 'build-config'
 
   if (PROSE_ONLY_FILES.includes(file)) return 'prose'
 
@@ -159,6 +202,7 @@ export function productionAccepted(root) {
 
 export function cleanupPreflight(ecosystemRoot, options = {}) {
   const zeusRoot = options.zeus ? resolve(options.zeus) : undefined
+  const zeusUiRoot = options.zeusUi ? resolve(options.zeusUi) : undefined
   const prerequisites = []
 
   const add = (id, status, detail, evidence) =>
@@ -218,8 +262,19 @@ export function cleanupPreflight(ecosystemRoot, options = {}) {
      * directory that is not a checkout reported MET, which is the opposite of
      * what the module promises ("an unread tree is not a clean tree").
      */
-    const perPath = LEGACY_PATHS.map(needle => ({ needle, found: findReferences(zeusRoot, needle) }))
+    const perPath = LEGACY_TREES.zeus.map(needle => ({ needle, found: findReferences(zeusRoot, needle) }))
     const unreadable = perPath.find(entry => entry.found === undefined)
+
+    /*
+     * The AI trees are in `zeus-ui`, not here. They are reported separately
+     * below; leaving them out of this check would let "the build configuration
+     * is clean" be true of a repository that never contained them.
+     */
+    const uiPerPath = zeusUiRoot
+      ? LEGACY_TREES['zeus-ui'].map(needle => ({ needle, found: findReferences(zeusUiRoot, needle) }))
+      : undefined
+
+    const uiUnreadable = uiPerPath?.find(entry => entry.found === undefined)
 
     if (unreadable) {
       add(
@@ -227,7 +282,20 @@ export function cleanupPreflight(ecosystemRoot, options = {}) {
         'UNKNOWN',
         `${zeusRoot} could not be read as a git checkout, so nothing was compared`,
       )
-    } else if (perPath.every(entry => entry.found.length === 0)) {
+    } else if (!zeusUiRoot) {
+      add(
+        'build-config-clean',
+        'UNKNOWN',
+        `the AI legacy trees are in zeus-ui, which was not supplied; pass --zeus-ui <path> ` +
+          `(this repository's ${perPath.every(entry => entry.found.length === 0) ? 'own tree is clean' : 'own tree still references examples/admin'})`,
+      )
+    } else if (uiUnreadable) {
+      add(
+        'build-config-clean',
+        'UNKNOWN',
+        `${zeusUiRoot} could not be read as a git checkout, so the AI trees were not compared`,
+      )
+    } else if (perPath.every(entry => entry.found.length === 0) && uiPerPath.every(entry => entry.found.length === 0)) {
       add(
         'build-config-clean',
         'MET',
@@ -284,6 +352,7 @@ export function cleanupPreflight(ecosystemRoot, options = {}) {
     schema: 'zeus.ecosystem.cleanup-preflight/v1',
     generatedAt: new Date().toISOString(),
     zeusRoot: zeusRoot ?? null,
+    zeusUiRoot: zeusUiRoot ?? null,
     prerequisites,
     verdict: overallCleanup(prerequisites),
     note:
@@ -331,7 +400,7 @@ async function main() {
   }
 
   const root = resolve(value('--root') ?? process.cwd())
-  const result = cleanupPreflight(root, { zeus: value('--zeus') })
+  const result = cleanupPreflight(root, { zeus: value('--zeus'), zeusUi: value('--zeus-ui') })
   const out = value('--out') ?? join(root, 'temp/cleanup-preflight.json')
 
   writeFileSync(out, `${JSON.stringify(result, null, 2)}\n`)

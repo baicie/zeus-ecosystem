@@ -48,7 +48,7 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 | VISUAL_VALIDATED | ⬜ | 未做。AI 侧没有发布过的参考构建可冻结；见下文 |
 | IMAGE_VALIDATED | ⬜ | 曾记为 ✅ 并引用 `delivery-evidence/v1`，但**仓库里没有任何这种文件**。CI 的 `Image / ai-workbench` 绿证明镜像能构建，不满足本表第 13 行要求的证据形式 |
 | DEPLOYMENT_REHEARSED | ✅ | AI 单元有自己的 `scripts/release/ai-rehearsal.mjs`（不是 `cross-version-rehearsal.mjs`）。最新通过的报告 15 步全过、两侧镜像 ID 不同、数据跨版本读回 |
-| PRODUCTION_ACCEPTED | ⬜ | 未部署 |
+| PRODUCTION_ACCEPTED | ⬜ | **迁移后的版本**未部署。但 AI 侧的**旧实现**正在生产上跑——见下方「线上跑的是旧实现」 |
 | LEGACY_REMOVED | ⬜ | 旧实现保留 |
 
 **容器内 P0 门禁**是这一行最有力的证据：48 项检查（三引擎 × 16），经 nginx 代理、read-only root、no-new-privileges 运行，全部通过。
@@ -63,7 +63,7 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 | VISUAL_VALIDATED | n/a | 无界面 |
 | IMAGE_VALIDATED | ⬜ | 同左：`delivery-evidence/v1` 不存在。协议验收 9/9 是进程级证据，不是镜像证据 |
 | DEPLOYMENT_REHEARSED | ✅ | 与 Workbench 在同一次 15 步演练中作为单元启动，顺序 host → workbench |
-| PRODUCTION_ACCEPTED | ⬜ | 未部署 |
+| PRODUCTION_ACCEPTED | ⬜ | 同左：迁移后的版本未部署，线上的 host 来自旧实现 |
 | LEGACY_REMOVED | ⬜ | 旧实现保留 |
 
 ### Admin
@@ -81,6 +81,54 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 
 ## 证据说明
 
+**线上跑的是旧实现。** 这条此前没有被记录，是本轮核查发现的。
+
+`zeus-ui/.github/workflows/ai-workbench-image.yml` 在 push 到 `main` 且命中
+`examples/ai-workbench/**`、`examples/ai-host/**`、`packages/ai-*/**` 等路径时触发，
+`environment: production`，最后一步是：
+
+```
+"${RUN[@]}" compose -f docker-compose.deploy.yml up -d --pull never --remove-orphans --force-recreate
+```
+
+compose 里两个服务，容器名 `zeus-ai-host` 与 `zeus-ai-workbench`。
+
+最近一次成功的完整链路（2026-11-24，`16c7dd13`）三个 job 全部成功：
+
+```
+success  Build and publish to GHCR
+success  Mirror to TCR
+success  Deploy
+```
+
+构建源是 `examples/ai-workbench/Dockerfile`（该 workflow 第 160 行）。
+
+**这不是「很久以前部署过。」** `16c7dd13` 就是 zeus-ui `main` 当前的 HEAD，
+且 `examples/ai-workbench` / `examples/ai-host` 在那之后没有任何改动——
+线上跑的就是旧实现的当前状态。
+
+### 这条改变了什么
+
+| 此前写的 | 实际 |
+| --- | --- |
+| AI 单元「未部署」 | 迁移后的版本未部署，旧实现正在生产 |
+| Phase 7「等所有应用 `PRODUCTION_ACCEPTED`」 | 线上有一份**正在服务**的旧实现，删它等于停服，不是删死代码 |
+| 「旧实现清理」是删冗余 | 是**替换**：先让迁移版本上线并验收，再下旧版本 |
+
+迁移版本自己的部署链路是另一条：`zeus-ecosystem` 的 `app-images.yml`
+**明确不 push 也不 deploy**，`release-candidate` 因此记录 `0/3 image(s) pushed`。
+换句话说，两条链路之间没有交接——旧的在跑，新的还没被推上过 registry。
+
+### 回滚意味着什么
+
+对 Admin，`docs/legacy-cleanup-manifest.md` 记录的回滚目标是
+`ghcr.io/baicie/zeus-admin:main`（已按 digest 固定）。
+
+**AI 侧没有对应的记录。** 线上正在用的旧镜像来自 `ghcr.io/baicie/zeus-ai-workbench`
+与 `ghcr.io/baicie/zeus-ai-host` 的 `main` 标签——标签会移动，所以它不能作为回滚目标。
+在切换之前必须先把当前线上镜像按 digest 记下来，否则回滚时不知道回到哪个构建。
+
+**Admin 的跨版本演练是真的跨版本。** 基线是
 **Admin 的跨版本演练是真的跨版本。** 基线是
 `ghcr.io/baicie/zeus-admin@sha256:faf238d3b701…`（`132c777e`，`0.1.1-beta.20`，
 监听 8080），候选是从当前树构建的
@@ -256,6 +304,9 @@ viewer 能打开 `/admin/settings`，这是有意的：该页同时承载工作�
 
 - 三个应用全部达到 `PRODUCTION_ACCEPTED`
 - 观察期内无回滚
+- **AI 单元完成替换，不是删除**：线上当前跑的是旧实现，Phase 7 对它是
+  「先上新的、验收、观察，再下旧的」。删除之前必须先把线上镜像按 digest 记录下来，
+  否则没有回滚目标（`docs/legacy-cleanup-manifest.md` 只记了 Admin 的）
 - 旧实现引用的工作流全部有替代
 - `zeus` 与 `zeus-ui` 的框架级测试不再依赖 `examples/admin`
 
@@ -301,6 +352,10 @@ viewer 能打开 `/admin/settings`，这是有意的：该页同时承载工作�
 ### 生产验收完成状态
 
 `PRODUCTION_ACCEPTED`：**0 个应用**。本仓库没有生产凭据，也没有执行过任何生产操作。
+
+这句话说的是**迁移后的版本**。生产上并非空无一物：AI 单元跑的是
+`zeus-ui` 部署的旧实现（见「证据说明」第一节）。两者不矛盾，但只看这一句会
+以为线上没人用——实际有人在用，只是用的不是这里的东西。
 
 ### 聚合的三个判据各守什么
 

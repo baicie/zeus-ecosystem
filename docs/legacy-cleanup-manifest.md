@@ -9,16 +9,23 @@ This is the inventory it will act on. Nothing here has been deleted.
 
 ## What the old implementation is
 
-`examples/admin`, `examples/ai-workbench` and the AI host inside
-`baicie/zeus` — the sources the migrated apps were copied from. They still build
+`examples/admin` and `examples/ai-workbench` / `examples/ai-host`, **all three in
+`zeus-ui`** — the sources the migrated apps were copied from. They still build
 against `workspace:*` and `file:` specifiers, which is exactly what the
 migration exists to remove.
 
+An earlier version of this file placed `examples/ai-workbench` in `zeus`. It has
+never been there: `zeus` has no such path in any of its 841 commits, and
+`zeus-ui` has thirty tracked files under it. The correction matters because
+`LEGACY_PATHS` in `scripts/release/cleanup-preflight.mjs` scanned the wrong
+repository and could never have found the AI tree.
+
 ## References, by kind
 
-| Kind | Location in `zeus` | Disposition |
+| Kind | Where | Disposition |
 | --- | --- | --- |
-| Application source | `examples/admin/`, `examples/ai-workbench/` | Delete with Phase 7 |
+| Application source | `zeus-ui`: `examples/admin/`, `examples/ai-workbench/`, `examples/ai-host/` | Delete with Phase 7 — **after the replacements serve production** |
+| Live deployment | `zeus-ui`: `.github/workflows/ai-workbench-image.yml` deploys both AI containers to `environment: production` | The replacement path is `zeus-ecosystem`'s `app-images.yml`, which does not push or deploy |
 | Deployment workflow | `.github/workflows/admin-image.yml` | **Deleted 2026-11-25** |
 | Product acceptance | `.github/workflows/product-acceptance.yml` | **Deleted 2026-11-25** |
 | Pages deployment | `.github/workflows/demos-pages.yml` | **Deleted 2026-11-25**; `playground-pages.yml` kept |
@@ -32,6 +39,7 @@ migration exists to remove.
 | --- | --- |
 | `examples/admin` at commit `132c777e` | It is the source of the visual reference. The published image is the reference now, but the commit is how the image is explained |
 | `ghcr.io/baicie/zeus-admin:main` | The rollback target named in the rehearsal. Deleting it removes the only previously-deployed artefact this repository has |
+| `ghcr.io/baicie/zeus-ai-workbench` and `ghcr.io/baicie/zeus-ai-host` | **These are serving production right now.** `zeus-ui`'s `ai-workbench-image.yml` deployed them on 2026-11-24 from `examples/ai-workbench/Dockerfile`, and that commit is `zeus-ui`'s current `main`. Deleting them stops a live service, not a stale one — and they are referenced by a moving tag, so the digest must be recorded before any cutover or there is no rollback target |
 | Any `deployment-*.ts` the production host still runs | Unknown without host access; marked here rather than guessed |
 | `examples/admin/server` | `check:admin` imports it and drives the app in three engines — it is the only browser coverage of the old app that still runs |
 | `scripts/release/verify-ui-provenance.ts` | The check is intact; only its `ci.yml` caller went with the image workflow. The migrated Admin runs the same binding through `zeus-ecosystem/scripts/release/build-image.mjs` |
@@ -114,19 +122,27 @@ Phase 7 may begin when all of these hold:
 `scripts/release/cleanup-preflight.mjs` reads them and deletes nothing:
 
 ```bash
-node scripts/release/cleanup-preflight.mjs --zeus ../zeus
+node scripts/release/cleanup-preflight.mjs --zeus ../zeus --zeus-ui ../zeus-ui
 ```
 
-It refuses `--zeus`, so a tree it has not read is `UNKNOWN` rather than `MET`.
-Measured at `zeus@6e623d5f` / `zeus-ecosystem@aa590b3`:
+`--zeus-ui` is not optional in practice: the AI trees live there, so a run
+without it reports the AI half as `UNKNOWN` rather than clean.
+
+A tree it was not given is `UNKNOWN` rather than `MET`. Measured at
+`zeus@0aa75cc1` / `zeus-ui@16c7dd13`:
 
 ```
-UNMET    production-accepted      0 of 3 PRODUCTION_ACCEPTED row(s) complete
-UNKNOWN  observation-window       a decision after a cutover, not a file
-MET      deleted-workflows-gone   the three workflows are absent
-UNMET    build-config-clean       vitest.config.ts still includes examples/admin/server/**
-MET      baseline-explainable     the baseline names the digest it came from
+UNMET    production-accepted      0 of 3 PRODUCTION_ACCEPTED row(s) show a completed status
+UNKNOWN  observation-window       no artefact records an observation window; this is a decision after a cutover, not a file
+MET      deleted-workflows-gone   admin-image.yml, product-acceptance.yml and demos-pages.yml are absent
+UNMET    build-config-clean       build configuration still references it: vitest.config.ts
+MET      baseline-explainable     the baseline names sha256:faf238d3b701…, which is the build the screenshots came from
 ```
+
+The `build-config-clean` line is the `zeus` half. `zeus-ui` refuses too — twelve
+references, including `tsconfig.json`, `vitest.config.ts` and nine
+`check-ai-workbench-*` gates — but the label reports the first blocker it finds,
+and `zeus`'s `vitest.config.ts` comes first.
 
 `UNKNOWN` is not a soft `MET`. The observation window is the reason Phase 7 is
 blocked even for an application accepted tomorrow: nothing has been

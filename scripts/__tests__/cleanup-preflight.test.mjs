@@ -117,3 +117,57 @@ test('an unreadable tree is UNKNOWN, not a clean one', async () => {
     rmSync(notACheckout, { recursive: true, force: true })
   }
 })
+
+test('the AI trees are looked for in zeus-ui, not zeus', async () => {
+  /*
+   * The manifest placed `examples/ai-workbench` in `zeus`, where it has never
+   * existed — `zeus` has no such path in any commit, and `zeus-ui` has thirty
+   * tracked files under it. A scanner reading only `zeus` reported the AI side
+   * clean by never looking at it.
+   */
+  const { LEGACY_TREES } = await import('../release/cleanup-preflight.mjs')
+
+  assert.deepEqual(LEGACY_TREES.zeus, ['examples/admin'])
+  assert.deepEqual(LEGACY_TREES['zeus-ui'], ['examples/ai-workbench', 'examples/ai-host'])
+})
+
+test('a workflow that deploys the legacy tree blocks its deletion', async () => {
+  /*
+   * The manifest's two-file rule is right for `zeus`. `zeus-ui` is a different
+   * shape: a workflow there builds and deploys the AI trees to production, and
+   * deleting them breaks it. A rule that only looked at package.json would
+   * call the tree clean.
+   */
+  const { blocksDeletion } = await import('../release/cleanup-preflight.mjs')
+
+  assert.equal(blocksDeletion('.github/workflows/ai-workbench-image.yml'), true)
+  assert.equal(blocksDeletion('tsconfig.json'), true)
+  assert.equal(blocksDeletion('scripts/checks/ai/check-ai-workbench-p0.ts'), true)
+
+  /* Host-deployment scripts are the manifest's audit column, not blockers. */
+  assert.equal(blocksDeletion('scripts/release/deployment-stage1.ts'), false)
+  assert.equal(blocksDeletion('docs/release/ai-workbench-deployment.md'), false)
+})
+
+test('without --zeus-ui the AI half is UNKNOWN, not clean', async () => {
+  /*
+   * Reporting MET because the repository that does not contain the tree is
+   * clean is the same defect as an unread tree reported clean.
+   */
+  const { mkdtempSync, rmSync } = await import('node:fs')
+  const { tmpdir } = await import('node:os')
+  const { join } = await import('node:path')
+  const { cleanupPreflight } = await import('../release/cleanup-preflight.mjs')
+
+  const notACheckout = mkdtempSync(join(tmpdir(), 'zeus-partial-'))
+
+  try {
+    const entry = cleanupPreflight(process.cwd(), { zeus: notACheckout })
+      .prerequisites.find(item => item.id === 'build-config-clean')
+
+    assert.equal(entry.status, 'UNKNOWN')
+    assert.match(entry.detail, /could not be read/)
+  } finally {
+    rmSync(notACheckout, { recursive: true, force: true })
+  }
+})

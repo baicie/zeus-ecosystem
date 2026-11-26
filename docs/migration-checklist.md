@@ -61,7 +61,7 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 | --- | --- | --- |
 | SOURCE_MIGRATED | ✅ | 依赖 `@zeus-js/compiler-wasm@0.1.1-beta.20`、`playground-engine@0.2.0-rc.5` 与六个 `0.2.0-rc.5` 运行时包、`vite-plugin@0.0.6`；零 `workspace:` / `file:` / alias |
 | LOCAL_TESTED | ✅ | `tsc --noEmit` 干净；`vite build` 产出四个入口（index / sandbox / webc / host）与 1.55 MB wasm 资源 |
-| CI_VALIDATED | ⬜ | `ci.yml` 新增的 `Apps build` job 会构建它，但尚未在 main 上跑过一次 |
+| CI_VALIDATED | ✅ | `Apps build` 在 `1551b25` 上通过：四个 app 的 `tsc --noEmit` 与构建全过，且断言了 `sandbox.html` 的资源路径是相对的 |
 | VISUAL_VALIDATED | ⬜ | 未做。core 侧的视觉门禁随应用一起待迁 |
 | IMAGE_VALIDATED | ⬜ | `app-images.yml` 的 matrix 已含 `playground`，镜像尚未构建过 |
 | DEPLOYMENT_REHEARSED | ⬜ | 未做 |

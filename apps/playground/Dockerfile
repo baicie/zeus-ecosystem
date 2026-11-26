@@ -59,3 +59,10 @@ COPY apps/playground/deploy/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/apps/playground/dist /usr/share/nginx/html
 
 EXPOSE 80 81
+
+# Without this, `docker inspect .State.Health` is empty and the release gate's
+# health check falls back to `.State.Status` — which reads `running` forever and
+# reports `health check: timeout` sixty seconds later. The other three apps
+# declare one; this one did not.
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget -q --spider http://127.0.0.1/ || exit 1

@@ -60,6 +60,28 @@
         "note": "node runtime plus the SPA and the API server",
         "maxUnpackedBytes": 524288000
       }
+    },
+    {
+      "productId": "playground",
+      "appPath": "apps/playground",
+      "dockerfile": "apps/playground/Dockerfile",
+      "context": ".",
+      "platforms": [
+        "linux/amd64",
+        "linux/arm64"
+      ],
+      "runtimePort": 80,
+      "healthcheckPath": "/",
+      "buildInfoPath": null,
+      "staticArtifact": true,
+      "dependsOn": [],
+      "deploymentUnit": "playground",
+      "sandboxPort": 81,
+      "sandboxNote": "The same image serves the untrusted preview on :81. The sandbox server sends `Content-Security-Policy: sandbox allow-scripts`, which is what gives the iframe its opaque origin; host and sandbox must be different origins in production.",
+      "sizePolicy": {
+        "note": "nginx plus the built bundle. The wasm compiler is 1.55 MB raw but 480 kB gzip and is cached separately by the browser; React and Vue vendor chunks belong to the WebC studio preview, not the main path.",
+        "maxUnpackedBytes": 220200960
+      }
     }
   ],
   "deploymentUnits": {

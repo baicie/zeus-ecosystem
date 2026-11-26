@@ -148,6 +148,71 @@ const UNITS = {
       }
     },
   },
+  /*
+   * The Playground serves a static bundle; there is no API to read back through.
+   * What a rehearsal can prove here is that the candidate image serves the
+   * entry, the sandbox document and a real compiler binary — the three things
+   * whose absence produces a page that loads and then does nothing.
+   *
+   * The two ports are not interchangeable: `:80` is the trusted host and `:81`
+   * the untrusted preview, which is served with
+   * `Content-Security-Policy: sandbox allow-scripts`. Checking the header is
+   * part of the rehearsal because deploying both on one origin would lose the
+   * isolation with nothing to show for it.
+   */
+  playground: {
+    port: 80,
+    healthPath: '/',
+    env: extra => [...extra],
+    async run(base) {
+      const entry = await get(`${base}/`)
+      const sandbox = await get(`${base}/sandbox.html`)
+
+      if (!entry.ok) {
+        return { ok: false, why: `entry answered HTTP ${entry.status}` }
+      }
+
+      const html = await entry.text()
+      const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map(match => match[1])
+
+      if (scripts.length === 0) {
+        return { ok: false, why: 'the entry references no script; the bundle is missing' }
+      }
+
+      const firstScript = await get(new URL(scripts[0], base).href)
+
+      /*
+       * The sandbox document names its own entry; fetching that proves the
+       * second bundle exists rather than only the host's.
+       */
+      const sandboxHtml = sandbox.ok ? await sandbox.text() : ''
+      const sandboxScript = (sandboxHtml.match(/<script[^>]+src="([^"]+)"/) ?? [])[1]
+      const sandboxEntry = sandboxScript
+        ? await get(new URL(sandboxScript, base).href)
+        : { ok: false, status: 0 }
+
+      return {
+        ok: sandboxEntry.ok && firstScript.ok,
+        entryStatus: entry.status,
+        entryBytes: html.length,
+        scriptCount: scripts.length,
+        firstScriptStatus: firstScript.status,
+        sandboxStatus: sandbox.status,
+        sandboxEntryStatus: sandboxEntry.status,
+        /*
+         * Recorded, not asserted: the rehearsal runs the image's own nginx, and
+         * the header is what makes the preview's origin opaque. A run against a
+         * build that dropped it should look different in the report rather than
+         * pass quietly.
+         */
+        sandboxCspHeader: sandbox.headers.get('content-security-policy'),
+        why: sandboxEntry.ok
+          ? undefined
+          : `the sandbox entry answered HTTP ${sandboxEntry.status}; the preview would not load`,
+      }
+    },
+  },
+
 }
 
 /**

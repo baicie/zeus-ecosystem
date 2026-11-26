@@ -380,7 +380,7 @@ success  Deploy          ← Rolling update containers
 ## 八、验证方式
 
 ```bash
-cd zeus-ecosystem && npm run check        # 129/129
+cd zeus-ecosystem && npm run check        # 132/132
 cd apps/admin && pnpm test:checks          # 38/38
 cd apps/admin && pnpm check:browser        # 14/14（chromium）
 cd apps/admin && pnpm check:permissions    # 16/16

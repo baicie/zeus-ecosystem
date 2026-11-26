@@ -8,7 +8,7 @@
 
 | 仓库 | HEAD | 说明 |
 | --- | --- | --- |
-| `baicie/zeus` | `6e623d5f` | `release: vite-plugin@0.0.6 (#415)`，main CI 绿 |
+| `baicie/zeus` | `0aa75cc1` | `fix(release): canary 改写版本后重生成包表 (#416)`；`CI` 绿 |
 | `baicie/zeus-ui` | `4e7e429f` | 本轮未改动；工作区有两个未跟踪的 `Dockerfile.baseline-*` |
 | `baicie/zeus-ecosystem` | `git log -1` | 本轮全部改动落在这里 |
 

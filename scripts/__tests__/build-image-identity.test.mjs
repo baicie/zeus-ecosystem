@@ -15,7 +15,11 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { revisionMismatch } from '../release/build-image.mjs'
+import {
+  readProducts,
+  revisionMismatch,
+  staticTarget,
+} from '../release/build-image.mjs'
 
 const COMMIT = 'a'.repeat(40)
 
@@ -45,4 +49,28 @@ test('an empty label is treated as absent, not as a match', () => {
 
 test('a short or truncated revision does not pass by prefix', () => {
   assert.ok(revisionMismatch(COMMIT.slice(0, 8), COMMIT), 'a prefix is not the commit')
+})
+
+/* --------------------------- where identity lands --------------------------- */
+
+/**
+ * The three static products do not share an image layout: `admin` serves
+ * `/app/dist`, the two nginx images serve `/usr/share/nginx/html`. The first
+ * version of `readImageBuildInfo` hardcoded `/app/dist`, which would have
+ * reported two correct images as broken — a check that fails on success is as
+ * useless as one that passes on failure.
+ */
+const byId = () =>
+  Object.fromEntries(readProducts(process.cwd()).products.map(p => [p.productId, p]))
+
+test('each static product resolves to the path its Dockerfile copies into', () => {
+  const products = byId()
+
+  assert.equal(staticTarget(products['ai-workbench']), '/usr/share/nginx/html')
+  assert.equal(staticTarget(products.admin), '/app/dist')
+  assert.equal(staticTarget(products.playground), '/usr/share/nginx/html')
+})
+
+test('a product with no dist has no static target', () => {
+  assert.equal(staticTarget(byId()['ai-host']), undefined)
 })

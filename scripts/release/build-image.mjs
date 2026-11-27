@@ -167,6 +167,100 @@ export async function checkHealth(product, tag, timeoutSeconds = 60) {
 }
 
 /**
+ * Reads the build identity out of a built image.
+ *
+ * The health check proves the container starts; it says nothing about whether
+ * the artifact carries an identity, and the image label is a claim the
+ * Dockerfile makes rather than evidence about the filesystem. The one way to
+ * know `build-info.json` shipped is to read it from the image itself.
+ *
+ * Returns the parsed record, or a reason it is unusable. A product with no
+ * `dist` (`ai-host`) legitimately has neither, and its declaration says so —
+ * this is driven by `products.json`, not by a product list in here.
+ */
+/**
+ * Where a static product's `dist` ends up inside its runtime image.
+ *
+ * Read from the Dockerfile rather than assumed: the three static products do
+ * not share a layout, and a hardcoded path would report a correct image as
+ * broken for two of them.
+ */
+export function staticTarget(product, root = process.cwd()) {
+  if (!product.dockerfile) return undefined
+
+  const file = join(root, product.dockerfile)
+
+  if (!existsSync(file)) return undefined
+
+  const lines = readFileSync(file, 'utf8').split('\n')
+  const line = [...lines]
+    .reverse()
+    .find(entry => /^\s*COPY\b/.test(entry) && /\/dist\s+\S+/.test(entry))
+
+  if (!line) return undefined
+
+  const destination = line.match(/\/dist\s+(\S+)/)?.[1]
+
+  if (!destination) return undefined
+
+  /* A relative destination is relative to the last WORKDIR above it. */
+  if (destination.startsWith('/')) return destination
+
+  const index = lines.lastIndexOf(line)
+  const workdir = lines
+    .slice(0, index)
+    .filter(entry => /^\s*WORKDIR\s+/.test(entry))
+    .pop()
+    ?.match(/^\s*WORKDIR\s+(\S+)/)?.[1]
+
+  return `${workdir ?? '/'}/${destination.replace(/^\.\//, '')}`.replace(/\/+/g, '/')
+}
+
+export function readImageBuildInfo(product, tag) {
+  const path = product.buildInfoPath
+
+  if (!path) return { present: false, reason: 'the product declares no buildInfoPath' }
+
+  /*
+   * The declaration is a repository-relative path; where it lands inside the
+   * image differs per product — `admin` serves `/app/dist`, the two nginx
+   * images serve `/usr/share/nginx/html`. Guessing one and asserting the
+   * others would fail for a correct image, so the destination is read from
+   * the Dockerfile's own `COPY .../dist <target>` line.
+   */
+  const file = path.split('/').pop()
+  const target = staticTarget(product)
+
+  if (!target) {
+    return {
+      present: false,
+      reason: `no COPY of a dist directory is recognisable in ${product.dockerfile}`,
+    }
+  }
+
+  const inside = `${target.replace(/\/+$/, '')}/${file}`
+
+  try {
+    const raw = docker(['run', '--rm', '--entrypoint', 'cat', tag, inside])
+
+    if (!raw) return { present: false, reason: `${inside} is empty` }
+
+    const info = JSON.parse(raw)
+
+    if (info.schema !== 'zeus.ecosystem.build-info/v1') {
+      return { present: false, reason: `${inside} has schema ${String(info.schema)}` }
+    }
+
+    return { present: true, info }
+  } catch (error) {
+    return {
+      present: false,
+      reason: `${inside} could not be read: ${error instanceof Error ? error.message.slice(0, 200) : String(error)}`,
+    }
+  }
+}
+
+/**
  * Produces the delivery evidence for one product.
  *
  * Fields that cannot be measured are omitted rather than filled with a
@@ -382,6 +476,47 @@ export async function buildProduct(options) {
 
   if (revisionFailure) {
     evidence.failureReasons = [...(evidence.failureReasons ?? []), revisionFailure]
+  }
+
+  /*
+   * And the identity the artifact carries, read out of the image.
+   *
+   * The label is a claim the Dockerfile makes; the file is the artifact's own
+   * record. `admin` declared a `buildInfoPath` for months while nothing wrote
+   * it, and no check noticed because the only reader was a provenance step
+   * that treats a missing file as "no claims" rather than as a defect. A
+   * static product that declares one now has to actually ship it.
+   */
+  if (product.staticArtifact) {
+    const artifact = readImageBuildInfo(product, localTag)
+
+    evidence.buildInfo = artifact.present
+      ? {
+          present: true,
+          product: artifact.info.product,
+          appCommit: artifact.info.app?.commit,
+          coreVersion: artifact.info.core?.version,
+          uiVersion: artifact.info.ui?.version,
+          synthetic: artifact.info.synthetic === true,
+        }
+      : { present: false, reason: artifact.reason }
+
+    if (!artifact.present) {
+      evidence.failureReasons = [
+        ...(evidence.failureReasons ?? []),
+        `the image does not carry its declared build identity: ${artifact.reason}`,
+      ]
+    } else if (artifact.info.app?.commit !== appCommit) {
+      evidence.failureReasons = [
+        ...(evidence.failureReasons ?? []),
+        `build-info records app commit ${artifact.info.app?.commit}, but this build was started from ${appCommit}`,
+      ]
+    } else if (artifact.info.synthetic === true) {
+      evidence.failureReasons = [
+        ...(evidence.failureReasons ?? []),
+        'build-info is marked synthetic, so the image is not release evidence',
+      ]
+    }
   }
 
   if (evidence.unpackedBytes > product.sizePolicy.maxUnpackedBytes) {

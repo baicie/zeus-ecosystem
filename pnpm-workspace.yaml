@@ -1,6 +1,14 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+  # Demonstrations that are not deployments.
+  #
+  # `demos/` holds complete applications built from published packages, kept
+  # apart from `apps/` because they have no image, no healthcheck and no
+  # deployment unit. `demos/project-board` came from the core repository's
+  # `examples/`, which is where a comprehensive product does not belong: the
+  # core tree carries the framework and the fixtures its own tests need.
+  - 'demos/*'
 
 # The published-consumer fixtures are deliberately NOT workspace members.
 #

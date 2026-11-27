@@ -14,7 +14,8 @@
     "check:browser": "tsx scripts/checks/check-admin-browser.ts",
     "check:visual": "tsx scripts/checks/check-admin-visual.ts",
     "check:permissions": "node scripts/run-with-sqlite.mjs scripts/checks/check-admin-permissions.ts",
-    "test:checks": "node scripts/run-with-sqlite.mjs node_modules/vitest/vitest.mjs run scripts/checks"
+    "test:checks": "node scripts/run-with-sqlite.mjs node_modules/vitest/vitest.mjs run scripts/checks",
+    "check:devtools": "tsx scripts/checks/check-admin-devtools.ts"
   },
   "dependencies": {
     "@zeus-js/i18n": "0.2.0-rc.5",

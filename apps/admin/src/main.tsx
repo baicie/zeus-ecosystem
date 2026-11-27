@@ -67,28 +67,55 @@ if (!root) throw new Error('Zeus Admin root element was not found.')
 const mountRoot = root
 
 /**
- * Mounts the admin shell.
+ * Mounts the admin shell, with the DevTools consumer already listening.
  *
- * ## DevTools
+ * The panel comes from `@zeus-js/devtools-consumer`, in a development build
+ * with `?devtools`. That package was `private: true` and unpublished when Admin
+ * was migrated, so the panel could not be carried over — the migration may only
+ * install published packages. It is published now, and
+ * `./devtools/bootstrap` restores it. The bootstrap is dynamic and guarded by
+ * `import.meta.env.DEV`, so a production build contains neither the module nor
+ * the call.
  *
- * In a development build with `?devtools` in the URL, this also mounts the
- * panel from `@zeus-js/devtools-consumer`. That package was `private: true` and
- * unpublished when Admin was migrated, so the panel could not be carried over —
- * the migration may only install published packages. It is published now, and
- * `./devtools/bootstrap` restores it.
+ * ## The order is the feature
  *
- * The bootstrap is dynamic and guarded by `import.meta.env.DEV`, so a
- * production build contains neither the module nor the call.
+ * This used to render first and connect the consumer in a `.then()`:
+ *
+ *     render(() => <App />, mountRoot)
+ *     void bootstrapDevtools().then(handle => …)
+ *
+ * The consumer observes the runtime's event protocol, so every event the first
+ * mount produced — the mount, every effect creation, every binding — happened
+ * before it existed to hear them. The panel opened on an empty timeline for a
+ * page that was fully rendered, which reads as "DevTools is broken" and is
+ * actually "DevTools started one tick late".
+ *
+ * So: connect first, then render. The guard is repeated here rather than left
+ * to `bootstrapDevtools` so the ordinary path never awaits a dynamic import —
+ * production and a development build without `?devtools` both render
+ * synchronously. A devtools module that fails to load is logged and the shell
+ * still renders; breaking the page while debugging is the worst possible
+ * failure mode.
  */
 function mount(): void {
+  void mountWithDevtools()
+}
+
+async function mountWithDevtools(): Promise<void> {
+  if (import.meta.env.DEV && new URLSearchParams(window.location.search).has('devtools')) {
+    try {
+      const handle = await bootstrapDevtools()
+      if (handle) {
+        /* A developer driving the panel from the console, as the original did. */
+        Object.assign(window, { adminDevtools: handle })
+      }
+    } catch (error) {
+      /* bootstrapDevtools already catches its own failures; this is the rest. */
+      console.warn('[admin] devtools bootstrap threw:', error)
+    }
+  }
+
   render(() => <App />, mountRoot)
-
-  void bootstrapDevtools().then(handle => {
-    if (!handle) return
-
-    /* A developer driving the panel from the console, as the original did. */
-    Object.assign(window, { adminDevtools: handle })
-  })
 }
 
 void mount()

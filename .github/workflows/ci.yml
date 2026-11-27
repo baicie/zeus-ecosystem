@@ -211,6 +211,16 @@ jobs:
       # the devtools panel, the sandbox origin checks, and both exports end to
       # end: browser download, npm install, typecheck, production build, and a
       # real browser driving the built output.
+      #
+      # It runs against PUBLISHED packages, and that is the point: the export
+      # installs `@zeus-js/*` from the registry, so this job sees what a user
+      # gets, not what this checkout compiles. The consequence is that a fix to
+      # `@zeus-js/playground-engine` in the core repository stays red here until
+      # a release carries it — which is exactly what happened the first time
+      # this job ran: it caught the WebC export defect in rc.5 and stayed red
+      # until the fix shipped. Treat a red run here as "the published engine is
+      # older than the fix", check `infra/contracts/published-pair.json`, and do
+      # not silence it by installing anything from a local path.
       - name: Playground editor, exports and sandbox
         run: pnpm --filter @zeus-ecosystem/playground check:editor
         env:

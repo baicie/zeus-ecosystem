@@ -23,6 +23,37 @@ import type {
 } from '@zeus-js/playground-engine'
 import type { WorkerCompiler } from '@zeus-js/compiler-wasm'
 
+/*
+ * The dependency versions an exported project should pin.
+ *
+ * `vite.config.ts` injects them from this application's own manifest at build
+ * time. Without them `exportProject` falls back to constants inside the engine,
+ * which are a version line this app no longer uses — the export then pins
+ * `@zeus-js/query@0.1.1-beta.20` and its `tsc` fails on APIs those versions do
+ * not have.
+ */
+declare const __ZEUS_EXPORT_VERSIONS__: {
+  zeus: string
+  vitePlugin: string
+  vite: string
+  typescript: string
+}
+
+function exportedVersions(): {
+  zeusVersion?: string
+  vitePluginVersion?: string
+  viteVersion?: string
+  typescriptVersion?: string
+} {
+  if (typeof __ZEUS_EXPORT_VERSIONS__ === 'undefined') return {}
+  return {
+    zeusVersion: __ZEUS_EXPORT_VERSIONS__.zeus || undefined,
+    vitePluginVersion: __ZEUS_EXPORT_VERSIONS__.vitePlugin || undefined,
+    viteVersion: __ZEUS_EXPORT_VERSIONS__.vite || undefined,
+    typescriptVersion: __ZEUS_EXPORT_VERSIONS__.typescript || undefined,
+  }
+}
+
 import { PreviewController } from '../preview'
 import { activeProduct, productHref, setActiveProduct } from '../products'
 import { templates } from '../webc-project'
@@ -220,12 +251,21 @@ export function projectSnapshot() {
     schemaVersion: 2,
     entryPath: entryPath(),
     frameworkTarget: currentProduct === 'webc-studio' ? 'webc' : 'native',
-    compilerVersion: 'wasm:0.1.1-beta.20',
+    /*
+     * Read from this application's manifest, not typed in.
+     *
+     * These were literal `0.1.1-beta.20` strings carried over from the core
+     * repository. Once the application moved to `0.2.0-rc.5` they were still
+     * here, and the export pinned the old line — whose `query` and `router` have
+     * no `useQuery` or `Link`, so the exported project's own `tsc` failed on the
+     * built-in examples.
+     */
+    compilerVersion: `wasm:${exportedVersions().zeusVersion ?? 'unknown'}`,
     dependencies:
       currentProduct === 'native-lab'
         ? [
-            { name: '@zeus-js/query', version: '0.1.1-beta.20' },
-            { name: '@zeus-js/router', version: '0.1.1-beta.20' },
+            { name: '@zeus-js/query', version: exportedVersions().zeusVersion ?? '' },
+            { name: '@zeus-js/router', version: exportedVersions().zeusVersion ?? '' },
           ]
         : [],
     files: files().map(file => ({ path: file.path, content: file.content })),
@@ -591,6 +631,7 @@ export async function exportZip(): Promise<void> {
         product() === 'webc-studio'
           ? 'zeus-webc-studio-export'
           : 'zeus-native-lab-export',
+      ...exportedVersions(),
     })
     const { zipSync } = await import('fflate')
     const tree: Record<string, Uint8Array> = {}

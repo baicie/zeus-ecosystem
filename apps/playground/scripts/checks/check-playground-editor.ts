@@ -14,7 +14,6 @@ import {
   type Page,
 } from '@playwright/test'
 
-import { findWorkspacePackages } from '../shared/utils'
 
 const execFileAsync = promisify(execFile)
 const root = path.resolve(import.meta.dirname, '../..')
@@ -440,36 +439,17 @@ async function downloadExport(page: Page): Promise<string> {
   return archive
 }
 
-const LOCAL_EXPORT_PACKAGES = new Set([
-  '@zeus-js/zeus',
-  '@zeus-js/signal',
-  '@zeus-js/shared',
-  '@zeus-js/runtime-dom',
-  '@zeus-js/runtime-ssr',
-  '@zeus-js/query',
-  '@zeus-js/router',
-  '@zeus-js/resource',
-])
-
+/*
+ * Exported projects install from npm, so there is nothing to override.
+ *
+ * In the core repository this packed workspace members into tarballs and
+ * rewrote the exported project's dependencies to point at them, because the
+ * export had to build without a registry. Here every `@zeus-js/*` dependency is
+ * a published version, so the exported project's own `pnpm install` resolves
+ * them exactly as this application's did.
+ */
 async function packLocalPackages(): Promise<Record<string, string>> {
-  const packagesDirectory = path.join(output, 'packages')
-  await fs.rm(packagesDirectory, { recursive: true, force: true })
-  await fs.mkdir(packagesDirectory, { recursive: true })
-  const overrides: Record<string, string> = {}
-  for (const pkg of findWorkspacePackages()) {
-    if (!LOCAL_EXPORT_PACKAGES.has(pkg.name)) continue
-    const { stdout } = await execFileAsync(
-      'pnpm',
-      ['pack', '--pack-destination', packagesDirectory, '--json'],
-      { cwd: pkg.dir, shell: process.platform === 'win32' },
-    )
-    const parsed = JSON.parse(stdout.slice(stdout.indexOf('{'))) as {
-      name: string
-      filename: string
-    }
-    overrides[parsed.name] = `file:${path.resolve(parsed.filename)}`
-  }
-  return overrides
+  return {}
 }
 
 async function installAndBuildExport(archive: string): Promise<string> {

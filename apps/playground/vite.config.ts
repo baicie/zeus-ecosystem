@@ -1,7 +1,35 @@
+import { readFileSync } from 'node:fs'
 import { fileURLToPath, URL } from 'node:url'
 
 import zeus from '@zeus-js/vite-plugin'
 import { defineConfig } from 'vite'
+
+/*
+ * The versions the *exported* project will install.
+ *
+ * `exportProject` falls back to defaults baked into the engine when the caller
+ * passes none — and those defaults are a version line this application no longer
+ * uses. An exported project built with them pins `@zeus-js/query@0.1.1-beta.20`,
+ * which has no `useQuery`, so the export's own `tsc` fails on the built-in
+ * examples. Reading this app's own manifest is the only answer that stays true
+ * as the pins move.
+ */
+function exportedDependencyVersions() {
+  const manifest = JSON.parse(
+    readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
+  ) as { dependencies?: Record<string, string>; devDependencies?: Record<string, string> }
+  const dependency = (name: string): string =>
+    manifest.dependencies?.[name] ?? manifest.devDependencies?.[name] ?? ''
+
+  return {
+    __ZEUS_EXPORT_VERSIONS__: JSON.stringify({
+      zeus: dependency('@zeus-js/zeus'),
+      vitePlugin: dependency('@zeus-js/vite-plugin'),
+      vite: dependency('vite'),
+      typescript: dependency('typescript'),
+    }),
+  }
+}
 
 // The sandbox document may be served under a path prefix (production mounts it
 // at /zeus-sandbox/). Absolute asset URLs would escape that prefix, so the
@@ -24,6 +52,7 @@ function relativeSandboxAssets() {
 }
 
 export default defineConfig({
+  define: exportedDependencyVersions(),
   plugins: [zeus(), relativeSandboxAssets()],
   server: {
     headers: {

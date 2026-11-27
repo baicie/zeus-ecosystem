@@ -98,7 +98,14 @@ function startApi(): Promise<void> {
         ZEUS_ADMIN_EMAIL: process.env.ZEUS_ADMIN_EMAIL ?? 'devtools-check@example.test',
         ZEUS_ADMIN_PASSWORD: process.env.ZEUS_ADMIN_PASSWORD ?? 'devtools-check-password-000000',
         ZEUS_ADMIN_VIEWER_PASSWORD: process.env.ZEUS_ADMIN_VIEWER_PASSWORD ?? 'devtools-check-viewer-000000',
-        ZEUS_ADMIN_DB: process.env.ZEUS_ADMIN_DB ?? '.data/devtools-check.sqlite',
+        /*
+         * Under `temp/`, not `.data/`: the repository's `.gitignore` covers
+         * `temp/` and not `.data/`, and the first version of this check left
+         * three SQLite files in a commit. A gate that writes into the source
+         * tree is a gate that can dirty it.
+         */
+        ZEUS_ADMIN_DB:
+          process.env.ZEUS_ADMIN_DB ?? path.join(output, 'devtools-check.sqlite'),
         /*
          * A fresh database has no users, and the server refuses to invent one
          * implicitly — `ZEUS_ADMIN_BOOTSTRAP` is the explicit opt-in for a first

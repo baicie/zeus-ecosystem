@@ -23,10 +23,34 @@ WORKDIR /app
 ARG PNPM_VERSION=10.33.4
 RUN corepack enable && corepack prepare "pnpm@${PNPM_VERSION}" --activate
 
+# The commit that started this build. Passed in because `.dockerignore` removes
+# `.git`, so the build has no history to read it from — and `build-info.mjs`
+# calls `git rev-parse` before it falls back to the environment. Without this
+# the build died with `spawnSync git ENOENT`, which names a missing binary
+# rather than a missing input.
+#
+# `apps/ai-workbench` declares the same argument for the same reason. The
+# runtime stage below declares it again: an ARG does not carry across FROM.
+ARG ZEUS_APP_COMMIT
+ENV ZEUS_APP_COMMIT=${ZEUS_APP_COMMIT}
+
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json .npmrc ./
 COPY apps/playground/package.json apps/playground/package.json
 
 RUN pnpm install --frozen-lockfile --filter @zeus-ecosystem/playground...
+
+# The build identity needs two things outside the app directory.
+#
+# `vite.config.ts` imports `scripts/release/build-info.mjs`, which reads
+# `infra/contracts/published-pair.json` and the lockfile. Without these the
+# build fails with `Could not resolve '../../scripts/release/build-info.mjs'` —
+# which is what the first image build after that plugin was added did, and it
+# failed in the container rather than in CI's build job because only the
+# container has a copy scope narrow enough to notice.
+#
+# `apps/ai-workbench` copies the same two paths for the same reason.
+COPY infra/contracts ./infra/contracts
+COPY scripts/release ./scripts/release
 
 COPY apps/playground ./apps/playground
 

@@ -181,8 +181,28 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      # The Playground declares its own `@playwright/test`, and the root
+      # declares a different major-minor (`1.57.0` vs `1.65.1` here). `pnpm exec`
+      # at the repo root resolves the root one, which on ubuntu-26.04 fails with
+      # "Playwright does not support chromium on ubuntu26.04-x64" — a browser
+      # that cannot be installed, on a job whose whole purpose is the browser.
+      # Running the install through the app's own filter uses the version the
+      # app's `node_modules` already has, and the cache key the two agree on.
+      # Two versions of Playwright live in this repository: the root declares
+      # 1.57.0, the Playground 1.65.1. A root `pnpm exec playwright` resolves
+      # the root one, and on ubuntu-26.04 that build answers
+      # "Playwright does not support chromium on ubuntu26.04-x64" — a browser
+      # that cannot be installed, on the job whose entire purpose is the
+      # browser. `--filter` selects the app's own version and the browser cache
+      # key that goes with it.
+      #
+      # The version is printed rather than assumed: a future bump that makes
+      # these disagree again should show up in the log, not as a confusing
+      # install failure.
       - name: Install the one browser this job drives
-        run: pnpm exec playwright install --with-deps --no-shell chromium
+        run: |
+          pnpm --filter @zeus-ecosystem/playground exec playwright --version
+          pnpm --filter @zeus-ecosystem/playground exec playwright install --with-deps --no-shell chromium
 
       - name: Build the Playground
         run: pnpm --filter @zeus-ecosystem/playground build

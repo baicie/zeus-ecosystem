@@ -151,7 +151,53 @@ export function rehearsalImages(report) {
  * second check is what the project's own prohibition is about — a rehearsal
  * that looks cross-version and never moves data.
  */
+/**
+ * Which rehearsal family produced a report, from its schema.
+ *
+ * Three families now: the admin SQLite rehearsal, the AI conversation
+ * rehearsal, and the Playground's browser-storage rehearsal. They record the
+ * data-crossing claim differently because the data lives differently, and a
+ * reader that assumes one spelling reports the other two as broken.
+ */
+export function rehearsalFamily(report) {
+  switch (report?.schema) {
+    case 'zeus.ecosystem.cross-version-rehearsal/v1':
+      return 'admin'
+    case 'zeus.ecosystem.ai-rehearsal/v1':
+      return 'ai'
+    case 'zeus.playground-upgrade-rehearsal/v1':
+      return 'playground'
+    default:
+      return undefined
+  }
+}
+
+/** Which deployment unit a rehearsal report is evidence for. */
+export function rehearsalUnit(report) {
+  const family = rehearsalFamily(report)
+  if (family === 'admin' || family === 'ai') return report?.unit ?? family
+  if (family === 'playground') return 'playground'
+  return undefined
+}
+
+/**
+ * The newest passing report for one unit, by that unit's own family.
+ *
+ * `newestPassing` over every report in `temp/` is how a Playground report could
+ * be offered as Admin evidence: both are "the newest passing cross-version
+ * run", and the schema is the only thing that says which product it proves
+ * anything about. Selecting by unit first, family second, makes that
+ * impossible.
+ */
+export function newestPassingForUnit(reports, unit) {
+  return reports.find(
+    report => rehearsalUnit(report) === unit && report.passed === true,
+  )
+}
+
 export function isRealCrossVersion(report) {
+  const family = rehearsalFamily(report)
+  if (family === 'playground') return isRealPlaygroundCrossVersion(report)
   const { baseline, candidate } = rehearsalImages(report)
 
   if (baseline.length === 0 || candidate.length === 0) return { real: false, reason: 'a side recorded no images' }
@@ -189,6 +235,53 @@ export function isRealCrossVersion(report) {
   return {
     real: true,
     reason: `${baseline.length} baseline image(s) against ${candidate.length} candidate image(s), with data read across the boundary`,
+  }
+}
+
+/**
+ * Whether a Playground rehearsal crossed a version boundary with data.
+ *
+ * The claim is different in kind from the other two. There is no row and no
+ * conversation: the state is `indexedDB` + `localStorage` keyed by the host
+ * origin, and what a rehearsal can prove is that the candidate *read a project
+ * the baseline wrote* and that the write survived the round trip. `upgrade.matched`
+ * does not exist in this family and looking for it would report every
+ * Playground run as a restart.
+ */
+export function isRealPlaygroundCrossVersion(report) {
+  const { baseline, candidate } = rehearsalImages(report)
+
+  if (baseline.length === 0 || candidate.length === 0) {
+    return { real: false, reason: 'a side recorded no images' }
+  }
+  if (candidate.some(id => baseline.includes(id))) {
+    return { real: false, reason: 'the candidate is one of the baseline images — one build compared with itself' }
+  }
+
+  const step = name => (report?.steps ?? []).find(entry => entry.name === name)
+  const read = step('the candidate reads the project the baseline wrote')
+  const survived = step('the project content survived the round trip byte for byte')
+  const wrote = step('the baseline persisted its project to IndexedDB')
+
+  /*
+   * All three, and each must have run. A "read the project" step that compared
+   * two empty lists says `ok: true` — the first version of the Playground
+   * rehearsal did exactly that — so `ok` alone is not the claim. The baseline
+   * writing something first is what makes the comparison non-vacuous.
+   */
+  if (!wrote?.ok) {
+    return { real: false, reason: 'the baseline never persisted a project, so nothing crossed the boundary' }
+  }
+  if (!read?.ok) {
+    return { real: false, reason: read?.detail ?? 'the candidate did not read what the baseline wrote' }
+  }
+  if (!survived?.ok) {
+    return { real: false, reason: survived?.detail ?? 'the project content did not survive the round trip' }
+  }
+
+  return {
+    real: true,
+    reason: `browser storage read across the boundary: ${read.detail ?? 'project matched'}`,
   }
 }
 
@@ -503,30 +596,130 @@ export function buildCandidate(root, options = {}) {
   )
 
   /* ---- cross-version ------------------------------------------------- */
-  const crossVersion = readReports(root, 'zeus.ecosystem.cross-version-rehearsal/v1')
-  const aiRehearsal = readReports(root, 'zeus.ecosystem.ai-rehearsal/v1')
+  /*
+   * One verdict per deployment unit, from that unit's own evidence.
+   *
+   * This used to be two hardcoded names — `admin` and `ai` — and a single
+   * `newestPassing` over every report in `temp/`. Both halves were wrong once a
+   * third unit existed:
+   *
+   *   * a unit missing from the code could not be reported as missing, so the
+   *     Playground's rehearsal was invisible to the release decision;
+   *   * `newestPassing` returns the newest passing report of *any* family, so a
+   *     Playground run could be offered as the Admin evidence. The schema is
+   *     the only thing that says which product a report proves anything about,
+   *     and nothing was reading it.
+   *
+   * The unit list now comes from `infra/contracts/products.json`, and evidence
+   * is selected by unit first. A unit with no passing rehearsal reports
+   * INCOMPLETE by name rather than being skipped.
+   */
+  const unitNames = Object.keys(products?.deploymentUnits ?? {}).sort()
 
-  const crossPassing = newestPassing(crossVersion)
-  const aiPassing = newestPassing(aiRehearsal)
+  /*
+   * The persistence kind each unit declares, from the product that defines it.
+   *
+   * A release gate that demands a SQLite row of every unit cannot be satisfied
+   * by the Playground, which has no server state at all, and one that accepts
+   * "some state existed" for every unit would accept a database for a product
+   * that has none. The contract already says which is which — `server-database`
+   * for Admin and AI, `browser-storage` for the Playground — so the dimension
+   * below reads it instead of inventing a rule.
+   */
+  const persistenceOf = unit => {
+    const productIds = products?.deploymentUnits?.[unit]?.products ?? []
+    const kinds = productIds
+      .map(productId => (products?.products ?? []).find(entry => entry.productId === productId))
+      .map(product => product?.persistence?.kind)
+      .filter(kind => typeof kind === 'string')
+    /*
+     * Several products, several kinds.
+     *
+     * Taking `products[0]` was wrong for the AI unit, whose two products are
+     * listed with the workbench first: it declared `browser-storage` while the
+     * conversation data — the only durable record — lives in `ai-host`'s
+     * SQLite. A rehearsal that read a conversation across the boundary then
+     * failed a check that said "ai declares browser-storage".
+     *
+     * A unit's evidence is only wrong if it matches *none* of its products'
+     * kinds, and the check below says which kind it matched.
+     */
+    return kinds.length > 0 ? kinds : ['unknown']
+  }
+  const unitVerdicts = unitNames.map(unit => {
+    const family = unit === 'admin' ? 'cross-version' : unit === 'ai' ? 'ai-rehearsal' : 'playground-upgrade'
+    const schema =
+      family === 'cross-version'
+        ? 'zeus.ecosystem.cross-version-rehearsal/v1'
+        : family === 'ai-rehearsal'
+          ? 'zeus.ecosystem.ai-rehearsal/v1'
+          : 'zeus.playground-upgrade-rehearsal/v1'
+    const reports = readReports(root, schema)
+    const passing = newestPassingForUnit(reports, unit)
+    const real = passing ? isRealCrossVersion(passing) : { real: false, reason: 'no passing rehearsal for this unit' }
+    return { unit, passing, real }
+  })
 
-  const crossReal = crossPassing ? isRealCrossVersion(crossPassing) : { real: false, reason: 'no passing run' }
-  const aiReal = aiPassing ? isRealCrossVersion(aiPassing) : { real: false, reason: 'no passing run' }
+  const crossEvidence = unitVerdicts
+    .filter(verdict => verdict.passing)
+    .map(verdict => verdict.passing.file.replace(`${root}/`, ''))
+  const crossPassed = unitVerdicts.every(verdict => verdict.real.real)
 
-  if (crossReal.real && aiReal.real) {
-    dimensions.push(
+  dimensions.push(
+    dimension(
+      'cross-version',
+      crossPassed ? 'PASS' : 'INCOMPLETE',
+      unitVerdicts
+        .map(
+          verdict =>
+            `${verdict.unit} (${persistenceOf(verdict.unit)}): ${verdict.real.reason}`,
+        )
+        .join('; '),
+      crossEvidence,
+    ),
+  )
+
+  /*
+   * A unit whose declared persistence is not what its rehearsal exercised is a
+   * contract mismatch, not a passing dimension. This is the same class of
+   * mistake as a rehearsal that compares one image with itself: the evidence
+   * exists, it is simply about something else.
+   */
+  /*
+   * What a rehearsal's evidence looks like, per persistence kind.
+   *
+   *   server-database — a row, a conversation or a message written under one
+   *                     version and read under the other.
+   *   browser-storage — the same, but in `indexedDB`/`localStorage`, and the
+   *                     Playground's report says so by name.
+   */
+  const evidenceMatches = (kind, reason) => {
+    if (kind === 'server-database') return /row|conversation|written|read across/i.test(reason)
+    if (kind === 'browser-storage') return /browser storage|read across/i.test(reason)
+    return false
+  }
+
+  const persistenceMismatches = unitVerdicts
+    .filter(verdict => verdict.real.real)
+    .filter(verdict => !persistenceOf(verdict.unit).some(kind => evidenceMatches(kind, verdict.real.reason)))
+
+  dimensions.push(
+    ...persistenceMismatches.map(mismatch =>
       dimension(
-        'cross-version',
-        'PASS',
-        `admin: ${crossReal.reason}; ai: ${aiReal.reason}`,
-        [crossPassing.file, aiPassing.file].map(file => file.replace(`${root}/`, '')),
+        'persistence-contract',
+        'FAIL',
+        `${mismatch.unit} declares ${persistenceOf(mismatch.unit).join('/')} but its evidence reads "${mismatch.real.reason}"`,
       ),
-    )
-  } else {
+    ),
+  )
+  if (persistenceMismatches.length === 0) {
     dimensions.push(
       dimension(
-        'cross-version',
-        'INCOMPLETE',
-        [`admin: ${crossReal.reason}`, `ai: ${aiReal.reason}`].join('; '),
+        'persistence-contract',
+        'PASS',
+        unitVerdicts
+          .map(verdict => `${verdict.unit}: ${persistenceOf(verdict.unit).join('/')}`)
+          .join(', '),
       ),
     )
   }

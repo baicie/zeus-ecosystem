@@ -16,7 +16,8 @@
     "check:editor": "tsx scripts/checks/check-playground-editor.ts",
     "check:performance": "tsx scripts/checks/check-playground-performance.ts",
     "check:theme-i18n": "tsx scripts/checks/check-playground-theme-i18n.ts",
-    "check:image": "tsx scripts/checks/check-playground-image.ts"
+    "check:image": "tsx scripts/checks/check-playground-image.ts",
+    "check:upgrade": "tsx scripts/checks/check-playground-upgrade.ts"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.4",

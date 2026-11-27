@@ -181,6 +181,13 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      # The compiler/engine contract runs first: it needs no browser, takes
+      # seconds, and a break in it explains a browser failure that would
+      # otherwise be debugged from a screenshot. It is a Node-level gate on
+      # purpose — the browser layers live in `check:image` and `check:editor`.
+      - name: Compiler and engine contract
+        run: pnpm --filter @zeus-ecosystem/playground check:contract
+
       # The Playground declares its own `@playwright/test`, and the root
       # declares a different major-minor (`1.57.0` vs `1.65.1` here). `pnpm exec`
       # at the repo root resolves the root one, which on ubuntu-26.04 fails with
@@ -245,4 +252,5 @@ jobs:
           path: |
             apps/playground/temp/playground-editor/runs/
             apps/playground/temp/playground-image/report.json
+            temp/contract/wasm-engine.json
           if-no-files-found: warn

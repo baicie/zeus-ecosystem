@@ -279,6 +279,45 @@ export function validateRepository(root = DEFAULT_ROOT) {
       }
     }
   }
+  errors.push(...validateAppScripts(root))
+  return errors
+}
+
+/**
+ * Every script an app declares must point at a file that exists.
+ *
+ * The Playground arrived from the core repository with six check scripts that
+ * existed as sources and were never declared in its manifest, so a CI job
+ * could not call them and nobody noticed which gates were absent. Declaring a
+ * script that points at a missing file is the same failure one step later: the
+ * job exists, is required, and fails for a reason unrelated to the product.
+ *
+ * Only file paths are checked. A script may be `vite build` or a pnpm filter;
+ * those are resolved by the runner and not by this repository.
+ */
+function validateAppScripts(root) {
+  const errors = []
+  for (const manifestPath of manifestsUnder(join(root, 'apps'))) {
+    if (!existsSync(manifestPath)) continue
+    const pkg = readJson(manifestPath, [])
+    if (!pkg || typeof pkg.scripts !== 'object' || pkg.scripts === null) continue
+    const directory = dirname(manifestPath)
+    for (const [name, command] of Object.entries(pkg.scripts)) {
+      if (typeof command !== 'string') {
+        errors.push(relative(root, manifestPath) + ' script ' + name + ' must be a string')
+        continue
+      }
+      const match = command.match(/^\s*tsx\s+(\S+)/)
+      if (!match) continue
+      const target = match[1]
+      if (target.startsWith('-')) continue
+      if (!existsSync(join(directory, target))) {
+        errors.push(
+          relative(root, manifestPath) + ' script ' + name + ' runs ' + target + ', which does not exist',
+        )
+      }
+    }
+  }
   return errors
 }
 

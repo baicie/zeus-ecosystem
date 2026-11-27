@@ -219,3 +219,38 @@ test('rejects browser storage that points at a product that does not exist', () 
   )
   assert.ok(errors.some(error => error.includes('ghost')), errors.join('\n'))
 })
+
+/*
+ * An app script that names a file must name one that exists.
+ *
+ * The Playground moved here with six check scripts present as sources and
+ * absent from its manifest, so no CI job could call them and nothing recorded
+ * which gates were missing. Declaring a script that points at a deleted file is
+ * the same failure one step later: the job exists, is required, and fails for a
+ * reason that has nothing to do with the product.
+ */
+test('rejects an app script that runs a file which does not exist', () => {
+  const root = fixture()
+  write(root, 'apps/example/package.json', {
+    name: '@ecosystem/example',
+    private: true,
+    scripts: { 'check:missing': 'tsx scripts/checks/does-not-exist.ts' },
+  })
+  const errors = validateRepository(root).join('\n')
+  assert.match(errors, /check:missing runs scripts\/checks\/does-not-exist\.ts, which does not exist/)
+})
+
+test('accepts an app script that runs a file which does exist', () => {
+  const root = fixture()
+  write(root, 'apps/example/scripts/checks/present.ts', 'export {}\n')
+  write(root, 'apps/example/package.json', {
+    name: '@ecosystem/example',
+    private: true,
+    scripts: {
+      'check:present': 'tsx scripts/checks/present.ts',
+      // Not a tsx file path; resolved by the package manager, out of scope here.
+      build: 'vite build',
+    },
+  })
+  assert.deepEqual(validateRepository(root), [])
+})

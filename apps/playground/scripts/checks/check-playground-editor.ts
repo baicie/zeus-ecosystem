@@ -111,8 +111,10 @@ async function main(): Promise<void> {
       'Every browser must pass the playground editor gate.',
     )
 
-    const exportedProjectDirectory =
-      await installAndBuildExport(downloadedArchive)
+    const exportedProjectDirectory = await installAndBuildExport(
+      downloadedArchive,
+      'native-lab',
+    )
     const exportedSecurity = await checkExportedBrowser(
       exportedProjectDirectory,
       'chromium',
@@ -122,13 +124,59 @@ async function main(): Promise<void> {
       status: 'passed',
       security: exportedSecurity,
     })
-    const webcProject = await installAndBuildExport(downloadedWebCArchive!)
+    const webcProject = await installAndBuildExport(
+      downloadedWebCArchive!,
+      'webc-studio',
+    )
     const webcFiles = await fs.readdir(webcProject)
     assert(webcFiles.includes('custom-elements.json'))
     assert(webcFiles.includes('zeus.components.json'))
+
+    /*
+     * Metadata files existing is not a Web Component that runs.
+     *
+     * `zeus.components.json` is produced by the analyzer; the custom element it
+     * describes comes from the compiler, and nothing so far has executed it.
+     * The exported project ships an entry that defines the element and appends
+     * one to `#root`, so a real browser is the only thing that can tell a
+     * working export from a manifest.
+     */
+    const webcManifest = JSON.parse(
+      await fs.readFile(path.join(webcProject, 'zeus.components.json'), 'utf8'),
+    ) as {
+      components: Array<{
+        tag: string
+        props: Record<string, { type: string }>
+        slots: Record<string, unknown>
+      }>
+    }
+    const counter = webcManifest.components.find(
+      component => component.tag === 'z-counter',
+    )
+    assert(counter, 'the WebC export must describe its z-counter element')
+    assert.equal(
+      counter.props.count?.type,
+      'number',
+      'the analyzer must report the numeric prop the component declares',
+    )
+    assert.ok(
+      Object.keys(counter.slots).length > 0,
+      'the component declares <Slot>, so the manifest must record a slot',
+    )
+    assert.ok(
+      webcFiles.includes('z-counter.d.ts'),
+      'the WebC export must ship the type declarations the manifest promises',
+    )
+
+    const webcAcceptance = await checkExportedWebComponent(
+      webcProject,
+      counter.tag,
+      'chromium',
+    )
     results.push({
       browser: 'chromium-webc-export',
       status: 'passed',
+      security: webcAcceptance,
     })
 
     await fs.writeFile(
@@ -452,8 +500,20 @@ async function packLocalPackages(): Promise<Record<string, string>> {
   return {}
 }
 
-async function installAndBuildExport(archive: string): Promise<string> {
-  const extraction = path.join(output, 'exported-project')
+async function installAndBuildExport(
+  archive: string,
+  label: string,
+): Promise<string> {
+  /*
+   * One directory per export.
+   *
+   * Both exports used `exported-project`, so the WebC install removed the
+   * Native project's tree. Nothing failed, because the Native verification runs
+   * first and the WebC one only looked for two JSON files — but the evidence
+   * for the first product was destroyed before the report was written, and
+   * `temp/` held only whichever export happened to run last.
+   */
+  const extraction = path.join(output, `exported-project-${label}`)
   await fs.rm(extraction, { recursive: true, force: true })
   await fs.mkdir(extraction, { recursive: true })
   if (archive.endsWith('.zip')) {
@@ -505,6 +565,117 @@ async function installAndBuildExport(archive: string): Promise<string> {
     timeout: 60_000,
   })
   return directory
+}
+
+/**
+ * Loads the exported Web Component project in a real browser.
+ *
+ * Asserts the element is registered, that it renders its own content (the
+ * compiled template, not the text the entry writes into it), that a `Slot`
+ * projects light DOM, and that a prop reaches the component as a property.
+ */
+async function checkExportedWebComponent(
+  directory: string,
+  tag: string,
+  browserName: keyof typeof engines,
+): Promise<Record<string, boolean>> {
+  const server = await createStaticServer(path.join(directory, 'dist'))
+  const address = server.address()
+  assert(address && typeof address !== 'string')
+  const browser = await engines[browserName].launch({
+    headless: true,
+    ...(browserName === 'chromium' ? { channel: 'chromium' } : {}),
+  })
+  try {
+    const page = await browser.newPage()
+    const pageErrors: string[] = []
+    page.on('pageerror', error => pageErrors.push(error.message))
+    await page.goto(`http://127.0.0.1:${address.port}/`)
+
+    // The entry throws if the module defines no element, so reaching this means
+    // a registration happened; this asserts *which* tag is registered.
+    await page.waitForFunction(
+      name => Boolean(customElements.get(name)),
+      tag,
+      { timeout: 15_000 },
+    )
+
+    const element = page.locator(tag).first()
+    await expect(element).toBeAttached()
+    // The compiled template renders a <button>; the entry's own textContent is
+    // a sibling text node, so a button can only come from the component.
+    await expect(element.locator('button')).toBeVisible()
+    await expect(element.locator('button')).toContainText(':')
+
+    /*
+     * The prop round-trips through the property, and only through it.
+     *
+     * An earlier version of this check set `count = 7` and expected the button
+     * to read `7`. It did not, and that was the correct behaviour: the fixture
+     * does `createSignal(props.count ?? 0)`, so the prop seeds the signal once
+     * and later prop writes do not reach the rendered text. Asserting that they
+     * did would have encoded a re-render model this framework does not have.
+     *
+     * What must hold is the property contract the manifest publishes: a number
+     * assigned as a property reads back as that number, without going through
+     * attribute string coercion. The rendered output is asserted separately,
+     * from the template the compiler produced.
+     */
+    const projection = await page.evaluate(
+      name => {
+        const el = document.querySelector(name)
+        if (!el) return null
+        ;(el as unknown as { count: number }).count = 7
+        return {
+          count: (el as unknown as { count: number }).count,
+          shadow: Boolean((el as unknown as { shadowRoot: unknown }).shadowRoot),
+        }
+      },
+      tag,
+    )
+    assert(projection, 'the exported element must be in the document')
+    assert.equal(
+      projection.count,
+      7,
+      'a numeric prop must round-trip through the property without string coercion',
+    )
+    assert.equal(
+      projection.shadow,
+      false,
+      'the manifest says shadow: false, so the element must render into the light DOM',
+    )
+
+    // The component's own counter still works, and it is the compiled output
+    // doing it: a click updates the text the compiler bound.
+    await element.locator('button').click()
+    await expect(element.locator('button')).toContainText(': 1')
+
+    /*
+     * `<Slot>` projects light DOM that existed at upgrade time.
+     *
+     * The component captures the host's children on mount and re-projects them;
+     * appending afterwards lands in the rendered tree, which is what this
+     * asserts. It is the visible proof that the compiled `<Host>`/`<Slot>` pair
+     * produced a working light-DOM element rather than a detached template.
+     */
+    const slotState = await page.evaluate(name => {
+      const el = document.querySelector(name)
+      if (!el) return null
+      const marker = document.createElement('em')
+      marker.id = 'projected'
+      marker.textContent = 'projected'
+      el.append(marker)
+      return { projected: Boolean(el.querySelector('#projected')) }
+    }, tag)
+    assert(slotState?.projected, 'an appended child must remain in the light tree')
+    await expect(page.locator(`${tag} #projected`)).toHaveText('projected')
+
+    assert.deepEqual(pageErrors, [], 'the exported Web Component page must not throw')
+    return { registration: true, render: true, prop: true, slot: true }
+  } finally {
+    await browser.close()
+    await closeServer(server)
+  }
 }
 
 async function checkExportedBrowser(

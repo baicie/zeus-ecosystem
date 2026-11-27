@@ -141,3 +141,73 @@ jobs:
             exit 1
           fi
           echo "sandbox asset URLs are relative"
+
+  # The Playground's product behaviour, in a job of its own.
+  #
+  # The `apps` job proves the four applications build. It says nothing about
+  # whether the editor compiles, whether the preview runs, or whether the
+  # exported project installs and works — and the Playground arrived from the
+  # core repository with all of that checked only by a script nobody invoked.
+  # A gate that exists and is never run reads, in every report, exactly like a
+  # gate that passes.
+  #
+  # Chromium only. Firefox and WebKit are the same suite with a different
+  # launcher, and three full runs (each doing an npm install of two exported
+  # projects) is where this would stop being run at all. The three-engine claim
+  # belongs to `Playground / Browser gates`, which is a release-candidate-level
+  # job, not to a pull request.
+  playground-browser:
+    name: Playground / Browser gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10.33.4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          # The Playground's exported projects install `@zeus-js/*` from npm
+          # with `engines: ^22.18.0 || >=24.11.0`. The platform binaries are
+          # optional dependencies, and pnpm silently skips an optional package
+          # whose engine the running Node does not satisfy — so an older Node
+          # makes the native compiler disappear and the export fail with
+          # `MODULE_NOT_FOUND`. Pin the version the packages declare.
+          node-version: '24.16.0'
+          package-manager-cache: false
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Install the one browser this job drives
+        run: pnpm exec playwright install --with-deps --no-shell chromium
+
+      - name: Build the Playground
+        run: pnpm --filter @zeus-ecosystem/playground build
+
+      # The editor gate covers compile, multi-file update, preview, diagnostics,
+      # the devtools panel, the sandbox origin checks, and both exports end to
+      # end: browser download, npm install, typecheck, production build, and a
+      # real browser driving the built output.
+      - name: Playground editor, exports and sandbox
+        run: pnpm --filter @zeus-ecosystem/playground check:editor
+        env:
+          PLAYGROUND_BROWSERS: chromium
+
+      - name: Sandbox CSP and origin boundary
+        run: pnpm --filter @zeus-ecosystem/playground check:sandbox
+
+      - name: Playground i18n keys
+        run: pnpm --filter @zeus-ecosystem/playground check:i18n-keys
+
+      - name: Preserve the Playground acceptance report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: playground-acceptance
+          path: |
+            apps/playground/temp/playground-editor/report.json
+            apps/playground/temp/playground-editor/*.zip
+          if-no-files-found: warn

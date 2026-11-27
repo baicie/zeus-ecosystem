@@ -12,7 +12,10 @@
     "check:api-completions": "tsx scripts/generate/generate-api-completions.ts --check",
     "check:browser": "tsx scripts/checks/check-playground-ux.ts",
     "check:sandbox": "tsx scripts/checks/check-playground-sandbox-csp.ts",
-    "check:i18n-keys": "tsx scripts/checks/check-playground-i18n-keys.ts"
+    "check:i18n-keys": "tsx scripts/checks/check-playground-i18n-keys.ts",
+    "check:editor": "tsx scripts/checks/check-playground-editor.ts",
+    "check:performance": "tsx scripts/checks/check-playground-performance.ts",
+    "check:theme-i18n": "tsx scripts/checks/check-playground-theme-i18n.ts"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.4",

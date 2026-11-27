@@ -83,9 +83,32 @@ export function designVerdictFrom(approvalStatus: string | undefined): DesignRev
  * otherwise every run would be red until someone signed off, and a signature
  * that is forced is not a review.
  */
-export function overallStatus(evidence: VisualEvidence): 'PASS' | 'REGRESSION' | 'REVIEW_REQUIRED' | 'INCOMPLETE' {
+export function overallStatus(
+  evidence: VisualEvidence,
+): 'PASS' | 'REGRESSION' | 'REVIEW_REQUIRED' | 'INCOMPLETE' {
   if (evidence.functional === 'FAIL') return 'REGRESSION'
   if (evidence.structural.verdict === 'REGRESSION') return 'REGRESSION'
+
+  /*
+   * Added content explains a pixel difference; it does not excuse one silently.
+   *
+   * The `roles` scenario reports `CANDIDATE_ADDED` — the candidate has a table
+   * and a form the reference does not — and 1.68% of pixels differ. The
+   * structural dimension says nothing was lost, so the pixels changed because
+   * something was added, which is a design decision and not a regression. The
+   * previous version let the pixel threshold fire on its own and reported that
+   * scenario as `REGRESSION`, which tells someone to fix a page that is doing
+   * what it was asked to do.
+   *
+   * It is still not a `PASS`: a person has to confirm the addition is intended,
+   * so it asks for review. That is the same rule every other unverified
+   * difference gets.
+   */
+  if (evidence.structural.verdict === 'CANDIDATE_ADDED') {
+    if (evidence.screenshot.verdict === 'REGRESSION') return 'REVIEW_REQUIRED'
+    return evidence.design.verdict === 'REVIEW_REQUIRED' ? 'REVIEW_REQUIRED' : 'PASS'
+  }
+
   if (evidence.screenshot.verdict === 'REGRESSION') return 'REGRESSION'
 
   /*

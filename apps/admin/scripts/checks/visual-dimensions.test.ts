@@ -108,3 +108,57 @@ describe('the design verdict comes from a person', () => {
     expect(designVerdictFrom('APPROVED').reviewer).toBeUndefined()
   })
 })
+
+/*
+ * Added content explains a pixel difference.
+ *
+ * `roles` reports `CANDIDATE_ADDED` — a table and a form the reference does not
+ * have — and 1.68% pixels different. Nothing was lost; the page grew. Letting
+ * the pixel threshold fire on its own reported it as `REGRESSION`, which sends
+ * someone to fix a page that is doing what it was asked to.
+ */
+describe('candidate-added content', () => {
+  const added = {
+    scenario: 'roles',
+    functional: 'PASS' as const,
+    structural: {
+      verdict: 'CANDIDATE_ADDED' as const,
+      detail: 'the candidate has landmarks the reference does not: table, form',
+    },
+    screenshot: {
+      verdict: 'REGRESSION' as const,
+      differenceRatio: 0.0168,
+      threshold: 0.01,
+      detail: '1.68% of pixels differ',
+    },
+    design: { verdict: 'APPROVED' as const, reviewer: 'someone', detail: '' },
+  }
+
+  it('asks for review instead of reporting a regression', () => {
+    expect(overallStatus(added)).toBe('REVIEW_REQUIRED')
+  })
+
+  it('is still not a pass when the design has not been reviewed', () => {
+    expect(
+      overallStatus({
+        ...added,
+        screenshot: { verdict: 'PASS' as const },
+        design: { verdict: 'REVIEW_REQUIRED' as const, detail: 'nobody looked' },
+      }),
+    ).toBe('REVIEW_REQUIRED')
+  })
+
+  it('does not weaken the lost-content case', () => {
+    // The branch is only for additions. A structural REGRESSION still fails,
+    // and a pixel regression with matching structure still fails.
+    expect(
+      overallStatus({ ...added, structural: { verdict: 'REGRESSION' as const, detail: '' } }),
+    ).toBe('REGRESSION')
+    expect(
+      overallStatus({
+        ...added,
+        structural: { verdict: 'PASS' as const, detail: '' },
+      }),
+    ).toBe('REGRESSION')
+  })
+})

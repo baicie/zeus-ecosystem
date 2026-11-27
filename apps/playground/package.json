@@ -18,7 +18,8 @@
     "check:theme-i18n": "tsx scripts/checks/check-playground-theme-i18n.ts",
     "check:image": "tsx scripts/checks/check-playground-image.ts",
     "check:upgrade": "tsx scripts/checks/check-playground-upgrade.ts",
-    "check:contract": "node ../../scripts/checks/check-wasm-engine-contract.mjs"
+    "check:contract": "node ../../scripts/checks/check-wasm-engine-contract.mjs",
+    "check:visual": "tsx scripts/checks/check-playground-visual.ts"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.4",

@@ -32,9 +32,22 @@ COPY apps/playground ./apps/playground
 
 # The sandbox document may be mounted under a path prefix in production, so its
 # asset URLs must be relative; `vite.config.ts` rewrites them at build time.
+# Both are required, and neither has a usable fallback.
+#
+# Left unset, `resolveSandboxUrl` derives the sandbox from `location.port + 1`.
+# That is true inside this image (80 → 81) and false the moment the ports are
+# mapped or a reverse proxy fronts one of them, which is every real deployment:
+# the host then frames `:8080` while the sandbox listens on `:8081`, the browser
+# blocks it on `frame-src`, and the editor renders and compiles normally with no
+# preview. The build fails here instead of shipping that.
 ARG VITE_ZEUS_SANDBOX_URL
 ARG VITE_ZEUS_SANDBOX_ORIGIN
 ARG VITE_ZEUS_PLAYGROUND_HOST_ORIGINS
+
+RUN test -n "$VITE_ZEUS_SANDBOX_URL" \
+      || (echo "VITE_ZEUS_SANDBOX_URL is required: the sandbox is a second origin and cannot be derived from the host at runtime" >&2 && exit 1)
+RUN test -n "$VITE_ZEUS_PLAYGROUND_HOST_ORIGINS" \
+      || (echo "VITE_ZEUS_PLAYGROUND_HOST_ORIGINS is required: the sandbox rejects parent messages from unlisted origins" >&2 && exit 1)
 ENV VITE_ZEUS_SANDBOX_URL=$VITE_ZEUS_SANDBOX_URL \
     VITE_ZEUS_SANDBOX_ORIGIN=$VITE_ZEUS_SANDBOX_ORIGIN \
     VITE_ZEUS_PLAYGROUND_HOST_ORIGINS=$VITE_ZEUS_PLAYGROUND_HOST_ORIGINS
@@ -55,8 +68,19 @@ ARG ZEUS_VERSION
 LABEL org.opencontainers.image.revision=$ZEUS_APP_COMMIT \
       org.opencontainers.image.version=$ZEUS_VERSION
 
-COPY apps/playground/deploy/nginx.conf /etc/nginx/conf.d/default.conf
+# A template, not a file: the image's entrypoint runs envsubst over
+# `/etc/nginx/templates/*.template` at start and writes the result into
+# `/etc/nginx/conf.d/`. The CSP source list for the preview origin is a
+# deployment property (a self-hosted install frames its own sandbox), so it
+# cannot be baked in. `apps/ai-workbench` uses the same mechanism.
+COPY apps/playground/deploy/nginx.conf /etc/nginx/templates/default.conf.template
 COPY --from=build /app/apps/playground/dist /usr/share/nginx/html
+
+# Defaults keep an unconfigured image behaving exactly as the public
+# deployment does. Both are origins, not bare hosts: CSP source expressions
+# require the scheme.
+ENV ZEUS_SANDBOX_ORIGIN=https://playground.moonbyte.top:8443 \
+    ZEUS_PLAYGROUND_HOST_ORIGIN=https://playground.moonbyte.top:8443
 
 EXPOSE 80 81
 

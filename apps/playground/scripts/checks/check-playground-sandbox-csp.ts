@@ -74,7 +74,29 @@ interface Report {
  * The first block is the host origin and the second is the sandbox origin. That
  * ordering is the file's own: `listen 80` then `listen 81`.
  */
-function readCspHeaders(conf: string): HeaderRule[][] {
+/**
+ * Substitutes the origins the image's entrypoint would substitute.
+ *
+ * `deploy/nginx.conf` is an envsubst template now: the two origins are
+ * deployment properties, not literals, because a self-hosted install frames its
+ * own sandbox. Reading it raw would compare `${ZEUS_SANDBOX_ORIGIN}` against a
+ * real CSP and fail on every run. These are the same defaults the Dockerfile
+ * sets, so this check states what an unconfigured image actually serves.
+ */
+const TEMPLATE_DEFAULTS: Readonly<Record<string, string>> = {
+  ZEUS_SANDBOX_ORIGIN: 'https://playground.moonbyte.top:8443',
+  ZEUS_PLAYGROUND_HOST_ORIGIN: 'https://playground.moonbyte.top:8443',
+}
+
+function renderTemplate(conf: string): string {
+  return conf.replace(
+    /\$\{([A-Z0-9_]+)\}/g,
+    (match, name: string) => TEMPLATE_DEFAULTS[name] ?? match,
+  )
+}
+
+function readCspHeaders(rawConf: string): HeaderRule[][] {
+  const conf = renderTemplate(rawConf)
   const blocks = conf.split(/^server\s*\{$/m).slice(1)
   assert.equal(
     blocks.length,

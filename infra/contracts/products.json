@@ -98,7 +98,13 @@
       "persistence": {
         "kind": "browser-storage",
         "note": "Projects and files in IndexedDB, settings in LocalStorage, both keyed by the host origin. IndexedDB is per-origin: a rollback that changes the origin shows an empty workspace rather than migrated data, which is why the rehearsal keeps the origin stable."
-      }
+      },
+      "buildArgs": [
+        "VITE_ZEUS_SANDBOX_URL",
+        "VITE_ZEUS_SANDBOX_ORIGIN",
+        "VITE_ZEUS_PLAYGROUND_HOST_ORIGINS"
+      ],
+      "buildArgsNote": "The sandbox is a second origin served from the same image. Left unset, the application derives it from location.port + 1, which is wrong behind any port mapping or reverse proxy: the host frames an origin that is not listening and the preview is blocked by frame-src. The Dockerfile refuses to build without them."
     }
   ],
   "deploymentUnits": {

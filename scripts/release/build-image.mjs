@@ -198,10 +198,42 @@ export async function buildProduct(options) {
   const localTag = `zeus-${productId}:${tag}`
   const reference = imageReference(productId, tag)
 
-  docker(['build', '-f', product.dockerfile, '-t', localTag, '--build-arg', `ZEUS_APP_COMMIT=${appCommit}`, product.context], {
-    cwd: top,
-    stdio: 'inherit',
+  /*
+   * Build arguments a product declares, from the environment.
+   *
+   * The Playground cannot bake a guess for its sandbox origin: the URL is a
+   * second listener and the host would derive it from its own port, which is
+   * wrong behind every port mapping and reverse proxy. Its Dockerfile refuses
+   * to build without them, so the values have to arrive from the deployment
+   * configuration rather than from the Dockerfile's defaults.
+   *
+   * A product with no declared arguments contributes nothing, so this does not
+   * change how the other three are built.
+   */
+  const buildArgs = (product.buildArgs ?? []).flatMap(name => {
+    const value = process.env[name]
+    if (value === undefined || value === '') {
+      throw new Error(
+        `product ${productId} requires build argument ${name}; set it in the environment`,
+      )
+    }
+    return ['--build-arg', `${name}=${value}`]
   })
+
+  docker(
+    [
+      'build',
+      '-f',
+      product.dockerfile,
+      '-t',
+      localTag,
+      '--build-arg',
+      `ZEUS_APP_COMMIT=${appCommit}`,
+      ...buildArgs,
+      product.context,
+    ],
+    { cwd: top, stdio: 'inherit' },
+  )
 
   const inspected = inspectImage(localTag)
 

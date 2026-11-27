@@ -18,11 +18,25 @@ services:
       - '127.0.0.1:18080:80'
       - '127.0.0.1:18081:81'
     read_only: true
+    environment:
+      # The two origins the CSP allowlists. They travel with the deployment
+      # rather than baked into the image, because a self-hosted install frames
+      # its own sandbox; before this the image shipped the public panel origin
+      # as a literal and any other deployment had every preview iframe blocked
+      # by `frame-src` — with the editor rendering and compiling normally.
+      #
+      # The image's entrypoint substitutes these into
+      # /etc/nginx/templates/default.conf.template. Defaults are the public
+      # Playground's origins, so an environment that sets neither keeps its
+      # previous behaviour.
+      ZEUS_SANDBOX_ORIGIN: ${ZEUS_SANDBOX_ORIGIN:-https://playground.moonbyte.top:8443}
+      ZEUS_PLAYGROUND_HOST_ORIGIN: ${ZEUS_PLAYGROUND_HOST_ORIGIN:-https://playground.moonbyte.top:8443}
     volumes:
-      # Keep the host's verified nginx.conf mounted. The copy baked into the
-      # image is the generic one (`sandbox allow-scripts`, no frame-ancestors);
-      # the production file pins frame-ancestors to the public Playground
-      # origin. Dropping this mount would silently weaken the sandbox CSP.
+      # The host operator may still mount a hand-verified nginx.conf over the
+      # rendered one. That file must list the same origins as the environment
+      # above; mounting it bypasses envsubst entirely, which is why the release
+      # gate compares the two. Dropping this mount is the safe direction: the
+      # image's own template then applies with the environment it was given.
       - /home/ubuntu/zeus-playground/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     # The base image rewrites its config into /etc/nginx/conf.d on start; the
     # renderer needs a writable temp dir, hence the tmpfs entries below.

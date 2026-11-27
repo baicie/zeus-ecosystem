@@ -60,7 +60,14 @@ jobs:
       # The image is built from a clean context: `.dockerignore` keeps the
       # workspace's node_modules out, so this proves the Dockerfile is
       # self-sufficient rather than leaning on the checkout.
+      # The Playground's sandbox is a second origin and its Dockerfile refuses
+      # to build without both values. They are the ones the image's own nginx
+      # template substitutes, so what CI checks is what a deployment gets.
       - name: Build, inspect and check the image
+        env:
+          VITE_ZEUS_SANDBOX_URL: ${{ matrix.product == 'playground' && 'http://127.0.0.1:8081/sandbox.html' || '' }}
+          VITE_ZEUS_SANDBOX_ORIGIN: ${{ matrix.product == 'playground' && 'http://127.0.0.1:8081' || '' }}
+          VITE_ZEUS_PLAYGROUND_HOST_ORIGINS: ${{ matrix.product == 'playground' && 'http://127.0.0.1:8080' || '' }}
         run: |
           node scripts/release/build-image.mjs \
             --product "${{ matrix.product }}" \

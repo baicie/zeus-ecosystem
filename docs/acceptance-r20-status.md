@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | `baicie/zeus` | `9353ed74` | CI / Compiler Native Matrix / Release Canary 全绿 |
 | `baicie/zeus-ui` | `b7f3997` | 含 Zeus Canary Compatibility 通过 |
-| `baicie/zeus-ecosystem` | `bfe1d94` | 见下 |
+| `baicie/zeus-ecosystem` | `772344e` | 见下 |
 
 ## 本轮关闭的缺陷
 
@@ -175,7 +175,16 @@ ls: apps/admin/dist/build-info.json: No such file or directory
 `revisionMismatch()` 使其可在没有 Docker 的环境下测试：5 条断言，含截断
 SHA 不得按前缀通过；把判定改成恒 `undefined` 后 4 条转红。
 
-> 注意：本机没有 Docker，镜像层改动由 CI 的 `App images` 矩阵验证。
+**镜像里的产物本身**：修完上面两处之后仍未闭合。`build-image.mjs` 的
+健康检查只读 Docker 的 HEALTHCHECK 状态，从不打开镜像看 `build-info.json`
+是否存在——label 对、`status: PASS`，但产物可能根本没进镜像。补
+`readImageBuildInfo()`：从镜像里 `cat` 出该文件、校验 schema、比对 app
+commit、拒绝 synthetic。文件位置从 Dockerfile 自己的 `COPY .../dist <目标>`
+行推导（`admin` 是 `/app/dist`，两个 nginx 镜像是
+`/usr/share/nginx/html`）；写死任一个都会把正确镜像判为失败。
+
+> 注意：本机没有 Docker。第一版路径写死 `/app/dist`，靠变异测试才发现
+> 它会让两个正确镜像变红；镜像层的最终结论仍以 CI 的 `App images` 为准。
 
 ## 仍开放
 

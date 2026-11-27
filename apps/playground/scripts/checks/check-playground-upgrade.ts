@@ -609,14 +609,36 @@ async function main(): Promise<void> {
       (storedRollback.settings as { theme?: string } | null)?.theme === 'light',
       JSON.stringify(storedRollback.settings).slice(0, 120),
     )
+    /*
+     * Compiling after a rollback is only evidence if the rollback target could
+     * compile before the round trip.
+     *
+     * The current GHCR `:main` cannot: it reports "Preview sandbox did not
+     * become ready" on its own built-in project, before any of this rehearsal's
+     * data exists. Requiring it to compile afterwards would fail every run for
+     * a reason that has nothing to do with the upgrade — and, worse, would read
+     * as "the rollback is broken" when the image was already broken. The
+     * baseline's own result from phase one decides what this step means.
+     */
+    const baselineCouldCompile =
+      /Compiled \d+ modules|已编译 \d+ 个模块/.test(baselineCompile) &&
+      /Preview ready|Running in the opaque sandbox|预览就绪|正在不透明沙箱中运行/.test(
+        baselineCompile,
+      )
     const rollbackCompile = await compile(page)
-    record(
-      'the rollback target still compiles',
+    const rollbackCompiled =
       /Compiled \d+ modules|已编译 \d+ 个模块/.test(rollbackCompile) &&
-        /Preview ready|Running in the opaque sandbox|预览就绪|正在不透明沙箱中运行/.test(
-          rollbackCompile,
-        ),
-      rollbackCompile,
+      /Preview ready|Running in the opaque sandbox|预览就绪|正在不透明沙箱中运行/.test(
+        rollbackCompile,
+      )
+    record(
+      baselineCouldCompile
+        ? 'the rollback target still compiles'
+        : 'the rollback target compiles as well as it did before the round trip',
+      rollbackCompiled === baselineCouldCompile,
+      baselineCouldCompile
+        ? rollbackCompile
+        : `skipped: the baseline could not compile before the upgrade either — ${rollbackCompile}`,
     )
     await page.getByRole('tab', { name: 'counter.tsx' }).click()
     const after = await page.evaluate(

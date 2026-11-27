@@ -85,7 +85,7 @@
       ],
       "runtimePort": 80,
       "healthcheckPath": "/",
-      "buildInfoPath": null,
+      "buildInfoPath": "apps/playground/dist/build-info.json",
       "staticArtifact": true,
       "dependsOn": [],
       "deploymentUnit": "playground",

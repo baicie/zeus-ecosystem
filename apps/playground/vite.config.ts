@@ -2,7 +2,9 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath, URL } from 'node:url'
 
 import zeus from '@zeus-js/vite-plugin'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
+
+import { createBuildInfo } from '../../scripts/release/build-info.mjs'
 
 /*
  * The application's whole package identity, read from its own manifest once.
@@ -54,6 +56,43 @@ function injectedVersionContract() {
   }
 }
 
+/**
+ * Writes the build identity next to the bundle.
+ *
+ * `infra/contracts/products.json` gives the Playground `buildInfoPath: null`,
+ * which is why its delivery evidence said less than Admin's and the
+ * workbench's: an audit could name the image but not the packages inside it.
+ * The identity is the same one the other two apps emit — source commit,
+ * lockfile hash, and the per-package versions the release contract pins.
+ *
+ * Emitted as a separate asset rather than injected into the JS: it has to be
+ * readable by a deployment check without executing the app.
+ */
+function buildInfoPlugin(): Plugin {
+  return {
+    name: 'zeus-build-info',
+    apply: 'build',
+    generateBundle() {
+      // The repository root: the release contract and the lockfile both live
+      // there, and passing the app directory made a present contract look
+      // missing the first time this was written for the workbench.
+      const root = fileURLToPath(new URL('../..', import.meta.url))
+
+      const info = createBuildInfo({
+        root,
+        product: 'playground',
+        allowSynthetic: process.env.ZEUS_ALLOW_SYNTHETIC_IDENTITY === '1',
+      })
+
+      this.emitFile({
+        type: 'asset',
+        fileName: 'build-info.json',
+        source: `${JSON.stringify(info, null, 2)}\n`,
+      })
+    },
+  }
+}
+
 // The sandbox document may be served under a path prefix (production mounts it
 // at /zeus-sandbox/). Absolute asset URLs would escape that prefix, so the
 // sandbox entry rewrites them to paths relative to its own directory.
@@ -76,7 +115,7 @@ function relativeSandboxAssets() {
 
 export default defineConfig({
   define: injectedVersionContract(),
-  plugins: [zeus(), relativeSandboxAssets()],
+  plugins: [zeus(), relativeSandboxAssets(), buildInfoPlugin()],
   server: {
     headers: {
       // Opaque-origin module workers and iframes request scripts with Origin: null.

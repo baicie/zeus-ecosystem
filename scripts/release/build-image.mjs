@@ -172,6 +172,28 @@ export async function checkHealth(product, tag, timeoutSeconds = 60) {
  * Fields that cannot be measured are omitted rather than filled with a
  * placeholder, and every consumer treats an absent field as `NOT_RUN`.
  */
+/**
+ * Whether the image's recorded revision names the commit this build started
+ * from.
+ *
+ * Every Dockerfile sets `org.opencontainers.image.revision` from
+ * `ZEUS_APP_COMMIT`, and `ai-host` carries its identity *only* that way — it
+ * has no `dist` and so no `build-info.json`. Recording whatever label the
+ * image happens to hold would make an empty or stale label read as a fact,
+ * which is how a substituted identity gets onto a delivery record.
+ *
+ * Separated from `buildProduct` so both answers are testable without a Docker
+ * daemon: a check that only runs inside a container is a check nobody can
+ * prove refuses anything.
+ */
+export function revisionMismatch(inspectedRevision, appCommit) {
+  if (inspectedRevision === appCommit) return undefined
+
+  return inspectedRevision
+    ? `the image records revision ${inspectedRevision}, but this build was started from ${appCommit}`
+    : 'the image carries no org.opencontainers.image.revision label'
+}
+
 export async function buildProduct(options) {
   const {
     root = process.cwd(),
@@ -350,6 +372,16 @@ export async function buildProduct(options) {
     }))
 
     if (!health.ok) evidence.failureReasons = [`health check: ${health.status}`]
+  }
+
+  /*
+   * The image's own identity, checked rather than copied. A mismatch or an
+   * absent label is a failure, not a note.
+   */
+  const revisionFailure = revisionMismatch(inspected.revision, appCommit)
+
+  if (revisionFailure) {
+    evidence.failureReasons = [...(evidence.failureReasons ?? []), revisionFailure]
   }
 
   if (evidence.unpackedBytes > product.sizePolicy.maxUnpackedBytes) {

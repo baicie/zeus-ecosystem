@@ -15,10 +15,29 @@ WORKDIR /app
 ARG PNPM_VERSION=10.33.4
 RUN corepack enable && corepack prepare "pnpm@${PNPM_VERSION}" --activate
 
+# The commit that started this build. `.dockerignore` removes `.git`, so the
+# build has no history to read it from, and `build-info.mjs` calls
+# `git rev-parse` before it falls back to the environment. Without this the
+# build dies with `spawnSync git ENOENT`, which names a missing binary rather
+# than a missing input. The runtime stage declares it again: an ARG does not
+# carry across FROM.
+ARG ZEUS_APP_COMMIT
+ENV ZEUS_APP_COMMIT=${ZEUS_APP_COMMIT}
+
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json .npmrc ./
 COPY apps/admin/package.json apps/admin/package.json
 
 RUN pnpm install --frozen-lockfile --filter @zeus-ecosystem/admin...
+
+# The build identity needs two things outside the app directory.
+#
+# `vite.config.ts` imports `scripts/release/build-info.mjs`, which reads
+# `infra/contracts/published-pair.json` and the lockfile. Both live at the
+# repository root, so a context that copies only `apps/admin` cannot resolve
+# them — the same failure the Playground and AI Workbench Dockerfiles already
+# document.
+COPY infra/contracts ./infra/contracts
+COPY scripts/release ./scripts/release
 
 COPY apps/admin ./apps/admin
 

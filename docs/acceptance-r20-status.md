@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | `baicie/zeus` | `9353ed74` | CI / Compiler Native Matrix / Release Canary 全绿 |
 | `baicie/zeus-ui` | `b7f3997` | 含 Zeus Canary Compatibility 通过 |
-| `baicie/zeus-ecosystem` | `3e43099` | 见下 |
+| `baicie/zeus-ecosystem` | `bfe1d94` | 见下 |
 
 ## 本轮关闭的缺陷
 
@@ -143,13 +143,47 @@ lock     e3e18090641b65cd
 并对该镜像跑完整验收 11/11——**给配置加身份，如果镜像不再能跑，那身份没有意义**。
 `App images` CI 已转绿。
 
+### N2 — `admin` 的构建身份从未产出，`ai-host` 的身份从未被校验
+
+这一条分两半，两半都是「声明了但没人验证」的同一类缺陷。
+
+**`admin`**：`products.json` 从加入该字段起就声明
+`buildInfoPath: apps/admin/dist/build-info.json`，`verify-provenance.mjs`
+也确实按这个路径读。但全仓只有 `ai-workbench` 和 `playground` 的 vite 配置
+调用 `createBuildInfo`，`admin` 既没有插件、Dockerfile 也没 COPY
+`scripts/release`。实测：
+
+```
+$ pnpm --filter @zeus-ecosystem/admin build && ls apps/admin/dist/build-info.json
+ls: apps/admin/dist/build-info.json: No such file or directory
+```
+
+于是 provenance 报告的 `sourceCommit` 恒为 `null`——一个没人读的 null 字段。
+补上同一个插件（demo 构建跳过，Pages 产物不是交付物），Dockerfile 补
+`infra/contracts`、`scripts/release` 与 build 阶段的 `ZEUS_APP_COMMIT`。
+修后同一个命令：
+
+```
+"sourceCommit": "bfe1d94845b5e02b2a6d1a442fff34d8318f0e4f",
+"lockfileSha256": "e3e18090641b65da…"
+```
+
+**`ai-host`**：它没有 `dist`，身份只能来自镜像 label
+`org.opencontainers.image.revision`。`build-image.mjs` 一直把这个 label
+抄进证据，却从不与本次构建的 commit 比较——label 缺失、为空、或来自陈旧
+上下文，都会写出一条看起来像事实的记录。现改为不一致即失败，并抽出
+`revisionMismatch()` 使其可在没有 Docker 的环境下测试：5 条断言，含截断
+SHA 不得按前缀通过；把判定改成恒 `undefined` 后 4 条转红。
+
+> 注意：本机没有 Docker，镜像层改动由 CI 的 `App images` 矩阵验证。
+
 ## 仍开放
 
 | 项 | 状态 | 解除条件 |
 | --- | --- | --- |
 | Playground 浏览器门禁变绿 | 红 | 需发布含 WebC 修复的 `@zeus-js/playground-engine`；`check:contract` 15/15 已通过，失败点在 `check:editor` 的 WebC 导出 |
 | 回滚兼容性 | 真实缺陷 | 需产品决策：是否要求旧版读新版数据 |
-| `ai-host` 构建身份 | `buildInfoPath: null` | 需在镜像 label 承载，独立改动 |
+| `ai-host` 构建身份 | 已关闭 | 见 N2 |
 | N2–N5 的 Registry / Pages / 生产切换 | 未开始 | 需要发布与部署授权 |
 | O 的文档整改 | 部分 | 遵循本文 |
 

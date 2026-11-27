@@ -142,7 +142,7 @@ describe('candidate-added content', () => {
     expect(
       overallStatus({
         ...added,
-        screenshot: { verdict: 'PASS' as const },
+        screenshot: { verdict: 'PASS' as const, detail: 'no difference' },
         design: { verdict: 'REVIEW_REQUIRED' as const, detail: 'nobody looked' },
       }),
     ).toBe('REVIEW_REQUIRED')

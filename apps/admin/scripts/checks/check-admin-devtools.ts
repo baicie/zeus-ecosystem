@@ -277,7 +277,16 @@ async function main(): Promise<void> {
      * once, and it costs nothing in a page that will never look at it.
      */
     await page.addInitScript(() => {
-      globalThis.__name = globalThis.__name ?? (fn => fn)
+      /*
+       * Cast rather than declare: `globalThis` has no index signature, so the
+       * obvious assignment fails `tsc` in the admin gate-scripts job — which is
+       * how this surfaced, on CI, after the check already passed locally
+       * because `tsx` strips types and never checks them.
+       */
+      const scope = globalThis as unknown as {
+        __name?: (fn: unknown) => unknown
+      }
+      scope.__name ??= (fn: unknown) => fn
     })
 
     await page.goto(`http://127.0.0.1:${APP_PORT}/?devtools`, { waitUntil: 'domcontentloaded' })

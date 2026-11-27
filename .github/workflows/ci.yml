@@ -227,7 +227,12 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: playground-acceptance
+          # The whole run directory, not just the report: the archives each
+          # run produced are the evidence that the download, the npm install
+          # and the build were checked against *that* commit's output. The
+          # previous layout reused one directory, so an artifact could outlive
+          # the run that produced it.
           path: |
-            apps/playground/temp/playground-editor/report.json
-            apps/playground/temp/playground-editor/*.zip
+            apps/playground/temp/playground-editor/runs/
+            apps/playground/temp/playground-image/report.json
           if-no-files-found: warn

@@ -19,7 +19,19 @@ const execFileAsync = promisify(execFile)
 const root = path.resolve(import.meta.dirname, '../..')
 const example = root
 const dist = path.join(example, 'dist')
-const output = path.join(root, 'temp/playground-editor')
+/**
+ * One directory per run, never the previous run's.
+ *
+ * The output used to be `temp/playground-editor/` and was reused for every
+ * run. A failed run left its archives behind, and the next run's report could
+ * be read next to a ZIP that came from a different commit — while the export
+ * verification extracts into that same tree, so an install that failed early
+ * could be inspected against the previous run's files. `latest` is a pointer
+ * for humans; `runId` is what the report and every artifact path carry.
+ */
+const runId = `${new Date().toISOString().replace(/[:.]/g, '-')}-${process.pid}`
+const output = path.join(root, 'temp/playground-editor/runs', runId)
+const latestPointer = path.join(root, 'temp/playground-editor/latest')
 const engines = { chromium, firefox, webkit }
 const requestedBrowsers = (
   process.env.PLAYGROUND_BROWSERS ?? 'chromium,firefox,webkit'
@@ -47,6 +59,109 @@ let downloadedArchive: string | undefined
 let downloadedWebCArchive: string | undefined
 const requests: Array<{ host: string; path: string }> = []
 
+/**
+ * Everything the run knows, kept current while it runs.
+ *
+ * `writeReport` is called from `finally`, so a browser that cannot launch, a
+ * download that times out, a ZIP that will not extract, an `npm install` that
+ * fails and a build error all leave the same artifact: the stages that did
+ * run, the ones that did not, and the first error. The previous version wrote
+ * the report only on the success path, which meant the interesting runs —
+ * the failing ones — produced no evidence at all.
+ */
+const stages: Array<{
+  id: string
+  verdict: 'PASS' | 'FAIL' | 'SKIPPED'
+  durationMs: number
+  detail?: string
+}> = []
+const report: {
+  schema: string
+  runId: string
+  sourceCommit: string
+  lockfileSha256: string
+  node: string
+  browsers: string[]
+  verdict: 'PASS' | 'FAIL' | 'INCOMPLETE'
+  error?: string
+  stages: typeof stages
+  results: BrowserResult[]
+  requests: typeof requests
+  products: Record<string, 'passed' | 'failed'>
+} = {
+  schema: 'zeus.playground-editor-acceptance/v1',
+  runId,
+  sourceCommit: '',
+  lockfileSha256: '',
+  node: process.version,
+  browsers: selectedEngines.map(([name]) => name),
+  verdict: 'INCOMPLETE',
+  stages,
+  results,
+  requests,
+  products: {},
+}
+
+/** Runs one stage, records its verdict, and lets a failure propagate. */
+async function stage<T>(id: string, run: () => Promise<T>): Promise<T> {
+  const started = Date.now()
+  try {
+    const value = await run()
+    stages.push({ id, verdict: 'PASS', durationMs: Date.now() - started })
+    return value
+  } catch (error) {
+    stages.push({
+      id,
+      verdict: 'FAIL',
+      durationMs: Date.now() - started,
+      detail: error instanceof Error ? error.message.slice(0, 2000) : String(error),
+    })
+    throw error
+  }
+}
+
+/**
+ * Writes the report, the run identity, and the `latest` pointer.
+ *
+ * Best effort by design: it runs from `finally`, possibly because the
+ * filesystem is the thing that failed, and an exception here would replace the
+ * real error with this one.
+ */
+async function writeReport(): Promise<void> {
+  try {
+    report.sourceCommit = execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: root,
+      encoding: 'utf8',
+    }).trim()
+  } catch {
+    report.sourceCommit = 'unknown'
+  }
+  try {
+    const lockfile = await fs.readFile(path.join(root, '../../pnpm-lock.yaml'))
+    const { createHash } = await import('node:crypto')
+    report.lockfileSha256 = createHash('sha256').update(lockfile).digest('hex')
+  } catch {
+    report.lockfileSha256 = 'unknown'
+  }
+  if (report.verdict === 'INCOMPLETE') report.verdict = 'FAIL'
+  try {
+    await fs.mkdir(output, { recursive: true })
+    await fs.writeFile(
+      path.join(output, 'report.json'),
+      `${JSON.stringify(report, null, 2)}\n`,
+    )
+    // `latest` is for a human looking for the most recent evidence. It is not
+    // what the aggregator reads: `runId` inside the report is.
+    await fs.rm(latestPointer, { force: true })
+    await fs.symlink(path.relative(path.dirname(latestPointer), output), latestPointer)
+  } catch (error) {
+    console.error(
+      'could not write the acceptance report:',
+      error instanceof Error ? error.message : error,
+    )
+  }
+}
+
 async function main(): Promise<void> {
   await fs.mkdir(output, { recursive: true })
   editorServer = await createStaticServer(dist)
@@ -65,17 +180,26 @@ async function main(): Promise<void> {
         const page = await browser.newPage()
         page.setDefaultTimeout(12_000)
         page.on('pageerror', error => pageErrors.push(error.message))
-        const security = await runEditorChecks(page)
-        Object.assign(security, await runSandboxOriginChecks(browser))
+        const security = await stage(`${name}:editor`, () => runEditorChecks(page))
+        Object.assign(
+          security,
+          await stage(`${name}:sandbox-origin`, () => runSandboxOriginChecks(browser!)),
+        )
         nativeLabPassed = true
         if (name === 'chromium') {
-          downloadedArchive = await downloadExport(page)
-          const studio = await runWebCStudioChecks(page)
+          downloadedArchive = await stage(`${name}:native-export-download`, () =>
+            downloadExport(page),
+          )
+          const studio = await stage(`${name}:webc-studio`, () =>
+            runWebCStudioChecks(page),
+          )
           assert.deepEqual(studio.manifest.components[0]?.tag, 'z-counter')
           webcStudioPassed = true
-          downloadedWebCArchive = await downloadExport(page)
+          downloadedWebCArchive = await stage(`${name}:webc-export-download`, () =>
+            downloadExport(page),
+          )
         }
-        await runFrameworkHostChecks(page)
+        await stage(`${name}:framework-host`, () => runFrameworkHostChecks(page))
         assert.deepEqual(pageErrors, [], `${name} page errors`)
         results.push({
           browser: name,
@@ -111,22 +235,19 @@ async function main(): Promise<void> {
       'Every browser must pass the playground editor gate.',
     )
 
-    const exportedProjectDirectory = await installAndBuildExport(
-      downloadedArchive,
-      'native-lab',
+    const exportedProjectDirectory = await stage('native-export-install-and-build', () =>
+      installAndBuildExport(downloadedArchive!, 'native-lab'),
     )
-    const exportedSecurity = await checkExportedBrowser(
-      exportedProjectDirectory,
-      'chromium',
+    const exportedSecurity = await stage('native-export-browser', () =>
+      checkExportedBrowser(exportedProjectDirectory, 'chromium'),
     )
     results.push({
       browser: 'chromium-export',
       status: 'passed',
       security: exportedSecurity,
     })
-    const webcProject = await installAndBuildExport(
-      downloadedWebCArchive!,
-      'webc-studio',
+    const webcProject = await stage('webc-export-install-and-build', () =>
+      installAndBuildExport(downloadedWebCArchive!, 'webc-studio'),
     )
     const webcFiles = await fs.readdir(webcProject)
     assert(webcFiles.includes('custom-elements.json'))
@@ -168,10 +289,8 @@ async function main(): Promise<void> {
       'the WebC export must ship the type declarations the manifest promises',
     )
 
-    const webcAcceptance = await checkExportedWebComponent(
-      webcProject,
-      counter.tag,
-      'chromium',
+    const webcAcceptance = await stage('webc-export-browser', () =>
+      checkExportedWebComponent(webcProject, counter.tag, 'chromium'),
     )
     results.push({
       browser: 'chromium-webc-export',
@@ -179,39 +298,11 @@ async function main(): Promise<void> {
       security: webcAcceptance,
     })
 
-    await fs.writeFile(
-      path.join(output, 'report.json'),
-      `${JSON.stringify(
-        {
-          scope:
-            'WASM multi-file compile, DOM/SSR output, sandbox interaction, diagnostics, security, loop budget and external export',
-          sourceCommit: execFileSync('git', ['rev-parse', 'HEAD'], {
-            cwd: root,
-            encoding: 'utf8',
-          }).trim(),
-          host: 'http://127.0.0.1',
-          sandbox: 'http://localhost',
-          runtime: {
-            node: process.version,
-            v8: process.versions.v8,
-          },
-          requests,
-          results,
-          products: [
-            {
-              id: 'native-lab',
-              status: nativeLabPassed ? 'passed' : 'failed',
-            },
-            {
-              id: 'webc-studio',
-              status: webcStudioPassed ? 'passed' : 'failed',
-            },
-          ],
-        },
-        null,
-        2,
-      )}\n`,
-    )
+    report.products = {
+      'native-lab': nativeLabPassed ? 'passed' : 'failed',
+      'webc-studio': webcStudioPassed ? 'passed' : 'failed',
+    }
+    report.verdict = 'PASS'
 
     console.log(
       `Playground editor gate passed in ${selectedEngines
@@ -219,9 +310,15 @@ async function main(): Promise<void> {
         .join(', ')}.`,
     )
   } finally {
+    /*
+     * The report is written before anything is torn down, and it is written on
+     * every path. The previous version wrote it only after every assertion had
+     * passed, so a run that failed left the caller with a console message and
+     * nothing on disk — the runs whose evidence matters most.
+     */
+    await writeReport()
     const server = editorServer
-    if (!server) throw new Error('Editor server must be running.')
-    await closeServer(server)
+    if (server) await closeServer(server)
   }
 }
 
@@ -879,4 +976,16 @@ async function closeServer(server: http.Server): Promise<void> {
   )
 }
 
-await main()
+/*
+ * A top-level failure still exits non-zero, but the report from `finally` is
+ * already on disk by then. Printing the error here rather than letting Node
+ * print a stack keeps the artifact and the message in the same shape.
+ */
+try {
+  await main()
+} catch (error) {
+  report.verdict = 'FAIL'
+  report.error ??=
+    error instanceof Error ? (error.stack ?? error.message) : String(error)
+  throw error
+}

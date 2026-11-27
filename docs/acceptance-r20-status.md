@@ -120,11 +120,34 @@ Playground 补上 `build-info.json`：app commit、Core/UI 版本与 commit、
 lockfile 哈希、Node 版本。`products.json` 声明路径后 `build-image.mjs` 与
 provenance verifier 才会读取它。
 
+**这个改动第一次把镜像构建弄红了**，两处都是「配置新增了 build 阶段没有的
+依赖」：
+
+- `scripts/release/build-info.mjs` 与 `infra/contracts` 在 `apps/playground`
+  之外，而 Dockerfile 只 COPY 了 app。`.dockerignore` 的注释甚至写着 builder
+  需要这两条路径。
+- `build-info.mjs` 在没有 git 时读 `ZEUS_APP_COMMIT`——这正是容器场景。
+  Playground 只在 **runtime** 阶段声明了这个 ARG（给 OCI label 用），
+  build 阶段拿不到，于是回落到 `git rev-parse`，而镜像里没有 git 二进制。
+
+修后实测镜像内身份：
+
+```
+product  playground
+app      43b10523fec8
+core     0.2.0-rc.5  bc1d4fc2afaa
+ui       0.1.0-beta.35  9c90d0b35062
+lock     e3e18090641b65cd
+```
+
+并对该镜像跑完整验收 11/11——**给配置加身份，如果镜像不再能跑，那身份没有意义**。
+`App images` CI 已转绿。
+
 ## 仍开放
 
 | 项 | 状态 | 解除条件 |
 | --- | --- | --- |
-| Playground 浏览器门禁变绿 | 红 | 需发布含 WebC 修复的 `@zeus-js/playground-engine` |
+| Playground 浏览器门禁变绿 | 红 | 需发布含 WebC 修复的 `@zeus-js/playground-engine`；`check:contract` 15/15 已通过，失败点在 `check:editor` 的 WebC 导出 |
 | 回滚兼容性 | 真实缺陷 | 需产品决策：是否要求旧版读新版数据 |
 | `ai-host` 构建身份 | `buildInfoPath: null` | 需在镜像 label 承载，独立改动 |
 | N2–N5 的 Registry / Pages / 生产切换 | 未开始 | 需要发布与部署授权 |

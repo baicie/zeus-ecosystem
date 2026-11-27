@@ -5,28 +5,51 @@ import zeus from '@zeus-js/vite-plugin'
 import { defineConfig } from 'vite'
 
 /*
- * The versions the *exported* project will install.
+ * The application's whole package identity, read from its own manifest once.
  *
- * `exportProject` falls back to defaults baked into the engine when the caller
- * passes none — and those defaults are a version line this application no longer
- * uses. An exported project built with them pins `@zeus-js/query@0.1.1-beta.20`,
- * which has no `useQuery`, so the export's own `tsc` fails on the built-in
- * examples. Reading this app's own manifest is the only answer that stays true
- * as the pins move.
+ * Two separate defects came from computing these in more than one place: the
+ * compiler was labelled with the *runtime* version, and the exported project
+ * pinned a version line this app no longer used because `exportProject` fell
+ * back to constants inside the engine. Both were literal strings. This object
+ * is the single injection point; `src/playground/version-contract.ts` is the
+ * only reader, and the snapshot, the export and the build metadata all take
+ * their versions from it.
+ *
+ * `dependencies` is listed rather than "everything `@zeus-js/*`" because the
+ * contract must fail closed on a package the application forgot to declare —
+ * a discovered list would silently shrink instead.
  */
-function exportedDependencyVersions() {
+function injectedVersionContract() {
   const manifest = JSON.parse(
     readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
-  ) as { dependencies?: Record<string, string>; devDependencies?: Record<string, string> }
+  ) as {
+    dependencies?: Record<string, string>
+    devDependencies?: Record<string, string>
+  }
   const dependency = (name: string): string =>
     manifest.dependencies?.[name] ?? manifest.devDependencies?.[name] ?? ''
+  const zeusPackages = [
+    '@zeus-js/zeus',
+    '@zeus-js/signal',
+    '@zeus-js/runtime-dom',
+    '@zeus-js/runtime-ssr',
+    '@zeus-js/i18n',
+    '@zeus-js/query',
+    '@zeus-js/router',
+  ]
 
   return {
-    __ZEUS_EXPORT_VERSIONS__: JSON.stringify({
-      zeus: dependency('@zeus-js/zeus'),
-      vitePlugin: dependency('@zeus-js/vite-plugin'),
-      vite: dependency('vite'),
-      typescript: dependency('typescript'),
+    __ZEUS_VERSION_CONTRACT__: JSON.stringify({
+      compiler: dependency('@zeus-js/compiler-wasm'),
+      engine: dependency('@zeus-js/playground-engine'),
+      zeus: Object.fromEntries(
+        zeusPackages.map(name => [name, dependency(name)]),
+      ),
+      toolchain: {
+        vitePlugin: dependency('@zeus-js/vite-plugin'),
+        vite: dependency('vite'),
+        typescript: dependency('typescript'),
+      },
     }),
   }
 }
@@ -52,7 +75,7 @@ function relativeSandboxAssets() {
 }
 
 export default defineConfig({
-  define: exportedDependencyVersions(),
+  define: injectedVersionContract(),
   plugins: [zeus(), relativeSandboxAssets()],
   server: {
     headers: {

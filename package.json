@@ -9,7 +9,7 @@
     "node": "^22.18.0 || >=24.11.0"
   },
   "scripts": {
-    "check": "node scripts/validate-repository.mjs && node --test scripts/__tests__/*.test.mjs",
+    "check": "node scripts/validate-repository.mjs && node --test 'scripts/__tests__/**/*.test.mjs'",
     "check:policy": "node scripts/validate-repository.mjs",
     "check:registry": "node scripts/check-published-core.mjs",
     "check:core-consumer": "node scripts/core-consumer-smoke.mjs",
@@ -24,7 +24,9 @@
     "check:candidate": "node scripts/release/release-candidate.mjs",
     "check:cleanup": "node scripts/release/cleanup-preflight.mjs",
     "check:cutover-preflight": "node scripts/release/cutover-preflight.mjs",
-    "visual:review": "node scripts/release/visual-review.mjs"
+    "visual:review": "node scripts/release/visual-review.mjs",
+    "check:deployment-layout": "node --test scripts/__tests__/deployment/*.test.mjs",
+    "check:deployment": "node --test scripts/__tests__/deployment/*.test.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.57.0",

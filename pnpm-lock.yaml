@@ -21,95 +21,95 @@ importers:
   apps/admin:
     dependencies:
       '@zeus-js/i18n':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-js/query':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-js/resource':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-js/router':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-js/zeus':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-web/accordion':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/alert':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/avatar':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/badge':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/button':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/card':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/checkbox':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/collapsible':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/data-grid':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/dialog':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/dropdown-menu':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/form-field':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/input':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/label':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/popover':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/progress':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/radio-group':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/select':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/separator':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/skeleton':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/switch':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/tabs':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/textarea':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/toast':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
       '@zeus-web/tooltip':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
     devDependencies:
       '@types/node':
         specifier: 26.0.0
@@ -148,11 +148,11 @@ importers:
   apps/ai-host:
     dependencies:
       '@zeus-web/ai-adapters':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-web/ai-core':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
     devDependencies:
       '@types/node':
         specifier: 26.0.0
@@ -173,23 +173,23 @@ importers:
   apps/ai-workbench:
     dependencies:
       '@zeus-js/runtime-dom':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-js/zeus':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-web/ai-adapters':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-web/ai-core':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-web/ai-primitives':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-web/ai-wc':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
     devDependencies:
       '@playwright/test':
         specifier: 1.57.0
@@ -246,26 +246,26 @@ importers:
         specifier: 0.1.1-beta.20
         version: 0.1.1-beta.20
       '@zeus-js/i18n':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-js/playground-engine':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
       '@zeus-js/query':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-js/router':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-js/runtime-dom':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-js/signal':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-js/zeus':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       codemirror:
         specifier: ^6.0.2
         version: 6.0.2
@@ -1011,8 +1011,8 @@ packages:
   '@vue/shared@3.5.46':
     resolution: {integrity: sha512-P1WePbdzHrcIciWtmY2Im9EFhdakd3rZxYqvalOa3SfoxtF35Q8Uhmj1tKn6bWP4utcOpN8ao6BoJUItq0Uf+g==}
 
-  '@zeus-js/bundler-plugin@0.2.0-rc.5':
-    resolution: {integrity: sha512-rnc2Y5jbtS/4G+uPYcPd+8VoDn2VQOxgpPaDUZcwZfskV5S53I/AfwidMz5q/Y4wMbRlrSKOfxijUrFC8ajUTQ==}
+  '@zeus-js/bundler-plugin@0.2.0-rc.8':
+    resolution: {integrity: sha512-nK7ge9UpoaDvXeuYCpbiG+lxb9bTYGwUClAXFW9tjDh2gQ1w5pPr8zmqRwkWJviICiWv6gxfyp2kVLnbEbpRwA==}
     engines: {node: ^22.18.0 || >=24.11.0}
     peerDependencies:
       rolldown: ^1.0.0
@@ -1032,14 +1032,33 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
+  '@zeus-js/compiler-native-darwin-arm64@0.2.0-rc.8':
+    resolution: {integrity: sha512-h76e5bfp1TUntCV8qwNleO/+u9Y7HVPHCqhIQVru4d/3WCPhJMpHJ99vTUNbGeKrF695+Qxy4seMeasfmrnfqw==}
+    engines: {node: ^22.18.0 || >=24.11.0}
+    cpu: [arm64]
+    os: [darwin]
+
   '@zeus-js/compiler-native-darwin-x64@0.2.0-rc.5':
     resolution: {integrity: sha512-+zEkWcW0MwlKQIgAcI4P5Qf1/UzVzGGm6eD8cBNTYA7lY5mI1DgXRmaeGroHtCuBelvGiNaPGEUbiJGRDx4n2g==}
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [x64]
     os: [darwin]
 
+  '@zeus-js/compiler-native-darwin-x64@0.2.0-rc.8':
+    resolution: {integrity: sha512-crw9a2Q/TkgVtflcgHjIgsrskxb3z1A8AQJ0b1xAyRCXehzUSpUcBB4hxpOSyViJUP1nnmzLsk+Or9ys9hc2MA==}
+    engines: {node: ^22.18.0 || >=24.11.0}
+    cpu: [x64]
+    os: [darwin]
+
   '@zeus-js/compiler-native-linux-arm64-gnu@0.2.0-rc.5':
     resolution: {integrity: sha512-WHIVeeNntrpSnKeptF/IrMxIcJUv3wtjiouVDYEhtHxvz14Fe9byaguC0YLqRdL/YfbXaxPpTbSa+H615O5ddw==}
+    engines: {node: ^22.18.0 || >=24.11.0}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@zeus-js/compiler-native-linux-arm64-gnu@0.2.0-rc.8':
+    resolution: {integrity: sha512-/nBt/TU7h/KJWXcIsz7sbtFfQXPb1qaeSIa5Kh4KaC5DQEq42K/PXICbxB0xeXb202cp6ZAdGCnfON3cKUgYPw==}
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [arm64]
     os: [linux]
@@ -1052,8 +1071,22 @@ packages:
     os: [linux]
     libc: [glibc]
 
+  '@zeus-js/compiler-native-linux-x64-gnu@0.2.0-rc.8':
+    resolution: {integrity: sha512-JMhuCK12xR8a3CeFivuHoZEOraP8+EJE05oZE/20dOD8q5hAgQDa2QTUez0DqfPLqTID4m9KXTlIbnIPG8YPOQ==}
+    engines: {node: ^22.18.0 || >=24.11.0}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
   '@zeus-js/compiler-native-linux-x64-musl@0.2.0-rc.5':
     resolution: {integrity: sha512-HUrJEteC+6F6s3pO9zTxcCmg/tKROh7v3PsHNc+m3ydtk38iJCspX7FeLcqluemr+L66oowLseQ3H75g0xor3A==}
+    engines: {node: ^22.18.0 || >=24.11.0}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@zeus-js/compiler-native-linux-x64-musl@0.2.0-rc.8':
+    resolution: {integrity: sha512-8pY7dVP9S35EhfvHQgEh20Rha7VL4Ge62iglNmJ2qjrl+gmHh3KKI6//+YVtXjkxepqIqMOKpgVolevyucfjJQ==}
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [x64]
     os: [linux]
@@ -1065,8 +1098,20 @@ packages:
     cpu: [arm64]
     os: [win32]
 
+  '@zeus-js/compiler-native-win32-arm64-msvc@0.2.0-rc.8':
+    resolution: {integrity: sha512-0ICNGebDhkCUhmSpidLiQxOQE5rY0ukFMXbrWi7OfQDlBZpfYQE/JLkCMfztSTWLgXpQmMgH/y7CXANncsLjMA==}
+    engines: {node: ^22.18.0 || >=24.11.0}
+    cpu: [arm64]
+    os: [win32]
+
   '@zeus-js/compiler-native-win32-x64-msvc@0.2.0-rc.5':
     resolution: {integrity: sha512-M8JCyFZwEuzBmVTGHr2HvDQAZ5Tjn00t1rX+BnjaBtVTMS6E3P6agJotMwfLZ8VoeeDimTAzEfUO27KXB3Vcrg==}
+    engines: {node: ^22.18.0 || >=24.11.0}
+    cpu: [x64]
+    os: [win32]
+
+  '@zeus-js/compiler-native-win32-x64-msvc@0.2.0-rc.8':
+    resolution: {integrity: sha512-V+ZLm9l0xwisvwVS3R5FU4m4cFq/MZKZyw3gadShzVn9hV6Xi2Fr0t1aU+Vb4QnI8X+EA9+LdnR4DePx31a9lw==}
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [x64]
     os: [win32]
@@ -1075,28 +1120,32 @@ packages:
     resolution: {integrity: sha512-E+tvTKK70aByOEMAs/f96Y/gU6oS8U0K+mtKk/yknUy/83qK6s5hRFqU8yYhYSPQdS6Vobc4HK/ytlyifGL/ZA==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
+  '@zeus-js/compiler-native@0.2.0-rc.8':
+    resolution: {integrity: sha512-NoW0NZYkL3S3zJOMPq2DJzjGKP7G32eyIzVpQ13zpYDcUpC/CMo3PtZi/bclwIXMNG7vN2YjOyYgBb++un4D8w==}
+    engines: {node: ^22.18.0 || >=24.11.0}
+
   '@zeus-js/compiler-wasm@0.1.1-beta.20':
     resolution: {integrity: sha512-3ajvhTNYeAcoAT5VTl+45jvB2tQsQDl3FtqGtRz23KmwKckd+ZboIXjyZLz/k8kLBfkIfxeKSPz4qtu8MCNkHg==}
 
-  '@zeus-js/component-analyzer@0.2.0-rc.5':
-    resolution: {integrity: sha512-NU7s+/xXnCoEZcGu7oTrmqf5kywnKlfmNGKgeEPx4R0uBUjFfU+93Qr/2L+iMfTML8Vdwy4CQTsuaRki7TfmtQ==}
+  '@zeus-js/component-analyzer@0.2.0-rc.8':
+    resolution: {integrity: sha512-ZOSML5wQEP7rBUV/R6I2jTO23xMfx+vxAJeck/oRE7/SUSY8h0aZnHPHvzKKNDh10L1p7bP3pdbm1RGOur1Vcw==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
-  '@zeus-js/component-dts@0.2.0-rc.5':
-    resolution: {integrity: sha512-WTxSRD0RvfujgcA132z8lHb0spApzOv2vIKfbbGrTC/S8KC/ExAASLv77UaM2Hx/vai3szMS09yhZt5pyTwgNQ==}
+  '@zeus-js/component-dts@0.2.0-rc.8':
+    resolution: {integrity: sha512-2DGvNePMgkKMSz9ZNuHdh0kpBg3z0sxzEOQm1epB28yLTvUBtk7StMG3Tmwj4Xf7j+RA09MO/cBW+IoJqtgD3w==}
 
   '@zeus-js/devtools-consumer@0.1.1-beta.15':
     resolution: {integrity: sha512-+jds5VB4gb2aqV7clTx8ZgzMr80phCZsBydlXtd/JKym50Gp/26GO6ZfMD7660+KCybx41WowAlexwITjZiONg==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
-  '@zeus-js/i18n@0.2.0-rc.5':
-    resolution: {integrity: sha512-X5cN0/1pghK2Qq3q/e2XnKiK5ZwyMURkKK8xZUEvZ2wwUm/xmMRKWtTpGtuQ+AwCSyshi8o+f5KyD4chbhlGuw==}
+  '@zeus-js/i18n@0.2.0-rc.8':
+    resolution: {integrity: sha512-QUBfRV+XxNRsWjXJG5b5hBixS2rcz2EbjmafS6gH/fHrrcC1sXdAL8ChlUWL7GSImhI/HEqrHmK7N9vF4LK/fg==}
 
-  '@zeus-js/output-react-wrapper@0.2.0-rc.5':
-    resolution: {integrity: sha512-XtU1OXLkNF4/bFQlpATXlz6jhdTBMA6OZ4YICWkftZG64RZAJ6YHDmZYstnnGaAlkx0jeW+inGyCPuxqmaJlDg==}
+  '@zeus-js/output-react-wrapper@0.2.0-rc.8':
+    resolution: {integrity: sha512-vNpbBMlo/0Ayf9CcykDaZ84TncC//V/TNSuEn5cqGdTNuqIWfHJvIGrFhNFvbXjpNRIUmImtgxA/gwNiL9oYIg==}
     peerDependencies:
       '@types/react': 17 || 18 || 19
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
       react: '>=18'
       react-dom: '>=18'
     peerDependenciesMeta:
@@ -1109,10 +1158,10 @@ packages:
       react-dom:
         optional: true
 
-  '@zeus-js/output-vue-wrapper@0.2.0-rc.5':
-    resolution: {integrity: sha512-6dzMlSTAIoPVMqzZYbprBR5jltFd6/AIo+Ay0137bJqYrbyqCanTKWX1ZdeBlx8Bujli37i4R4aIbBt+1P/UhQ==}
+  '@zeus-js/output-vue-wrapper@0.2.0-rc.8':
+    resolution: {integrity: sha512-1oj+aFXZf8rkXaXsYUWK+dLNIWhTg1HDVAECnaZnTU6PEUJaTZWk+h4lAqwUHgEb/yQDAS5B8iJPwQ7czkEzeA==}
     peerDependencies:
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
       vue: '>=3'
     peerDependenciesMeta:
       '@zeus-js/web-c-runtime':
@@ -1120,40 +1169,53 @@ packages:
       vue:
         optional: true
 
-  '@zeus-js/output-wc@0.2.0-rc.5':
-    resolution: {integrity: sha512-l8PjgV/oI1vQaaGM4pDTlDpUfZCTYyvbNWgTyA51LUNZzDEtCZ5iGiwtibze0zklux2cUBTByhiyM+y4930aQw==}
+  '@zeus-js/output-wc@0.2.0-rc.8':
+    resolution: {integrity: sha512-JoGcntvG3tNF1AsOweBxShb+7s3k1Kwnx5YeiMsMr0ReLYORoCCHAX3MLljbqt8Sp3UmyEeDkfuN5t1q01ldUg==}
     peerDependencies:
       rollup: ^4.0.0
     peerDependenciesMeta:
       rollup:
         optional: true
 
-  '@zeus-js/playground-engine@0.2.0-rc.5':
-    resolution: {integrity: sha512-On0SlbVtpQGdSSwy18snwv+FJBGK5vKvJTQqF9P/dTJYUVwr4iPQRYRBQv5F5XoIRAZUBz9t1X/GW/QIJBqtjg==}
+  '@zeus-js/playground-engine@0.2.0-rc.8':
+    resolution: {integrity: sha512-8kFHpHYEfEUokdRI9mT1AoOadFtjP6joZ9BRG1SyiCrhsbJl6yOTQwnu2crQ47A4NdUU2xeMdneRpBwH/FRGSQ==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
-  '@zeus-js/query@0.2.0-rc.5':
-    resolution: {integrity: sha512-9VhPO87e7SdL57izWwY/mV0BWESocPx2AnM+DfvD2mRwjyN33Is29q1Q/+2eiuIfnRfWKhZ3tTmhTd0SIvPjMA==}
+  '@zeus-js/query@0.2.0-rc.8':
+    resolution: {integrity: sha512-PUKsppyIu36LifnBP1f8kbetnZ3P7iL0C9z4BoUODo/8Sv6dvq9/xTwPZZ8UvEgSl2t3IIYbgMCKpL9vi5hCcw==}
 
-  '@zeus-js/resource@0.2.0-rc.5':
-    resolution: {integrity: sha512-HZWvkjmtIK8I0nzW8oZoNP4Iu8TRoh4wCjVxk9anXoGPsHG0tNbsieqxwXr+R3jOiKpeQQ8xGnFYcjUisYCWaw==}
+  '@zeus-js/resource@0.2.0-rc.8':
+    resolution: {integrity: sha512-+StSjNoL9AZ6uzTV7AElg+Vp3OdTo1890erYaQwty9v4YlH87fYTwgtWXPZ60OsXw1SktxQZtuPc283SOxg0Kw==}
 
-  '@zeus-js/router@0.2.0-rc.5':
-    resolution: {integrity: sha512-FVDQQ7BEIP8EuCS/MdB0VilsLSFJEP/7AN7S6ACKeQ2QtuBG7uOq8E+btUWGGC59ItCoOg2crpXgEPRo6SNZHA==}
+  '@zeus-js/router@0.2.0-rc.8':
+    resolution: {integrity: sha512-VoXlHXlgvbrYH7OGdui7AIpUjVkZ1wVFZlDKGC2A5WOmI1DiF8TMKz6/W+vAPMOfNIGRbHmvRuWb87MxJjnaug==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
   '@zeus-js/runtime-dom@0.2.0-rc.5':
     resolution: {integrity: sha512-FR1UUenMj+4SW6Ctu1SpI0UfozNnzc7JLUrqRAgvY/Qm6FpLeD1siWxFxa8dx/AWRKWr3D7a3k1HiPkHsrXs1w==}
 
+  '@zeus-js/runtime-dom@0.2.0-rc.8':
+    resolution: {integrity: sha512-2zz/0/Y3ry5rBmu7rdLZ2g/vTLcbQ38eqzo3l6+YdkSWCYvb2P+9jdamcirDrIPPKr0SJ7YshNiAhEtsKFqODA==}
+
   '@zeus-js/runtime-ssr@0.2.0-rc.5':
     resolution: {integrity: sha512-6/AI5HUuT6Q82Zex77mTo27SQ1YKdhEZayJa2eWobPC70Ek5C/7wBcNcJcgK47YZLmVb2KTcIsVpVH1cKx1VTQ==}
+    engines: {node: ^22.18.0 || >=24.11.0}
+
+  '@zeus-js/runtime-ssr@0.2.0-rc.8':
+    resolution: {integrity: sha512-U+ExUAK8bCfLSpdPtsYKT3VxoliPkYCIe/+8j7qETklp1McoVFD8DQzpJoghweLyVlRC5FcnmTJj0H6tk04DDw==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
   '@zeus-js/shared@0.2.0-rc.5':
     resolution: {integrity: sha512-nE3czNiLoLzYcipsZQs/no7UCOcOQ9HxAI5mgalNsK4b/8xIQe++3CmyUcTGsZbY5E9VFNwNqbrYj5iBtOws/Q==}
 
+  '@zeus-js/shared@0.2.0-rc.8':
+    resolution: {integrity: sha512-2CNwDdnOkehgCsaoLqqtJLWgYzW5KzRlIGtaef8PjEBVdDitKJ4e8xhrDA10wTVEcAfl3/TR7IaJCAJefLH2vg==}
+
   '@zeus-js/signal@0.2.0-rc.5':
     resolution: {integrity: sha512-lczzMkh5IwpzYX7Oaz3oJEWUsIj3JsK2/eH+OfAuw8dEqgGY4lVdlafo0NZwX0Kji2JERV5vgSdT8hSclzrH/g==}
+
+  '@zeus-js/signal@0.2.0-rc.8':
+    resolution: {integrity: sha512-XCyXwBCYWEP+eLLFJHJvH3I7oeVFgpnNLtXdchfD90ywOEDfZSVTWlsPMM/FdeCKaVBaStqk0AWb76syLXjg7Q==}
 
   '@zeus-js/vite-plugin@0.0.6':
     resolution: {integrity: sha512-pFJTPzzRmBg6ZXj7j/rB1Ts9HRGNs8VSWTJ1+jO+zgxNdDIOwcGwgAEQEppc8Z70SMdC0eZD2+LWq8BPSFc7mw==}
@@ -1161,16 +1223,19 @@ packages:
     peerDependencies:
       vite: ^8.2.1
 
-  '@zeus-js/web-c-runtime@0.2.0-rc.5':
-    resolution: {integrity: sha512-CdHhV1pFr74ZuM4RDy2jDiCceQhstUCg+JI7hrmuT5A48oq+ags1xq5fV2cCW7HvNLzVqwlVYSN+8mj+uoGplw==}
+  '@zeus-js/web-c-runtime@0.2.0-rc.8':
+    resolution: {integrity: sha512-xj6o2aYVh2GkJaS/zNGqmBzXIPgj/VebO4tzvNrwvw02qWsHCgJMFk87xjCTnAz2jPG9UdBEPl7+HhZB/y7pvw==}
 
   '@zeus-js/zeus@0.2.0-rc.5':
     resolution: {integrity: sha512-q/FvWVy/wkXQKk9RMnFgnMOwEXjEsv9MY/3PcOPspHJt5LqbRiWwwlMVOzUBiB7jAIuRg4tk1/QiVt1JDLcS5Q==}
 
-  '@zeus-web/accordion@0.1.0-beta.35':
-    resolution: {integrity: sha512-HM8MiNYGFObNrdKNSmof7gioVvILFuPi9CULarK8XIxHvqVXBpUkQXPuldhsebZyfvtfgtW/PcE5cZPkzOki6Q==}
+  '@zeus-js/zeus@0.2.0-rc.8':
+    resolution: {integrity: sha512-Uz4s28lf08qcD0+eVDc2fdjLhNaifGMneJaSiSRaOUkf7FW87qrG8JFYHqiazDxvs95BstogmtuscOAcBx9dWg==}
+
+  '@zeus-web/accordion@0.2.0-rc.8':
+    resolution: {integrity: sha512-LJdbMWHOgGUHRWjwdmnjjBCMSMbiv6egYX606MmI9VJwUIsPcFYlrS3CxeygnD8IMMSixw8/btDUxrvajfl7jA==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1179,22 +1244,22 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/ai-adapters@0.1.0-beta.35':
-    resolution: {integrity: sha512-p7dQmskVzQgOB9vFwAvvd4UVHCUHzEtIi89kG8xSY57d57HUZNQX5zgScVk/W9lEfMI6W8jYn68AjXH9x5/O/A==}
+  '@zeus-web/ai-adapters@0.2.0-rc.8':
+    resolution: {integrity: sha512-LuEzvn8rynBAuaym13AFrMMFFKaes9L6lCJ3YHyXp5CajDArI0V3pi4cJhNOnLjdpwQDGPaPoFIisXvrOZ4WUQ==}
 
-  '@zeus-web/ai-core@0.1.0-beta.35':
-    resolution: {integrity: sha512-holyYsV5E3DdtahiTvEmHD4XVTeSijGjd7YkRPWHGKC0ASUxygGFT7awxqcfcabbEKgFPUxoDSzcArxwCJhmlw==}
+  '@zeus-web/ai-core@0.2.0-rc.8':
+    resolution: {integrity: sha512-JBStD15FEebmGBDbqrwjtaS5CsU14d8QqegIFnegb43iuSD91IxQoHZ6TW8q3SWXmtzjtoMhjmd9bMrMdSaYFQ==}
 
-  '@zeus-web/ai-primitives@0.1.0-beta.35':
-    resolution: {integrity: sha512-miDuQQG1rKI4k4BeK/zQ+WADu68q0xencjXyRgURkObba8cWaxQgzK5CmCc2Ue2yiEUx1W4PT4g9NsSbsiy9oQ==}
+  '@zeus-web/ai-primitives@0.2.0-rc.8':
+    resolution: {integrity: sha512-KHrb/qhg6j1n3RjH+bRsACjXKSgj1pDtXXnYgPza8vuIPd0Klpc6z4Pk/W+PrAcMLxQzcIJDeAiCuTAAZOUr9g==}
 
-  '@zeus-web/ai-wc@0.1.0-beta.35':
-    resolution: {integrity: sha512-PBi3lBNyA8I6TvrbhNFFl0sGDbFw1s+baSh8K+/22ND5Rs4QvWO6uTxh+4b0A8OZqqa14fBnYwx2ixeNWLpVSQ==}
+  '@zeus-web/ai-wc@0.2.0-rc.8':
+    resolution: {integrity: sha512-mJ6Y7aAVDO2FW3KcHxXtvHS5MMBUVcTBbJLaI+lgXgqCphKc8ONxbvATQpybRMmUWFvT9FyL0A4KZrZySv7ZLQ==}
 
-  '@zeus-web/alert@0.1.0-beta.35':
-    resolution: {integrity: sha512-AVFaqhZf5LV6qarFpUCCURrwlHo/GwFX8qGQ0izOAPgRCZqonVMbdmDsyIGAqh2Q9jQeCv8qZh7PjfHXiCS83Q==}
+  '@zeus-web/alert@0.2.0-rc.8':
+    resolution: {integrity: sha512-nByjMOb37sTuUhVzIzHPwwV1Ha0fevcByHh+kV+N9JpcrV7RaPuDVLxtqUDhARbmZz3xob5pievR/G8T2/QCzA==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1203,10 +1268,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/avatar@0.1.0-beta.35':
-    resolution: {integrity: sha512-p6A4x78j0o8rr9XCSExFx815Oz0zT4xfL2iOVdbRfc1ruHnIuRmVj2Q4/8uzZARBkl3oTvBAcKZyNxs4OpyHCw==}
+  '@zeus-web/avatar@0.2.0-rc.8':
+    resolution: {integrity: sha512-dZt0KTpIswB3N0XiK4DrAi6TRZkduHwW1EpDMp0Im4i9fO9Api0+YmDLXaHDeFL9LIPsUv/3djbMvWHIdrKMfA==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1215,10 +1280,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/badge@0.1.0-beta.35':
-    resolution: {integrity: sha512-jKtTE8EIfIvxITVe0ti2o55OQ7W/CIbA5KXasw2juCTSbB7eAYXpCStB+QUkgJAqVj41IfGpuIrOE91VlMYW8g==}
+  '@zeus-web/badge@0.2.0-rc.8':
+    resolution: {integrity: sha512-o9gPro0yazohUjYB4ojViWsel1vmgfLbiACd8ikrMqc77lt7tEFpvMbQQuJNyoqdIb/2aneFzSo/B4dRQ+aXww==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1227,10 +1292,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/button@0.1.0-beta.35':
-    resolution: {integrity: sha512-WtWlAgwZPYoNjJ0U9XIcImDjlN/tEnKRuERuOTBVg66hKLe8MRNOxK4BN/s8xKLiK6sagTGcxuxzmdxSsSKzrw==}
+  '@zeus-web/button@0.2.0-rc.8':
+    resolution: {integrity: sha512-G/5GRZxYzwRxnCsmED/V+Abt/2QNq01Hf2486pTO7uLzKUhkfIkfi1AAeTYGUGsDG3FK4uHwN/FYKNtzr7+U1Q==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1239,10 +1304,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/card@0.1.0-beta.35':
-    resolution: {integrity: sha512-CcdmxrhXp7njjCg951cZNYU9Ka+c2ZwjgA91LDsrgJ9tNibc3sLaAbh9V70XTPwmGEmvI/EOaSXwvEddDsq8XQ==}
+  '@zeus-web/card@0.2.0-rc.8':
+    resolution: {integrity: sha512-sN13gC/jyG1MwmpFEYoBnXFk7Yv6ArF98EBj7+bKIKT2SW51/zKYSLxAwxjAcXymWl56EWTNgXsGPGrQgfB3CA==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1251,10 +1316,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/checkbox@0.1.0-beta.35':
-    resolution: {integrity: sha512-ot1jh+3zPbPwckx+nQ98llV7w9xpRvcx9rvJU4Bk3hVorEoKsJELVKxaqvdqyKd/tSDH2VniY3iNGZbR2CuH8Q==}
+  '@zeus-web/checkbox@0.2.0-rc.8':
+    resolution: {integrity: sha512-UtivT+T9NHjyv9w0/mi7hlKxmFetBcLR5Ff5AKW9xPlWl5wEw4eghbUy7wO6Nr3UlOHwkgFPY/1dBzz7d3CEtA==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1263,10 +1328,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/collapsible@0.1.0-beta.35':
-    resolution: {integrity: sha512-SpdvE2tejNFEM4mXcprHbH7uQG9r/o6gTi2MJYVZd5BUWnP7jtnbXsKXTHpB7pyzXCrEvaud4kbZkC4ZpFRCHw==}
+  '@zeus-web/collapsible@0.2.0-rc.8':
+    resolution: {integrity: sha512-v02S0MNdragwwzrvmf1e0/xD/Whz6Xth5z1Vf79cEc7MbBUvng2j+Yzki8lq99+9gngBhoUMPVCJJu3LM+4KQg==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1275,10 +1340,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/data-grid@0.1.0-beta.35':
-    resolution: {integrity: sha512-82VGLz6fL9+OAemcdE+vK9iWkmolWyqjMnV3oO20ysET17sIU+PwVFOS3tVWeUzfrAgkO/fneNkqgV3sGLi+WQ==}
+  '@zeus-web/data-grid@0.2.0-rc.8':
+    resolution: {integrity: sha512-QgrSo/29CFcsGxEdWGH0Cah28ehTqfDFyX8LORHZVGt2KmfyjvWRRRvDG2QYev5iO9zdpR8Q0bKN0zIVnxkQig==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1287,10 +1352,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/dialog@0.1.0-beta.35':
-    resolution: {integrity: sha512-3vKVR/voLkvxkLM0wGvsnqblQPLgOeJgl1TK0c+bSe9VbMJc2S8rit0urhjFDqy17j4nMLCbB9SZA2glRLQMUA==}
+  '@zeus-web/dialog@0.2.0-rc.8':
+    resolution: {integrity: sha512-xzE76o2aF/bjqcMZMQSH26Hp/vzs966Rob5zC7LgmacE/e5ne9pu6oBoq3PbpkzUTsSqWHt6MOzviemFcbUGbA==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1299,10 +1364,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/dropdown-menu@0.1.0-beta.35':
-    resolution: {integrity: sha512-xoVr1oE3m/g8lEVFN00lw0r7hhRZVJm79hN7s/emeVfFyWYJh4T9QulDUUMd+uoBWbtjLuevuiE2fwmFoq5T6Q==}
+  '@zeus-web/dropdown-menu@0.2.0-rc.8':
+    resolution: {integrity: sha512-17Abp4xzH9p5eBh7TaEKPo0+hLe+bDhuhLh6t9VgAp4/3feGhx8O9raqA9xmPG9wykbt7hDbtHlmFOesf+UIvw==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1311,10 +1376,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/form-field@0.1.0-beta.35':
-    resolution: {integrity: sha512-7y2WEkPAyTFvXnXJXqRWKbL6BQAbg4khKQ+nwDoQPqxq6Kvgm4J23wBjGs9fj5KdZ1yLQk8q9yFQpGzi0AZejg==}
+  '@zeus-web/form-field@0.2.0-rc.8':
+    resolution: {integrity: sha512-8IccjDAL+0gDyseuITI/VwMKTPWjrUDe/n6PwnJGUfTR+WWg0KxU6sMC7gHaaS4FvgNdXuw3bRHRW0fC2NBxWQ==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1323,10 +1388,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/input@0.1.0-beta.35':
-    resolution: {integrity: sha512-UqwxyKRIWagN6dInW6aC9ustYtsB8AtZz29eu4ofQSnnOctMwvjZqNpbJcnHUY+/F4ZXBBPEAvTssI7pr61NiA==}
+  '@zeus-web/input@0.2.0-rc.8':
+    resolution: {integrity: sha512-0/79qK18D5rimfXSYLdaSVNprt7xeaU1I8AmBW+mxmDPunBQzWlMx5NWBMcaTChHQ+9DXmaX16LiGLMa4ZXR9w==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1335,10 +1400,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/label@0.1.0-beta.35':
-    resolution: {integrity: sha512-t+qjbl9EsyEMBcuLa8HRNw6ORFleLjHC3dof3/h1Dg88nZqp1vBf49Xkjg/nBoQaQBo/45ePlir+tjZFBF6zfA==}
+  '@zeus-web/label@0.2.0-rc.8':
+    resolution: {integrity: sha512-V8sVZy/SiXt/yqdFCMIFX34Lw0SRLFhM8HpiC4d6DOAwgVDI5UHey7ITvF7FjSjfkAxJ0cR9ScZ3IMaWCV6u1w==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1347,10 +1412,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/popover@0.1.0-beta.35':
-    resolution: {integrity: sha512-Byetxp7qFSLUX7OHdUhl2OlK2OU1QzBjscsifi5Zz7cXlr00C8q0CMSJyYzjNJNEyKWNMEotaCG6d1Nfkk1w1w==}
+  '@zeus-web/popover@0.2.0-rc.8':
+    resolution: {integrity: sha512-C0hXYfaiRI7UwZv9MQvG5jRgyqcSBUKejRPmb8Jt6IVU1uPqXaV6NAa8pm66ktcc7dwe9d5/BWyiNq/vDXIs7Q==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1359,10 +1424,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/progress@0.1.0-beta.35':
-    resolution: {integrity: sha512-uW3vv63kvnM5Cb0pA/3+Qz8RCLxuIhiWfJp6QuXSOWmc5A49dIRC+UoQDkfm7XuWHMgbHBhTDOtzl5km6ChyMg==}
+  '@zeus-web/progress@0.2.0-rc.8':
+    resolution: {integrity: sha512-1El9fN7ktmDoPjtrwiKSXchAU2I7jQB2nFjutnQOhzNDu4HBg+5v1LpM+qros8lCY11pvHt16SJe76I1YkQqvA==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1371,10 +1436,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/radio-group@0.1.0-beta.35':
-    resolution: {integrity: sha512-eXPSIXtbNbi44Flk08xnjBbr9wchtOiOlHV89s3pwQ7oZ5IH6B3wLxvvoxnnPFHQ6ue0UHk4isFz0bJ7gmsmxg==}
+  '@zeus-web/radio-group@0.2.0-rc.8':
+    resolution: {integrity: sha512-sfbVrQlkdQYfv2S9MAYaqmASEDTYc4/dq4M+uU+U5fk7/1NWgRC934X+82ct4LSmuw//eezLBb1ZgzboTnOnWg==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1383,10 +1448,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/select@0.1.0-beta.35':
-    resolution: {integrity: sha512-rvQcTjb374uCQCo3Mlw0bo0qhL5M4xuH8jpX1JfzsVsNRZedhfWDlU26BynDt3/jJHXr7URTmA3cEeABfQnVOQ==}
+  '@zeus-web/select@0.2.0-rc.8':
+    resolution: {integrity: sha512-yf1vAjzylQ8tfws7mmAj/jWUhikNe0+LB1nLhgA87acTmPh/dejyvU22ZLcNXIQu1snb8oQTHsUl31eslneJ6g==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1395,10 +1460,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/separator@0.1.0-beta.35':
-    resolution: {integrity: sha512-2YXZvMiVOkMSdCKo/AhYweA04xHzNeTQHO5ZSjeo8upvnvvaduWCSH3CBgz+mvxR3EzGJ11SmuF0hJ3enYywuQ==}
+  '@zeus-web/separator@0.2.0-rc.8':
+    resolution: {integrity: sha512-7f8/IDQmNVDlhLGOxzrRQ2UUB/IMQjTlko7Mzcm8fgI9blwcKO+8Kiva23mP+byl3REXvXYYacA1EVbhOR5p6g==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1407,10 +1472,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/skeleton@0.1.0-beta.35':
-    resolution: {integrity: sha512-u3tpJfJ/LwzobcQQeQwPFYL1HHa3TL8GqcoYx9NEloIxrT/2pJtNDw4JTUTP3ZllmsM9iZr/P7+NRgJz3AEUiw==}
+  '@zeus-web/skeleton@0.2.0-rc.8':
+    resolution: {integrity: sha512-/FWGarZ6bh+bRwf/h8fCeK3pzd0h16JOTHpIgn5VreME6CBR9CKWO4AJYLnxmOikCWazySb0brNezPum1BPUYg==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1419,10 +1484,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/switch@0.1.0-beta.35':
-    resolution: {integrity: sha512-w/BMBzVl7hmPbVsdy0HN0XNRCxAFAt4QT7vIua/5ZiqRO/wX2bwlq+6Il8enHdR0GDOPdLQP0nb1QxkJEXxt1Q==}
+  '@zeus-web/switch@0.2.0-rc.8':
+    resolution: {integrity: sha512-yzUal/A1eGZW1yZ/blvG2IkplyZui2chWH2Gaj30+VExFVqKle0Gi3veb5r1PZoN1o+eyKervUieI00ocXzqRg==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1431,10 +1496,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/tabs@0.1.0-beta.35':
-    resolution: {integrity: sha512-xSSqAXqbBbxbxWFB2sy5ZP6TB3Okggfbho3uiJ83cz7hCNuqD1OjNVm54Yyzd2KIO05K/FPOkr1fk7/mpvFZfA==}
+  '@zeus-web/tabs@0.2.0-rc.8':
+    resolution: {integrity: sha512-eBEFH+1zyxUPC+pBDYlQybGNjJmtvR8oBYbYBxXj6Tz/MNoiTd6uA36adAdlyft++jzGz5HpQ+zPuJ6th4nMSQ==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1443,10 +1508,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/textarea@0.1.0-beta.35':
-    resolution: {integrity: sha512-9/w2z3yCW+LiGWA8+7JxI9cHeQVEhgJuSw+cLAXRt33bkBvMlCL5RV6oB9YQbL3CY9M2Odp7QnmyAvsPlaxSWA==}
+  '@zeus-web/textarea@0.2.0-rc.8':
+    resolution: {integrity: sha512-VK/4ZWeEJl612oqCJxRIDFI9Q6r4ab20aNfJw48sWXqKQf1D536Z1VQaxEjSkEE5WLcFIr08ZegffZgya8hX0g==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1455,10 +1520,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/toast@0.1.0-beta.35':
-    resolution: {integrity: sha512-8zSv9m9gU9Yq1G7oxaSjAaqH9klOmex/HG5vMwG/1yf1bUgtpX/dlXJh6wQckVfBWBaUve4ROKIJRuJaW5cKUQ==}
+  '@zeus-web/toast@0.2.0-rc.8':
+    resolution: {integrity: sha512-gHC1ssFX1+6MrAdGn73QZih0Lce9oC5+M2BQHc3szBbEro8Gorz8gLqT4RALWjHpSu5P13ggx2aLwsJpl+jkMA==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1467,10 +1532,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/tooltip@0.1.0-beta.35':
-    resolution: {integrity: sha512-NacGdKyPz8RuDGhsh/ylsIK68GHfGHNCSgF+JFx8PMrbjeXwtVSsWi9SVmcCGX8IbhIDJg69vic3x3sihzzjiQ==}
+  '@zeus-web/tooltip@0.2.0-rc.8':
+    resolution: {integrity: sha512-PyTzIrsNeUOqB+RMstqj4yuMRsBPJQ7kFi352KSHB5YbSr/uqvzmxKcwf3sNhFjvI67OR/cteOu6yUuaK/Xzmw==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1479,10 +1544,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/virtual@0.1.0-beta.35':
-    resolution: {integrity: sha512-cXf6Fq5IeQ4tu1gzDsaeWdhcFdmS/OaHEFGk88bIUFwrbesmCZ+RxxeDRy5EsgG6UEONb/FoafmKwydDHfr+3A==}
+  '@zeus-web/virtual@0.2.0-rc.8':
+    resolution: {integrity: sha512-JCOofSfaqVeMb098YM+2EBAxNzGkmQQSeYXXaUCemhTgnN+Qj5+yhisChnVChkkAS7WrXqOUaQBbfnvJrUUORA==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -1491,10 +1556,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/zeus-compat@0.1.0-beta.35':
-    resolution: {integrity: sha512-gfNbrRMjU6Kce5ZaLvE2G6P+5z/NB+yDE1cxg1o2eBgQSNojP4Su2F7jAY2zjwLdJ/xn+aX/Grl+dxDD5rNadA==}
+  '@zeus-web/zeus-compat@0.2.0-rc.8':
+    resolution: {integrity: sha512-GCG52qWftTRrfqQF12YWZom0UvL0uDQqDdZpkSpXoQnZJW8CyioxHvBwfJ0V4AFXT+3LJ7puShArJsjBrBSyAA==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
 
   agent-base@7.1.4:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
@@ -2907,12 +2972,12 @@ snapshots:
 
   '@vue/shared@3.5.46': {}
 
-  '@zeus-js/bundler-plugin@0.2.0-rc.5(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))':
+  '@zeus-js/bundler-plugin@0.2.0-rc.8(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))':
     dependencies:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
-      '@zeus-js/compiler-native': 0.2.0-rc.5
-      '@zeus-js/component-analyzer': 0.2.0-rc.5
+      '@zeus-js/compiler-native': 0.2.0-rc.8
+      '@zeus-js/component-analyzer': 0.2.0-rc.8
       fast-glob: 3.3.3
       picomatch: 4.0.7
       typescript: 6.0.3
@@ -2923,22 +2988,43 @@ snapshots:
   '@zeus-js/compiler-native-darwin-arm64@0.2.0-rc.5':
     optional: true
 
+  '@zeus-js/compiler-native-darwin-arm64@0.2.0-rc.8':
+    optional: true
+
   '@zeus-js/compiler-native-darwin-x64@0.2.0-rc.5':
+    optional: true
+
+  '@zeus-js/compiler-native-darwin-x64@0.2.0-rc.8':
     optional: true
 
   '@zeus-js/compiler-native-linux-arm64-gnu@0.2.0-rc.5':
     optional: true
 
+  '@zeus-js/compiler-native-linux-arm64-gnu@0.2.0-rc.8':
+    optional: true
+
   '@zeus-js/compiler-native-linux-x64-gnu@0.2.0-rc.5':
+    optional: true
+
+  '@zeus-js/compiler-native-linux-x64-gnu@0.2.0-rc.8':
     optional: true
 
   '@zeus-js/compiler-native-linux-x64-musl@0.2.0-rc.5':
     optional: true
 
+  '@zeus-js/compiler-native-linux-x64-musl@0.2.0-rc.8':
+    optional: true
+
   '@zeus-js/compiler-native-win32-arm64-msvc@0.2.0-rc.5':
     optional: true
 
+  '@zeus-js/compiler-native-win32-arm64-msvc@0.2.0-rc.8':
+    optional: true
+
   '@zeus-js/compiler-native-win32-x64-msvc@0.2.0-rc.5':
+    optional: true
+
+  '@zeus-js/compiler-native-win32-x64-msvc@0.2.0-rc.8':
     optional: true
 
   '@zeus-js/compiler-native@0.2.0-rc.5':
@@ -2951,33 +3037,43 @@ snapshots:
       '@zeus-js/compiler-native-win32-arm64-msvc': 0.2.0-rc.5
       '@zeus-js/compiler-native-win32-x64-msvc': 0.2.0-rc.5
 
+  '@zeus-js/compiler-native@0.2.0-rc.8':
+    optionalDependencies:
+      '@zeus-js/compiler-native-darwin-arm64': 0.2.0-rc.8
+      '@zeus-js/compiler-native-darwin-x64': 0.2.0-rc.8
+      '@zeus-js/compiler-native-linux-arm64-gnu': 0.2.0-rc.8
+      '@zeus-js/compiler-native-linux-x64-gnu': 0.2.0-rc.8
+      '@zeus-js/compiler-native-linux-x64-musl': 0.2.0-rc.8
+      '@zeus-js/compiler-native-win32-arm64-msvc': 0.2.0-rc.8
+      '@zeus-js/compiler-native-win32-x64-msvc': 0.2.0-rc.8
+
   '@zeus-js/compiler-wasm@0.1.1-beta.20': {}
 
-  '@zeus-js/component-analyzer@0.2.0-rc.5':
+  '@zeus-js/component-analyzer@0.2.0-rc.8':
     dependencies:
       '@babel/parser': 8.1.3
       '@babel/types': 8.1.3
       fast-glob: 3.3.3
 
-  '@zeus-js/component-dts@0.2.0-rc.5':
+  '@zeus-js/component-dts@0.2.0-rc.8':
     dependencies:
-      '@zeus-js/component-analyzer': 0.2.0-rc.5
+      '@zeus-js/component-analyzer': 0.2.0-rc.8
 
   '@zeus-js/devtools-consumer@0.1.1-beta.15': {}
 
-  '@zeus-js/i18n@0.2.0-rc.5':
+  '@zeus-js/i18n@0.2.0-rc.8':
     dependencies:
-      '@zeus-js/signal': 0.2.0-rc.5
+      '@zeus-js/signal': 0.2.0-rc.8
       intl-messageformat: 10.7.18
 
-  '@zeus-js/output-react-wrapper@0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))':
+  '@zeus-js/output-react-wrapper@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))':
     dependencies:
-      '@zeus-js/bundler-plugin': 0.2.0-rc.5(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/component-analyzer': 0.2.0-rc.5
-      '@zeus-js/component-dts': 0.2.0-rc.5
+      '@zeus-js/bundler-plugin': 0.2.0-rc.8(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/component-analyzer': 0.2.0-rc.8
+      '@zeus-js/component-dts': 0.2.0-rc.8
     optionalDependencies:
       '@types/react': 19.3.3
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
     transitivePeerDependencies:
@@ -2985,72 +3081,87 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-js/output-vue-wrapper@0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-js/output-vue-wrapper@0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/bundler-plugin': 0.2.0-rc.5(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/component-analyzer': 0.2.0-rc.5
-      '@zeus-js/component-dts': 0.2.0-rc.5
+      '@zeus-js/bundler-plugin': 0.2.0-rc.8(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/component-analyzer': 0.2.0-rc.8
+      '@zeus-js/component-dts': 0.2.0-rc.8
     optionalDependencies:
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
       vue: 3.5.46(typescript@5.9.3)
     transitivePeerDependencies:
       - rolldown
       - rollup
       - vite
 
-  '@zeus-js/output-wc@0.2.0-rc.5(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))':
+  '@zeus-js/output-wc@0.2.0-rc.8(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))':
     dependencies:
-      '@zeus-js/bundler-plugin': 0.2.0-rc.5(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/component-analyzer': 0.2.0-rc.5
-      '@zeus-js/component-dts': 0.2.0-rc.5
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
+      '@zeus-js/bundler-plugin': 0.2.0-rc.8(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/component-analyzer': 0.2.0-rc.8
+      '@zeus-js/component-dts': 0.2.0-rc.8
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
     transitivePeerDependencies:
       - rolldown
       - vite
 
-  '@zeus-js/playground-engine@0.2.0-rc.5(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))':
+  '@zeus-js/playground-engine@0.2.0-rc.8(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))':
     dependencies:
       '@babel/parser': 8.1.3
       '@babel/standalone': 8.1.3
-      '@zeus-js/component-analyzer': 0.2.0-rc.5
-      '@zeus-js/component-dts': 0.2.0-rc.5
-      '@zeus-js/output-wc': 0.2.0-rc.5(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/component-analyzer': 0.2.0-rc.8
+      '@zeus-js/component-dts': 0.2.0-rc.8
+      '@zeus-js/output-wc': 0.2.0-rc.8(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
     transitivePeerDependencies:
       - rolldown
       - rollup
       - vite
 
-  '@zeus-js/query@0.2.0-rc.5':
+  '@zeus-js/query@0.2.0-rc.8':
     dependencies:
       '@tanstack/query-core': 5.108.4
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/signal': 0.2.0-rc.5
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/signal': 0.2.0-rc.8
 
-  '@zeus-js/resource@0.2.0-rc.5':
+  '@zeus-js/resource@0.2.0-rc.8':
     dependencies:
-      '@zeus-js/signal': 0.2.0-rc.5
+      '@zeus-js/signal': 0.2.0-rc.8
 
-  '@zeus-js/router@0.2.0-rc.5':
+  '@zeus-js/router@0.2.0-rc.8':
     dependencies:
       '@remix-run/router': 1.23.4
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/signal': 0.2.0-rc.5
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/signal': 0.2.0-rc.8
 
   '@zeus-js/runtime-dom@0.2.0-rc.5':
     dependencies:
       '@zeus-js/signal': 0.2.0-rc.5
+
+  '@zeus-js/runtime-dom@0.2.0-rc.8':
+    dependencies:
+      '@zeus-js/signal': 0.2.0-rc.8
 
   '@zeus-js/runtime-ssr@0.2.0-rc.5':
     dependencies:
       '@zeus-js/shared': 0.2.0-rc.5
       '@zeus-js/signal': 0.2.0-rc.5
 
+  '@zeus-js/runtime-ssr@0.2.0-rc.8':
+    dependencies:
+      '@zeus-js/shared': 0.2.0-rc.8
+      '@zeus-js/signal': 0.2.0-rc.8
+
   '@zeus-js/shared@0.2.0-rc.5': {}
+
+  '@zeus-js/shared@0.2.0-rc.8': {}
 
   '@zeus-js/signal@0.2.0-rc.5':
     dependencies:
       '@zeus-js/shared': 0.2.0-rc.5
+
+  '@zeus-js/signal@0.2.0-rc.8':
+    dependencies:
+      '@zeus-js/shared': 0.2.0-rc.8
 
   '@zeus-js/vite-plugin@0.0.6(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))':
     dependencies:
@@ -3058,9 +3169,9 @@ snapshots:
       '@zeus-js/compiler-native': 0.2.0-rc.5
       vite: 8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4)
 
-  '@zeus-js/web-c-runtime@0.2.0-rc.5':
+  '@zeus-js/web-c-runtime@0.2.0-rc.8':
     dependencies:
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
 
   '@zeus-js/zeus@0.2.0-rc.5':
     dependencies:
@@ -3068,14 +3179,20 @@ snapshots:
       '@zeus-js/runtime-ssr': 0.2.0-rc.5
       '@zeus-js/signal': 0.2.0-rc.5
 
-  '@zeus-web/accordion@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-js/zeus@0.2.0-rc.8':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/runtime-ssr': 0.2.0-rc.8
+      '@zeus-js/signal': 0.2.0-rc.8
+
+  '@zeus-web/accordion@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+    dependencies:
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3086,29 +3203,29 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/ai-adapters@0.1.0-beta.35':
+  '@zeus-web/ai-adapters@0.2.0-rc.8':
     dependencies:
-      '@zeus-web/ai-core': 0.1.0-beta.35
+      '@zeus-web/ai-core': 0.2.0-rc.8
 
-  '@zeus-web/ai-core@0.1.0-beta.35': {}
+  '@zeus-web/ai-core@0.2.0-rc.8': {}
 
-  '@zeus-web/ai-primitives@0.1.0-beta.35':
+  '@zeus-web/ai-primitives@0.2.0-rc.8':
     dependencies:
-      '@zeus-web/ai-core': 0.1.0-beta.35
+      '@zeus-web/ai-core': 0.2.0-rc.8
 
-  '@zeus-web/ai-wc@0.1.0-beta.35':
+  '@zeus-web/ai-wc@0.2.0-rc.8':
     dependencies:
-      '@zeus-web/ai-core': 0.1.0-beta.35
-      '@zeus-web/ai-primitives': 0.1.0-beta.35
+      '@zeus-web/ai-core': 0.2.0-rc.8
+      '@zeus-web/ai-primitives': 0.2.0-rc.8
 
-  '@zeus-web/alert@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/alert@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3119,14 +3236,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/avatar@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/avatar@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3137,14 +3254,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/badge@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/badge@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3155,14 +3272,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/button@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/button@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3173,14 +3290,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/card@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/card@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3191,14 +3308,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/checkbox@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/checkbox@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3209,14 +3326,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/collapsible@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/collapsible@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3227,15 +3344,15 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/data-grid@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/data-grid@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/virtual': 0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/virtual': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3246,14 +3363,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/dialog@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/dialog@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3264,14 +3381,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/dropdown-menu@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/dropdown-menu@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3282,14 +3399,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/form-field@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/form-field@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3300,14 +3417,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/input@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/input@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3318,14 +3435,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/label@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/label@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3336,14 +3453,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/popover@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/popover@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3354,14 +3471,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/progress@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/progress@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3372,14 +3489,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/radio-group@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/radio-group@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3390,14 +3507,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/select@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/select@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3408,14 +3525,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/separator@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/separator@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3426,14 +3543,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/skeleton@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/skeleton@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3444,14 +3561,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/switch@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/switch@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3462,14 +3579,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/tabs@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/tabs@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3480,14 +3597,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/textarea@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/textarea@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3498,14 +3615,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/toast@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/toast@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3516,14 +3633,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/tooltip@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/tooltip@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3534,14 +3651,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/virtual@0.1.0-beta.35(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
+  '@zeus-web/virtual@0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/zeus@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@types/react@19.3.3)(@zeus-js/web-c-runtime@0.2.0-rc.8)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.0.0)(esbuild@0.28.2)(tsx@4.22.4))(vue@3.5.46(typescript@5.9.3))
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     optionalDependencies:
       react: 19.3.1
       vue: 3.5.46(typescript@5.9.3)
@@ -3552,9 +3669,9 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/zeus-compat@0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)':
+  '@zeus-web/zeus-compat@0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)':
     dependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
 
   agent-base@7.1.4: {}
 

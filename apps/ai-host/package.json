@@ -12,8 +12,8 @@
     "check:protocol": "tsx scripts/checks/check-ai-host-protocol.ts"
   },
   "dependencies": {
-    "@zeus-web/ai-adapters": "0.1.0-beta.35",
-    "@zeus-web/ai-core": "0.1.0-beta.35"
+    "@zeus-web/ai-adapters": "0.2.0-rc.8",
+    "@zeus-web/ai-core": "0.2.0-rc.8"
   },
   "devDependencies": {
     "@types/node": "26.0.0",

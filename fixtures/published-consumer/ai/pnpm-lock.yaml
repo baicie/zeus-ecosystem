@@ -9,23 +9,23 @@ importers:
   .:
     dependencies:
       '@zeus-js/zeus':
-        specifier: 0.2.0-rc.5
-        version: 0.2.0-rc.5
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-web/ai':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-web/ai-adapters':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-web/ai-core':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-web/ai-primitives':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8
       '@zeus-web/chat':
-        specifier: 0.1.0-beta.35
-        version: 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8)
+        specifier: 0.2.0-rc.8
+        version: 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8)
     devDependencies:
       typescript:
         specifier: 5.9.3
@@ -204,8 +204,8 @@ packages:
   '@tybys/wasm-util@0.10.5':
     resolution: {integrity: sha512-dOGOPxlaNV+G046mZzN+9C0dAcQZeSKcXiVaM0TYy/LM4ttTmgSBDxYfovcYI8Em3+eAbiAYpvWLOv8+ZVRJKA==}
 
-  '@zeus-js/bundler-plugin@0.2.0-rc.5':
-    resolution: {integrity: sha512-rnc2Y5jbtS/4G+uPYcPd+8VoDn2VQOxgpPaDUZcwZfskV5S53I/AfwidMz5q/Y4wMbRlrSKOfxijUrFC8ajUTQ==}
+  '@zeus-js/bundler-plugin@0.2.0-rc.8':
+    resolution: {integrity: sha512-nK7ge9UpoaDvXeuYCpbiG+lxb9bTYGwUClAXFW9tjDh2gQ1w5pPr8zmqRwkWJviICiWv6gxfyp2kVLnbEbpRwA==}
     engines: {node: ^22.18.0 || >=24.11.0}
     peerDependencies:
       rolldown: ^1.0.0
@@ -219,67 +219,67 @@ packages:
       vite:
         optional: true
 
-  '@zeus-js/compiler-native-darwin-arm64@0.2.0-rc.5':
-    resolution: {integrity: sha512-kIJqJZy5q3vyFirZnJmANei1bKEYB7h6yrS5du+PmAdmk4vf/9ixlUocg71fl2+mv7e5OwSLl+UI8RsqieIrjQ==}
+  '@zeus-js/compiler-native-darwin-arm64@0.2.0-rc.8':
+    resolution: {integrity: sha512-h76e5bfp1TUntCV8qwNleO/+u9Y7HVPHCqhIQVru4d/3WCPhJMpHJ99vTUNbGeKrF695+Qxy4seMeasfmrnfqw==}
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [arm64]
     os: [darwin]
 
-  '@zeus-js/compiler-native-darwin-x64@0.2.0-rc.5':
-    resolution: {integrity: sha512-+zEkWcW0MwlKQIgAcI4P5Qf1/UzVzGGm6eD8cBNTYA7lY5mI1DgXRmaeGroHtCuBelvGiNaPGEUbiJGRDx4n2g==}
+  '@zeus-js/compiler-native-darwin-x64@0.2.0-rc.8':
+    resolution: {integrity: sha512-crw9a2Q/TkgVtflcgHjIgsrskxb3z1A8AQJ0b1xAyRCXehzUSpUcBB4hxpOSyViJUP1nnmzLsk+Or9ys9hc2MA==}
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [x64]
     os: [darwin]
 
-  '@zeus-js/compiler-native-linux-arm64-gnu@0.2.0-rc.5':
-    resolution: {integrity: sha512-WHIVeeNntrpSnKeptF/IrMxIcJUv3wtjiouVDYEhtHxvz14Fe9byaguC0YLqRdL/YfbXaxPpTbSa+H615O5ddw==}
+  '@zeus-js/compiler-native-linux-arm64-gnu@0.2.0-rc.8':
+    resolution: {integrity: sha512-/nBt/TU7h/KJWXcIsz7sbtFfQXPb1qaeSIa5Kh4KaC5DQEq42K/PXICbxB0xeXb202cp6ZAdGCnfON3cKUgYPw==}
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@zeus-js/compiler-native-linux-x64-gnu@0.2.0-rc.5':
-    resolution: {integrity: sha512-e0l4fej3fpgHuDdyyM0II+SPY/K5363hmsF60U7NO1mJKrfRfziV+QWDZ8YbSDrYXnX6/ORTYW4xCQH2IibZFg==}
+  '@zeus-js/compiler-native-linux-x64-gnu@0.2.0-rc.8':
+    resolution: {integrity: sha512-JMhuCK12xR8a3CeFivuHoZEOraP8+EJE05oZE/20dOD8q5hAgQDa2QTUez0DqfPLqTID4m9KXTlIbnIPG8YPOQ==}
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@zeus-js/compiler-native-linux-x64-musl@0.2.0-rc.5':
-    resolution: {integrity: sha512-HUrJEteC+6F6s3pO9zTxcCmg/tKROh7v3PsHNc+m3ydtk38iJCspX7FeLcqluemr+L66oowLseQ3H75g0xor3A==}
+  '@zeus-js/compiler-native-linux-x64-musl@0.2.0-rc.8':
+    resolution: {integrity: sha512-8pY7dVP9S35EhfvHQgEh20Rha7VL4Ge62iglNmJ2qjrl+gmHh3KKI6//+YVtXjkxepqIqMOKpgVolevyucfjJQ==}
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@zeus-js/compiler-native-win32-arm64-msvc@0.2.0-rc.5':
-    resolution: {integrity: sha512-GOokrP6fzIFSQCKabmL4cM71ZbW7L2I6keTnSFED3wubo//wLDVC7vh2BzhTS1mF+tfQs3siP81sSD/lSvpRrQ==}
+  '@zeus-js/compiler-native-win32-arm64-msvc@0.2.0-rc.8':
+    resolution: {integrity: sha512-0ICNGebDhkCUhmSpidLiQxOQE5rY0ukFMXbrWi7OfQDlBZpfYQE/JLkCMfztSTWLgXpQmMgH/y7CXANncsLjMA==}
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [arm64]
     os: [win32]
 
-  '@zeus-js/compiler-native-win32-x64-msvc@0.2.0-rc.5':
-    resolution: {integrity: sha512-M8JCyFZwEuzBmVTGHr2HvDQAZ5Tjn00t1rX+BnjaBtVTMS6E3P6agJotMwfLZ8VoeeDimTAzEfUO27KXB3Vcrg==}
+  '@zeus-js/compiler-native-win32-x64-msvc@0.2.0-rc.8':
+    resolution: {integrity: sha512-V+ZLm9l0xwisvwVS3R5FU4m4cFq/MZKZyw3gadShzVn9hV6Xi2Fr0t1aU+Vb4QnI8X+EA9+LdnR4DePx31a9lw==}
     engines: {node: ^22.18.0 || >=24.11.0}
     cpu: [x64]
     os: [win32]
 
-  '@zeus-js/compiler-native@0.2.0-rc.5':
-    resolution: {integrity: sha512-E+tvTKK70aByOEMAs/f96Y/gU6oS8U0K+mtKk/yknUy/83qK6s5hRFqU8yYhYSPQdS6Vobc4HK/ytlyifGL/ZA==}
+  '@zeus-js/compiler-native@0.2.0-rc.8':
+    resolution: {integrity: sha512-NoW0NZYkL3S3zJOMPq2DJzjGKP7G32eyIzVpQ13zpYDcUpC/CMo3PtZi/bclwIXMNG7vN2YjOyYgBb++un4D8w==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
-  '@zeus-js/component-analyzer@0.2.0-rc.5':
-    resolution: {integrity: sha512-NU7s+/xXnCoEZcGu7oTrmqf5kywnKlfmNGKgeEPx4R0uBUjFfU+93Qr/2L+iMfTML8Vdwy4CQTsuaRki7TfmtQ==}
+  '@zeus-js/component-analyzer@0.2.0-rc.8':
+    resolution: {integrity: sha512-ZOSML5wQEP7rBUV/R6I2jTO23xMfx+vxAJeck/oRE7/SUSY8h0aZnHPHvzKKNDh10L1p7bP3pdbm1RGOur1Vcw==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
-  '@zeus-js/component-dts@0.2.0-rc.5':
-    resolution: {integrity: sha512-WTxSRD0RvfujgcA132z8lHb0spApzOv2vIKfbbGrTC/S8KC/ExAASLv77UaM2Hx/vai3szMS09yhZt5pyTwgNQ==}
+  '@zeus-js/component-dts@0.2.0-rc.8':
+    resolution: {integrity: sha512-2DGvNePMgkKMSz9ZNuHdh0kpBg3z0sxzEOQm1epB28yLTvUBtk7StMG3Tmwj4Xf7j+RA09MO/cBW+IoJqtgD3w==}
 
-  '@zeus-js/output-react-wrapper@0.2.0-rc.5':
-    resolution: {integrity: sha512-XtU1OXLkNF4/bFQlpATXlz6jhdTBMA6OZ4YICWkftZG64RZAJ6YHDmZYstnnGaAlkx0jeW+inGyCPuxqmaJlDg==}
+  '@zeus-js/output-react-wrapper@0.2.0-rc.8':
+    resolution: {integrity: sha512-vNpbBMlo/0Ayf9CcykDaZ84TncC//V/TNSuEn5cqGdTNuqIWfHJvIGrFhNFvbXjpNRIUmImtgxA/gwNiL9oYIg==}
     peerDependencies:
       '@types/react': 17 || 18 || 19
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
       react: '>=18'
       react-dom: '>=18'
     peerDependenciesMeta:
@@ -292,52 +292,52 @@ packages:
       react-dom:
         optional: true
 
-  '@zeus-js/output-vue-wrapper@0.2.0-rc.5':
-    resolution: {integrity: sha512-6dzMlSTAIoPVMqzZYbprBR5jltFd6/AIo+Ay0137bJqYrbyqCanTKWX1ZdeBlx8Bujli37i4R4aIbBt+1P/UhQ==}
+  '@zeus-js/output-vue-wrapper@0.2.0-rc.8':
+    resolution: {integrity: sha512-1oj+aFXZf8rkXaXsYUWK+dLNIWhTg1HDVAECnaZnTU6PEUJaTZWk+h4lAqwUHgEb/yQDAS5B8iJPwQ7czkEzeA==}
     peerDependencies:
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      vue: 3.5.38
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      vue: '>=3'
     peerDependenciesMeta:
       '@zeus-js/web-c-runtime':
         optional: true
       vue:
         optional: true
 
-  '@zeus-js/runtime-dom@0.2.0-rc.5':
-    resolution: {integrity: sha512-FR1UUenMj+4SW6Ctu1SpI0UfozNnzc7JLUrqRAgvY/Qm6FpLeD1siWxFxa8dx/AWRKWr3D7a3k1HiPkHsrXs1w==}
+  '@zeus-js/runtime-dom@0.2.0-rc.8':
+    resolution: {integrity: sha512-2zz/0/Y3ry5rBmu7rdLZ2g/vTLcbQ38eqzo3l6+YdkSWCYvb2P+9jdamcirDrIPPKr0SJ7YshNiAhEtsKFqODA==}
 
-  '@zeus-js/runtime-ssr@0.2.0-rc.5':
-    resolution: {integrity: sha512-6/AI5HUuT6Q82Zex77mTo27SQ1YKdhEZayJa2eWobPC70Ek5C/7wBcNcJcgK47YZLmVb2KTcIsVpVH1cKx1VTQ==}
+  '@zeus-js/runtime-ssr@0.2.0-rc.8':
+    resolution: {integrity: sha512-U+ExUAK8bCfLSpdPtsYKT3VxoliPkYCIe/+8j7qETklp1McoVFD8DQzpJoghweLyVlRC5FcnmTJj0H6tk04DDw==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
-  '@zeus-js/shared@0.2.0-rc.5':
-    resolution: {integrity: sha512-nE3czNiLoLzYcipsZQs/no7UCOcOQ9HxAI5mgalNsK4b/8xIQe++3CmyUcTGsZbY5E9VFNwNqbrYj5iBtOws/Q==}
+  '@zeus-js/shared@0.2.0-rc.8':
+    resolution: {integrity: sha512-2CNwDdnOkehgCsaoLqqtJLWgYzW5KzRlIGtaef8PjEBVdDitKJ4e8xhrDA10wTVEcAfl3/TR7IaJCAJefLH2vg==}
 
-  '@zeus-js/signal@0.2.0-rc.5':
-    resolution: {integrity: sha512-lczzMkh5IwpzYX7Oaz3oJEWUsIj3JsK2/eH+OfAuw8dEqgGY4lVdlafo0NZwX0Kji2JERV5vgSdT8hSclzrH/g==}
+  '@zeus-js/signal@0.2.0-rc.8':
+    resolution: {integrity: sha512-XCyXwBCYWEP+eLLFJHJvH3I7oeVFgpnNLtXdchfD90ywOEDfZSVTWlsPMM/FdeCKaVBaStqk0AWb76syLXjg7Q==}
 
-  '@zeus-js/web-c-runtime@0.2.0-rc.5':
-    resolution: {integrity: sha512-CdHhV1pFr74ZuM4RDy2jDiCceQhstUCg+JI7hrmuT5A48oq+ags1xq5fV2cCW7HvNLzVqwlVYSN+8mj+uoGplw==}
+  '@zeus-js/web-c-runtime@0.2.0-rc.8':
+    resolution: {integrity: sha512-xj6o2aYVh2GkJaS/zNGqmBzXIPgj/VebO4tzvNrwvw02qWsHCgJMFk87xjCTnAz2jPG9UdBEPl7+HhZB/y7pvw==}
 
-  '@zeus-js/zeus@0.2.0-rc.5':
-    resolution: {integrity: sha512-q/FvWVy/wkXQKk9RMnFgnMOwEXjEsv9MY/3PcOPspHJt5LqbRiWwwlMVOzUBiB7jAIuRg4tk1/QiVt1JDLcS5Q==}
+  '@zeus-js/zeus@0.2.0-rc.8':
+    resolution: {integrity: sha512-Uz4s28lf08qcD0+eVDc2fdjLhNaifGMneJaSiSRaOUkf7FW87qrG8JFYHqiazDxvs95BstogmtuscOAcBx9dWg==}
 
-  '@zeus-web/ai-adapters@0.1.0-beta.35':
-    resolution: {integrity: sha512-p7dQmskVzQgOB9vFwAvvd4UVHCUHzEtIi89kG8xSY57d57HUZNQX5zgScVk/W9lEfMI6W8jYn68AjXH9x5/O/A==}
+  '@zeus-web/ai-adapters@0.2.0-rc.8':
+    resolution: {integrity: sha512-LuEzvn8rynBAuaym13AFrMMFFKaes9L6lCJ3YHyXp5CajDArI0V3pi4cJhNOnLjdpwQDGPaPoFIisXvrOZ4WUQ==}
 
-  '@zeus-web/ai-core@0.1.0-beta.35':
-    resolution: {integrity: sha512-holyYsV5E3DdtahiTvEmHD4XVTeSijGjd7YkRPWHGKC0ASUxygGFT7awxqcfcabbEKgFPUxoDSzcArxwCJhmlw==}
+  '@zeus-web/ai-core@0.2.0-rc.8':
+    resolution: {integrity: sha512-JBStD15FEebmGBDbqrwjtaS5CsU14d8QqegIFnegb43iuSD91IxQoHZ6TW8q3SWXmtzjtoMhjmd9bMrMdSaYFQ==}
 
-  '@zeus-web/ai-primitives@0.1.0-beta.35':
-    resolution: {integrity: sha512-miDuQQG1rKI4k4BeK/zQ+WADu68q0xencjXyRgURkObba8cWaxQgzK5CmCc2Ue2yiEUx1W4PT4g9NsSbsiy9oQ==}
+  '@zeus-web/ai-primitives@0.2.0-rc.8':
+    resolution: {integrity: sha512-KHrb/qhg6j1n3RjH+bRsACjXKSgj1pDtXXnYgPza8vuIPd0Klpc6z4Pk/W+PrAcMLxQzcIJDeAiCuTAAZOUr9g==}
 
-  '@zeus-web/ai@0.1.0-beta.35':
-    resolution: {integrity: sha512-5Pdx+HXHpgLJhIiOK0Q2Qvvy21hCCstXgVdBBw+eLYUJTJ4h8EOh7e1FCZt7YHoDH4VQzwwmcw8SQlRgHDbINg==}
+  '@zeus-web/ai@0.2.0-rc.8':
+    resolution: {integrity: sha512-sKQzsozgp0h1AoaTOM65Pi57kGCyVgJRViUWU1Bdc1mQXrMVH+aj6R0usANSQKrr3+Th3XV8vVyWWw7a4Wv00w==}
 
-  '@zeus-web/chat@0.1.0-beta.35':
-    resolution: {integrity: sha512-FFlU2rnSdxXT5tN8iXXSiKLsZ9QnSh7OxWJO/8dYcjHYWcanqz3e4XVNN5pyq1T9Z9hfBDn/JWOZPKBSf0d4Yg==}
+  '@zeus-web/chat@0.2.0-rc.8':
+    resolution: {integrity: sha512-LlcSSD0EloC0monTZIjXmJ85RLcE5ke/o1bAEIORWnpfQXgYOTEA+7pzpa1+H1UkXJkne06uBnNTBfKx6ST66g==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -346,10 +346,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/virtual@0.1.0-beta.35':
-    resolution: {integrity: sha512-cXf6Fq5IeQ4tu1gzDsaeWdhcFdmS/OaHEFGk88bIUFwrbesmCZ+RxxeDRy5EsgG6UEONb/FoafmKwydDHfr+3A==}
+  '@zeus-web/virtual@0.2.0-rc.8':
+    resolution: {integrity: sha512-JCOofSfaqVeMb098YM+2EBAxNzGkmQQSeYXXaUCemhTgnN+Qj5+yhisChnVChkkAS7WrXqOUaQBbfnvJrUUORA==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
       react: '>=18 || >=19'
       vue: '>=3'
     peerDependenciesMeta:
@@ -358,10 +358,10 @@ packages:
       vue:
         optional: true
 
-  '@zeus-web/zeus-compat@0.1.0-beta.35':
-    resolution: {integrity: sha512-gfNbrRMjU6Kce5ZaLvE2G6P+5z/NB+yDE1cxg1o2eBgQSNojP4Su2F7jAY2zjwLdJ/xn+aX/Grl+dxDD5rNadA==}
+  '@zeus-web/zeus-compat@0.2.0-rc.8':
+    resolution: {integrity: sha512-GCG52qWftTRrfqQF12YWZom0UvL0uDQqDdZpkSpXoQnZJW8CyioxHvBwfJ0V4AFXT+3LJ7puShArJsjBrBSyAA==}
     peerDependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
 
   braces@3.0.3:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
@@ -722,12 +722,12 @@ snapshots:
       tslib: 2.9.1
     optional: true
 
-  '@zeus-js/bundler-plugin@0.2.0-rc.5(rolldown@1.2.19)(vite@8.3.8)':
+  '@zeus-js/bundler-plugin@0.2.0-rc.8(rolldown@1.2.19)(vite@8.3.8)':
     dependencies:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
-      '@zeus-js/compiler-native': 0.2.0-rc.5
-      '@zeus-js/component-analyzer': 0.2.0-rc.5
+      '@zeus-js/compiler-native': 0.2.0-rc.8
+      '@zeus-js/component-analyzer': 0.2.0-rc.8
       fast-glob: 3.3.3
       picomatch: 4.0.7
       typescript: 6.0.3
@@ -735,117 +735,117 @@ snapshots:
       rolldown: 1.2.19
       vite: 8.3.8
 
-  '@zeus-js/compiler-native-darwin-arm64@0.2.0-rc.5':
+  '@zeus-js/compiler-native-darwin-arm64@0.2.0-rc.8':
     optional: true
 
-  '@zeus-js/compiler-native-darwin-x64@0.2.0-rc.5':
+  '@zeus-js/compiler-native-darwin-x64@0.2.0-rc.8':
     optional: true
 
-  '@zeus-js/compiler-native-linux-arm64-gnu@0.2.0-rc.5':
+  '@zeus-js/compiler-native-linux-arm64-gnu@0.2.0-rc.8':
     optional: true
 
-  '@zeus-js/compiler-native-linux-x64-gnu@0.2.0-rc.5':
+  '@zeus-js/compiler-native-linux-x64-gnu@0.2.0-rc.8':
     optional: true
 
-  '@zeus-js/compiler-native-linux-x64-musl@0.2.0-rc.5':
+  '@zeus-js/compiler-native-linux-x64-musl@0.2.0-rc.8':
     optional: true
 
-  '@zeus-js/compiler-native-win32-arm64-msvc@0.2.0-rc.5':
+  '@zeus-js/compiler-native-win32-arm64-msvc@0.2.0-rc.8':
     optional: true
 
-  '@zeus-js/compiler-native-win32-x64-msvc@0.2.0-rc.5':
+  '@zeus-js/compiler-native-win32-x64-msvc@0.2.0-rc.8':
     optional: true
 
-  '@zeus-js/compiler-native@0.2.0-rc.5':
+  '@zeus-js/compiler-native@0.2.0-rc.8':
     optionalDependencies:
-      '@zeus-js/compiler-native-darwin-arm64': 0.2.0-rc.5
-      '@zeus-js/compiler-native-darwin-x64': 0.2.0-rc.5
-      '@zeus-js/compiler-native-linux-arm64-gnu': 0.2.0-rc.5
-      '@zeus-js/compiler-native-linux-x64-gnu': 0.2.0-rc.5
-      '@zeus-js/compiler-native-linux-x64-musl': 0.2.0-rc.5
-      '@zeus-js/compiler-native-win32-arm64-msvc': 0.2.0-rc.5
-      '@zeus-js/compiler-native-win32-x64-msvc': 0.2.0-rc.5
+      '@zeus-js/compiler-native-darwin-arm64': 0.2.0-rc.8
+      '@zeus-js/compiler-native-darwin-x64': 0.2.0-rc.8
+      '@zeus-js/compiler-native-linux-arm64-gnu': 0.2.0-rc.8
+      '@zeus-js/compiler-native-linux-x64-gnu': 0.2.0-rc.8
+      '@zeus-js/compiler-native-linux-x64-musl': 0.2.0-rc.8
+      '@zeus-js/compiler-native-win32-arm64-msvc': 0.2.0-rc.8
+      '@zeus-js/compiler-native-win32-x64-msvc': 0.2.0-rc.8
 
-  '@zeus-js/component-analyzer@0.2.0-rc.5':
+  '@zeus-js/component-analyzer@0.2.0-rc.8':
     dependencies:
       '@babel/parser': 8.1.3
       '@babel/types': 8.1.3
       fast-glob: 3.3.3
 
-  '@zeus-js/component-dts@0.2.0-rc.5':
+  '@zeus-js/component-dts@0.2.0-rc.8':
     dependencies:
-      '@zeus-js/component-analyzer': 0.2.0-rc.5
+      '@zeus-js/component-analyzer': 0.2.0-rc.8
 
-  '@zeus-js/output-react-wrapper@0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8)':
+  '@zeus-js/output-react-wrapper@0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8)':
     dependencies:
-      '@zeus-js/bundler-plugin': 0.2.0-rc.5(rolldown@1.2.19)(vite@8.3.8)
-      '@zeus-js/component-analyzer': 0.2.0-rc.5
-      '@zeus-js/component-dts': 0.2.0-rc.5
+      '@zeus-js/bundler-plugin': 0.2.0-rc.8(rolldown@1.2.19)(vite@8.3.8)
+      '@zeus-js/component-analyzer': 0.2.0-rc.8
+      '@zeus-js/component-dts': 0.2.0-rc.8
     optionalDependencies:
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
     transitivePeerDependencies:
       - rolldown
       - rollup
       - vite
 
-  '@zeus-js/output-vue-wrapper@0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8)':
+  '@zeus-js/output-vue-wrapper@0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8)':
     dependencies:
-      '@zeus-js/bundler-plugin': 0.2.0-rc.5(rolldown@1.2.19)(vite@8.3.8)
-      '@zeus-js/component-analyzer': 0.2.0-rc.5
-      '@zeus-js/component-dts': 0.2.0-rc.5
+      '@zeus-js/bundler-plugin': 0.2.0-rc.8(rolldown@1.2.19)(vite@8.3.8)
+      '@zeus-js/component-analyzer': 0.2.0-rc.8
+      '@zeus-js/component-dts': 0.2.0-rc.8
     optionalDependencies:
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
     transitivePeerDependencies:
       - rolldown
       - rollup
       - vite
 
-  '@zeus-js/runtime-dom@0.2.0-rc.5':
+  '@zeus-js/runtime-dom@0.2.0-rc.8':
     dependencies:
-      '@zeus-js/signal': 0.2.0-rc.5
+      '@zeus-js/signal': 0.2.0-rc.8
 
-  '@zeus-js/runtime-ssr@0.2.0-rc.5':
+  '@zeus-js/runtime-ssr@0.2.0-rc.8':
     dependencies:
-      '@zeus-js/shared': 0.2.0-rc.5
-      '@zeus-js/signal': 0.2.0-rc.5
+      '@zeus-js/shared': 0.2.0-rc.8
+      '@zeus-js/signal': 0.2.0-rc.8
 
-  '@zeus-js/shared@0.2.0-rc.5': {}
+  '@zeus-js/shared@0.2.0-rc.8': {}
 
-  '@zeus-js/signal@0.2.0-rc.5':
+  '@zeus-js/signal@0.2.0-rc.8':
     dependencies:
-      '@zeus-js/shared': 0.2.0-rc.5
+      '@zeus-js/shared': 0.2.0-rc.8
 
-  '@zeus-js/web-c-runtime@0.2.0-rc.5':
+  '@zeus-js/web-c-runtime@0.2.0-rc.8':
     dependencies:
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
 
-  '@zeus-js/zeus@0.2.0-rc.5':
+  '@zeus-js/zeus@0.2.0-rc.8':
     dependencies:
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/runtime-ssr': 0.2.0-rc.5
-      '@zeus-js/signal': 0.2.0-rc.5
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/runtime-ssr': 0.2.0-rc.8
+      '@zeus-js/signal': 0.2.0-rc.8
 
-  '@zeus-web/ai-adapters@0.1.0-beta.35':
+  '@zeus-web/ai-adapters@0.2.0-rc.8':
     dependencies:
-      '@zeus-web/ai-core': 0.1.0-beta.35
+      '@zeus-web/ai-core': 0.2.0-rc.8
 
-  '@zeus-web/ai-core@0.1.0-beta.35': {}
+  '@zeus-web/ai-core@0.2.0-rc.8': {}
 
-  '@zeus-web/ai-primitives@0.1.0-beta.35':
+  '@zeus-web/ai-primitives@0.2.0-rc.8':
     dependencies:
-      '@zeus-web/ai-core': 0.1.0-beta.35
+      '@zeus-web/ai-core': 0.2.0-rc.8
 
-  '@zeus-web/ai@0.1.0-beta.35': {}
+  '@zeus-web/ai@0.2.0-rc.8': {}
 
-  '@zeus-web/chat@0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8)':
+  '@zeus-web/chat@0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8)':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8)
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8)
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/virtual': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8)
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8)
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8)
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/virtual': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8)
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     transitivePeerDependencies:
       - '@types/react'
       - react-dom
@@ -853,14 +853,14 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/virtual@0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8)':
+  '@zeus-web/virtual@0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8)':
     dependencies:
-      '@zeus-js/output-react-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8)
-      '@zeus-js/output-vue-wrapper': 0.2.0-rc.5(@zeus-js/web-c-runtime@0.2.0-rc.5)(rolldown@1.2.19)(vite@8.3.8)
-      '@zeus-js/runtime-dom': 0.2.0-rc.5
-      '@zeus-js/web-c-runtime': 0.2.0-rc.5
-      '@zeus-js/zeus': 0.2.0-rc.5
-      '@zeus-web/zeus-compat': 0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)
+      '@zeus-js/output-react-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8)
+      '@zeus-js/output-vue-wrapper': 0.2.0-rc.8(@zeus-js/web-c-runtime@0.2.0-rc.8)(rolldown@1.2.19)(vite@8.3.8)
+      '@zeus-js/runtime-dom': 0.2.0-rc.8
+      '@zeus-js/web-c-runtime': 0.2.0-rc.8
+      '@zeus-js/zeus': 0.2.0-rc.8
+      '@zeus-web/zeus-compat': 0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)
     transitivePeerDependencies:
       - '@types/react'
       - react-dom
@@ -868,9 +868,9 @@ snapshots:
       - rollup
       - vite
 
-  '@zeus-web/zeus-compat@0.1.0-beta.35(@zeus-js/zeus@0.2.0-rc.5)':
+  '@zeus-web/zeus-compat@0.2.0-rc.8(@zeus-js/zeus@0.2.0-rc.8)':
     dependencies:
-      '@zeus-js/zeus': 0.2.0-rc.5
+      '@zeus-js/zeus': 0.2.0-rc.8
 
   braces@3.0.3:
     dependencies:

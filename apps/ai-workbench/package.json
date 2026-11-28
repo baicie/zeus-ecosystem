@@ -15,12 +15,12 @@
     "check:live": "tsx scripts/checks/check-ai-workbench-live.ts"
   },
   "dependencies": {
-    "@zeus-js/runtime-dom": "0.2.0-rc.5",
-    "@zeus-js/zeus": "0.2.0-rc.5",
-    "@zeus-web/ai-adapters": "0.1.0-beta.35",
-    "@zeus-web/ai-core": "0.1.0-beta.35",
-    "@zeus-web/ai-primitives": "0.1.0-beta.35",
-    "@zeus-web/ai-wc": "0.1.0-beta.35"
+    "@zeus-js/runtime-dom": "0.2.0-rc.8",
+    "@zeus-js/zeus": "0.2.0-rc.8",
+    "@zeus-web/ai-adapters": "0.2.0-rc.8",
+    "@zeus-web/ai-core": "0.2.0-rc.8",
+    "@zeus-web/ai-primitives": "0.2.0-rc.8",
+    "@zeus-web/ai-wc": "0.2.0-rc.8"
   },
   "devDependencies": {
     "@zeus-js/vite-plugin": "0.0.6",

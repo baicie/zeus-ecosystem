@@ -10,12 +10,12 @@
     "dev": "vite"
   },
   "dependencies": {
-    "@zeus-js/zeus": "0.2.0-rc.5",
-    "@zeus-web/ai-core": "0.1.0-beta.35",
-    "@zeus-web/ai-adapters": "0.1.0-beta.35",
-    "@zeus-web/ai-primitives": "0.1.0-beta.35",
-    "@zeus-web/ai": "0.1.0-beta.35",
-    "@zeus-web/chat": "0.1.0-beta.35"
+    "@zeus-js/zeus": "0.2.0-rc.8",
+    "@zeus-web/ai-core": "0.2.0-rc.8",
+    "@zeus-web/ai-adapters": "0.2.0-rc.8",
+    "@zeus-web/ai-primitives": "0.2.0-rc.8",
+    "@zeus-web/ai": "0.2.0-rc.8",
+    "@zeus-web/chat": "0.2.0-rc.8"
   },
   "devDependencies": {
     "typescript": "5.9.3",

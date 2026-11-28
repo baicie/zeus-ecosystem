@@ -2,31 +2,42 @@
   "schema": "zeus.ecosystem.published-pair/v1",
   "core": {
     "repository": "baicie/zeus",
-    "version": "0.2.0-rc.5",
-    "tag": "v0.2.0-rc.5",
+    "version": "0.2.0-rc.8",
+    "tag": "v0.2.0-rc.8",
     "annotated": true,
-    "tagObject": "8f79492a238be5b0eba3b0f0773caac7b4fa118e",
-    "commit": "bc1d4fc2afaac8e5aa7625e62ea76c2f0d6805e2"
+    "tagObject": "4cd9b4af02aea06c323e4de7677ef957c1d0742a",
+    "commit": "c508b035b0bad86d0a587755c36778937608a1ee"
   },
   "ui": {
     "repository": "baicie/zeus-ui",
-    "version": "0.1.0-beta.35",
-    "tag": "v0.1.0-beta.35",
+    "version": "0.2.0-rc.8",
+    "tag": "v0.2.0-rc.8",
     "annotated": false,
     "tagObject": null,
-    "commit": "9c90d0b350626b71ed735acfb0e2e05383c5c402"
+    "commit": "56ae16497e242dc93e09cdd25598af5c787fb1da"
   },
   "independent": {
     "@zeus-js/vite-plugin": "0.0.6",
     "@zeus-js/devtools-consumer": "0.1.1-beta.15"
   },
   "compatibility": {
-    "status": "validated",
-    "verifiedAt": "2026-11-24",
+    "status": "candidate",
+    "verifiedAt": "2026-11-28",
     "evidence": [
-      "CI run 45370251534: 90 browser tests passed across 5 fixtures and 3 engines",
-      "CI run 45371044819: fixtures installed and built under npm and pnpm on Node 22 and 24"
-    ]
+      "scripts/verify-published-pair.mjs --core 0.2.0-rc.8 --ui 0.2.0-rc.8 --manager pnpm: pass, errors []",
+      "the four apps install from registry.npmjs.org and resolve @zeus-js/* and @zeus-web/ai-* at 0.2.0-rc.8",
+      "Core v0.2.0-rc.8: 32 packages, 7 platform binaries, 32 SLSA bundles, from c508b035",
+      "UI v0.2.0-rc.8: 46 packages verified by run 46125975434, latest baseline unmoved, from 56ae1649"
+    ],
+    "notYetVerified": [
+      "the browser matrix (three engines, five consumer fixtures) has not been run on this pair",
+      "the image builds and the three deployment units have not been re-run on this pair"
+    ],
+    "previous": {
+      "status": "validated",
+      "verifiedAt": "2026-11-24",
+      "note": "The 0.2.0-rc.5 / 0.1.0-beta.35 pair carried the full browser and package-manager evidence. That evidence describes those versions, not these, so it does not transfer."
+    }
   },
   "provenance": {
     "note": "Commits were resolved from the tags, not typed. `v0.2.0-rc.5` is an annotated tag, so its commit is the peeled object; `v0.1.0-beta.35` is lightweight and resolves directly. Both were read from the GitHub API at the time this file was written."

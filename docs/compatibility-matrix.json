@@ -50,6 +50,20 @@
       ],
       "scope": "playground",
       "scopeNotes": "CI builds it on every push. No image, no browser matrix and no deployment yet, so it is still a candidate rather than validated."
+    },
+    {
+      "core": "0.2.0-rc.8",
+      "ui": "0.2.0-rc.8",
+      "status": "candidate",
+      "reason": "First pair where every app resolves both lines from the registry at the same version. The four apps install and their pins verify against the published artifacts; no image, browser matrix or deployment has run on this pair yet, so it is a candidate rather than validated.",
+      "evidence": [
+        "pnpm install --no-frozen-lockfile against registry.npmjs.org: admin, ai-workbench and playground each resolve @zeus-js/zeus 0.2.0-rc.8; ai-host and ai-workbench resolve their @zeus-web/ai-* at 0.2.0-rc.8",
+        "scripts/verify-published-pair.mjs --core 0.2.0-rc.8 --ui 0.2.0-rc.8 --manager pnpm: result pass, errors []",
+        "Core v0.2.0-rc.8 published from c508b035 (32 packages, 7 platform binaries, 32 SLSA bundles)",
+        "UI v0.2.0-rc.8 published from 56ae1649 (46 packages verified by run 46125975434, latest baseline unmoved)"
+      ],
+      "scope": "all",
+      "scopeNotes": "Pins and lockfiles only. The browser matrix, image builds and deployment units have not been re-run on this pair."
     }
   ]
 }

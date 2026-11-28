@@ -10,10 +10,10 @@
     "dev": "vite"
   },
   "dependencies": {
-    "@zeus-js/zeus": "0.2.0-rc.5",
-    "@zeus-web/button": "0.1.0-beta.35",
-    "@zeus-web/input": "0.1.0-beta.35",
-    "@zeus-web/vue": "0.1.0-beta.35",
+    "@zeus-js/zeus": "0.2.0-rc.8",
+    "@zeus-web/button": "0.2.0-rc.8",
+    "@zeus-web/input": "0.2.0-rc.8",
+    "@zeus-web/vue": "0.2.0-rc.8",
     "vue": "3.5.38"
   },
   "devDependencies": {

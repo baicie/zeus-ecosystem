@@ -15,7 +15,6 @@ import net from 'node:net';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
-import { chromium, firefox, webkit, } from '@playwright/test';
 import { computeArtifactDigest, verifyDeployedBuildInfo, verifyProvenance, } from './build-info.mjs';
 import { isLoopbackAddress, isLoopbackHostname as isLoopbackHost, isPrivateAddress, } from './network-policy.mjs';
 /*
@@ -40,11 +39,32 @@ export const DEPLOYMENT_PRODUCTS = [
     'admin',
     'ai-workbench',
 ];
-const ENGINE_TYPES = {
-    chromium,
-    firefox,
-    webkit,
-};
+/**
+ * Playwright is loaded when a product is actually driven, not when this
+ * module is imported.
+ *
+ * The module is mostly pure logic — manifest validation, redirect policy,
+ * build-info verification — and all of it is worth testing in an environment
+ * with no dependencies installed. A top-level import of `@playwright/test`
+ * made every consumer of those pure functions require a browser toolchain,
+ * which is how the migrated tests failed in this repository's dependency-free
+ * policy job with `ERR_MODULE_NOT_FOUND`.
+ *
+ * Lazy is also more honest about what the dependency is for: the browser only
+ * exists once an acceptance run starts driving one.
+ */
+let engineTypes;
+async function loadEngineTypes() {
+    if (engineTypes === undefined) {
+        const playwright = await import('@playwright/test');
+        engineTypes = {
+            chromium: playwright.chromium,
+            firefox: playwright.firefox,
+            webkit: playwright.webkit,
+        };
+    }
+    return engineTypes;
+}
 const MAX_REDIRECTS = 5;
 const MAX_BODY_BYTES = 16 * 1024 * 1024;
 const HOP_TIMEOUT_MS = 15_000;
@@ -393,10 +413,11 @@ async function checkProduct(entry, manifest, provenance, context) {
         const hostRules = context.mode === 'online'
             ? await buildHostResolverRules(manifest.allowedHosts)
             : undefined;
+        const engines = await loadEngineTypes();
         for (const engineName of context.engines.length > 0
             ? context.engines
             : ['chromium']) {
-            const engine = ENGINE_TYPES[engineName];
+            const engine = engines[engineName];
             if (!engine)
                 throw new Error(`unknown browser engine: ${engineName}`);
             const browser = await launchEngine(engine, engineName, hostRules);

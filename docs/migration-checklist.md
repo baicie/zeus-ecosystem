@@ -42,11 +42,11 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 
 | 阶段 | 状态 | 依据 |
 | --- | --- | --- |
-| SOURCE_MIGRATED | ✅ | 依赖 `0.1.0-beta.35` / `0.2.0-rc.5`，无源码 alias |
+| SOURCE_MIGRATED | ✅ | 依赖 `0.2.0-rc.8`（Core 与 `@zeus-web/ai-*` 同版本），无源码 alias |
 | LOCAL_TESTED | ✅ | tsc 干净、8/8 单测、vite build 207 kB |
 | CI_VALIDATED | ✅ | `AI Workbench / Browser gates` 与 `AI Apps / Node 22|24` 在 main 上全绿 |
 | VISUAL_VALIDATED | ⬜ | 未做。AI 侧没有发布过的参考构建可冻结；见下文 |
-| IMAGE_VALIDATED | ⬜ | 曾记为 ✅ 并引用 `delivery-evidence/v1`，但**仓库里没有任何这种文件**。CI 的 `Image / ai-workbench` 绿证明镜像能构建，不满足本表第 13 行要求的证据形式 |
+| IMAGE_VALIDATED | ✅ | run 46128998856 的 `evidence-ai-workbench` artifact：`zeus.ecosystem.delivery-evidence/v1`，镜像 `sha256:90c36d20…`，BUILD/STARTUP/HEALTH 三项 PASS。证据是 CI artifact，不提交仓库 |
 | DEPLOYMENT_REHEARSED | ✅ | AI 单元有自己的 `scripts/release/ai-rehearsal.mjs`（不是 `cross-version-rehearsal.mjs`）。最新通过的报告 15 步全过、两侧镜像 ID 不同、数据跨版本读回 |
 | PRODUCTION_ACCEPTED | ⬜ | **迁移后的版本**未部署。但 AI 侧的**旧实现**正在生产上跑——见下方「线上跑的是旧实现」 |
 | LEGACY_REMOVED | ⬜ | 旧实现保留 |
@@ -59,11 +59,11 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 
 | 阶段 | 状态 | 依据 |
 | --- | --- | --- |
-| SOURCE_MIGRATED | ✅ | 依赖 `@zeus-js/compiler-wasm@0.1.1-beta.20`、`playground-engine@0.2.0-rc.5` 与六个 `0.2.0-rc.5` 运行时包、`vite-plugin@0.0.6`；零 `workspace:` / `file:` / alias |
+| SOURCE_MIGRATED | ✅ | 依赖 `@zeus-js/compiler-wasm@0.1.1-beta.20`、`playground-engine@0.2.0-rc.8` 与 `0.2.0-rc.8` 运行时包、`vite-plugin@0.0.6`；零 `workspace:` / `file:` / alias。独立版本线按各自契约保留 |
 | LOCAL_TESTED | ✅ | `tsc --noEmit` 干净；`vite build` 产出四个入口（index / sandbox / webc / host）与 1.55 MB wasm 资源 |
 | CI_VALIDATED | ✅ | `Apps build` 在 `1551b25` 上通过：四个 app 的 `tsc --noEmit` 与构建全过，且断言了 `sandbox.html` 的资源路径是相对的 |
 | VISUAL_VALIDATED | ⬜ | 未做。core 侧的视觉门禁随应用一起待迁 |
-| IMAGE_VALIDATED | ✅ | `Image / playground` 在 `5fe6796` 上通过：构建、启动、健康检查三项 PASS，解包 67.6 MB（预算 220 MB），SBOM 与 evidence 已上传 |
+| IMAGE_VALIDATED | ✅ | run 46128998856：镜像 `sha256:5cbf97ca…`，BUILD/STARTUP/HEALTH PASS，SBOM 与 delivery-evidence 已上传。**FUNCTIONAL_PASS 仍为 NOT_RUN** |
 | DEPLOYMENT_REHEARSED | ⬜ | 未做 |
 | PRODUCTION_DEPLOYED | ⬜ | 未部署 |
 | PRODUCTION_ACCEPTED | ⬜ | 未验收 |
@@ -82,11 +82,11 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 
 | 阶段 | 状态 | 依据 |
 | --- | --- | --- |
-| SOURCE_MIGRATED | ✅ | 依赖 `0.1.0-beta.35` |
+| SOURCE_MIGRATED | ✅ | 依赖 `@zeus-web/ai-adapters` / `ai-core` 均为 `0.2.0-rc.8` |
 | LOCAL_TESTED | ✅ | tsc 干净、27/27 单测 |
 | CI_VALIDATED | ✅ | `Host protocol acceptance`（9 项，含真实进程重启）在 CI 中 |
 | VISUAL_VALIDATED | n/a | 无界面 |
-| IMAGE_VALIDATED | ⬜ | 同左：`delivery-evidence/v1` 不存在。协议验收 9/9 是进程级证据，不是镜像证据 |
+| IMAGE_VALIDATED | ✅ | run 46128998856 的 `evidence-ai-host` artifact：镜像 `sha256:f3bd6532…`，BUILD/STARTUP/HEALTH PASS。协议验收 9/9 仍是独立的进程级证据 |
 | DEPLOYMENT_REHEARSED | ✅ | 与 Workbench 在同一次 15 步演练中作为单元启动，顺序 host → workbench |
 | PRODUCTION_ACCEPTED | ⬜ | 同左：迁移后的版本未部署，线上的 host 来自旧实现 |
 | LEGACY_REMOVED | ⬜ | 旧实现保留 |
@@ -99,10 +99,36 @@ registry，镜像身份看 OCI。本文件里的每一句状态描述都应当�
 | LOCAL_TESTED | ✅ | tsc 0 错误、26/26 服务端测试、vite build 成功 |
 | CI_VALIDATED | ✅ | `Admin / Browser gates`（14 场景 × 3 引擎）与 `AI Apps` 全绿 |
 | VISUAL_VALIDATED | ⬜ | **结构一致性 8/8**（landmark 与文本重合度对按 digest 固定的参考构建）+ **像素比对 1/8**（`roles`，1.68%，差异全在候选新增的能力矩阵；其余 7 个场景两构建语言不同，不可比，记 `NOT_RUN`）。设计审查未做——那需要人，不是脚本。见下方说明 |
-| IMAGE_VALIDATED | ⬜ | 同左：`delivery-evidence/v1` 不存在。跨版本演练 20/20 用的是镜像，但没有留 `delivery-evidence` 记录 |
+| IMAGE_VALIDATED | ✅ | run 46128998856 的 `evidence-admin` artifact：镜像 `sha256:142a5c80…`，BUILD/STARTUP/HEALTH PASS |
 | DEPLOYMENT_REHEARSED | ✅ | **真实跨版本** 20/20 步，83.6 秒；回滚后数据完好 |
 | PRODUCTION_ACCEPTED | ⬜ | 未部署 |
 | LEGACY_REMOVED | ⬜ | 旧实现保留 |
+
+## rc.8 这一对的实际证据边界
+
+Ecosystem `48234945` 上的五个 run 提供了以下事实。它们比此前记录的多，但远不是全部。
+
+| 维度 | 状态 | 来源 |
+| --- | --- | --- |
+| 发布包消费（Node 22/24 × npm/pnpm） | ✅ 四格全过 | run 46128999143 |
+| 消费者浏览器矩阵 | ✅ 90/90，5 fixture × 3 引擎 | run 46128999143 |
+| Core 消费者冒烟 | ✅ | run 46128998873 |
+| 仓库策略 | ✅ | run 46128998936 |
+| 四镜像构建/启动/健康 | ✅ BUILD/STARTUP/HEALTH | run 46128998856 |
+| Admin 产品级浏览器门禁 | ✅ 14 场景 × 3 引擎 | run 46128999138 |
+| AI Workbench P0 / BYOK / CSP | ✅（CSP 5 项含「浏览器真的执行了」） | run 46128999138 |
+
+**镜像证据里的 `FUNCTIONAL_PASS` 对四个产品都是 `NOT_RUN`。** 一条 job 变绿只说明
+镜像能构建、能启动、健康路径有回答；它不说明应用里任何一个功能可用。本轮不把
+绿色当成产品验收。
+
+仍未运行：
+
+- 容器内功能验收（四个产品）。
+- Playground 的容器产品验收（contract / editor / browser / sandbox / image / upgrade）。
+- 三个部署单元的跨版本升级与回滚（本轮要做的 Task G）。
+- 面向已恢复历史参考的视觉比对。
+- AI Workbench 的真实 Provider 调用（CI 无凭据）。
 
 ## 证据说明
 

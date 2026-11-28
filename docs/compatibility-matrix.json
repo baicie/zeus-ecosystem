@@ -55,15 +55,17 @@
       "core": "0.2.0-rc.8",
       "ui": "0.2.0-rc.8",
       "status": "candidate",
-      "reason": "First pair where every app resolves both lines from the registry at the same version. The four apps install and their pins verify against the published artifacts; no image, browser matrix or deployment has run on this pair yet, so it is a candidate rather than validated.",
+      "reason": "Published consumption is proven — every fixture installs the registry artifacts under Node 22 and 24 with npm and pnpm, and 90 browser tests pass across three engines. Container FUNCTIONAL_PASS and cross-version rollback are still NOT_RUN, so this stays candidate rather than validated.",
       "evidence": [
-        "pnpm install --no-frozen-lockfile against registry.npmjs.org: admin, ai-workbench and playground each resolve @zeus-js/zeus 0.2.0-rc.8; ai-host and ai-workbench resolve their @zeus-web/ai-* at 0.2.0-rc.8",
-        "scripts/verify-published-pair.mjs --core 0.2.0-rc.8 --ui 0.2.0-rc.8 --manager pnpm: result pass, errors []",
-        "Core v0.2.0-rc.8 published from c508b035 (32 packages, 7 platform binaries, 32 SLSA bundles)",
-        "UI v0.2.0-rc.8 published from 56ae1649 (46 packages verified by run 46125975434, latest baseline unmoved)"
+        "Run 46128999143: fixtures pass on Node 22 + npm, Node 22 + pnpm, Node 24 + npm, Node 24 + pnpm, all from registry.npmjs.org",
+        "Run 46128999143: published consumer browsers 90 expected / 0 unexpected / 0 skipped / 0 flaky across native, web-components, react, vue and ai fixtures in chromium, firefox and webkit",
+        "Run 46128998873: published Core consumer smoke passed",
+        "Run 46128998936: repository policy passed",
+        "Run 46128998856: four images built, started and reported healthy (admin, ai-host, ai-workbench, playground)",
+        "Run 46128999138: admin browser gate 14 scenarios x 3 engines, admin permissions and visual reports, AI Workbench P0, BYOK and CSP gates all passed"
       ],
       "scope": "all",
-      "scopeNotes": "Pins and lockfiles only. The browser matrix, image builds and deployment units have not been re-run on this pair."
+      "scopeNotes": "Consumption and product browser gates. Container FUNCTIONAL_PASS is NOT_RUN in the image evidence, and cross-version upgrade/rollback has not been rehearsed on this pair."
     }
   ]
 }

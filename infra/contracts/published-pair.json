@@ -23,21 +23,121 @@
   "compatibility": {
     "status": "candidate",
     "verifiedAt": "2026-11-28",
-    "evidence": [
-      "scripts/verify-published-pair.mjs --core 0.2.0-rc.8 --ui 0.2.0-rc.8 --manager pnpm: pass, errors []",
-      "the four apps install from registry.npmjs.org and resolve @zeus-js/* and @zeus-web/ai-* at 0.2.0-rc.8",
-      "Core v0.2.0-rc.8: 32 packages, 7 platform binaries, 32 SLSA bundles, from c508b035",
-      "UI v0.2.0-rc.8: 46 packages verified by run 46125975434, latest baseline unmoved, from 56ae1649"
-    ],
+    "appsHead": "4823494554af7e62ee54f1ade5918c6b41735a87",
+    "evidence": {
+      "publishedFixtures": {
+        "runs": [
+          "46128999143"
+        ],
+        "matrix": [
+          "Node 22 + npm: pass",
+          "Node 22 + pnpm: pass",
+          "Node 24 + npm: pass",
+          "Node 24 + pnpm: pass"
+        ],
+        "registry": "https://registry.npmjs.org",
+        "note": "every fixture installed the published rc.8 artifacts; no workspace link, alias or candidate tarball"
+      },
+      "publishedConsumerBrowsers": {
+        "runs": [
+          "46128999143"
+        ],
+        "expected": 90,
+        "unexpected": 0,
+        "skipped": 0,
+        "flaky": 0,
+        "fixtures": [
+          "native",
+          "web-components",
+          "react",
+          "vue",
+          "ai"
+        ],
+        "engines": [
+          "chromium",
+          "firefox",
+          "webkit"
+        ]
+      },
+      "coreConsumerSmoke": {
+        "runs": [
+          "46128998873"
+        ]
+      },
+      "repositoryPolicy": {
+        "runs": [
+          "46128998936"
+        ]
+      },
+      "images": {
+        "runs": [
+          "46128998856"
+        ],
+        "products": {
+          "admin": "sha256:142a5c8063e3d06a29048b0352b9cbd7e0b2f7adfcc568ead21e9d7d4a3837ef",
+          "ai-host": "sha256:f3bd65329c18c50b7350360fe96104a1322c20b97fb800b709274fea4f176ff4",
+          "ai-workbench": "sha256:90c36d20185b1fdcf431c7392951e9085d7295d684453a63dcf26327d1697e6a",
+          "playground": "sha256:5cbf97ca9d4a0728e662db8c9340ac47a6fa4bea2438791c662c5f0572ebd0ac"
+        },
+        "dimensionsVerified": [
+          "BUILD_PASS",
+          "STARTUP_PASS",
+          "HEALTH_PASS"
+        ],
+        "dimensionsNotRun": [
+          "FUNCTIONAL_PASS",
+          "VISUAL_PASS",
+          "PERSISTENCE_PASS",
+          "CROSS_VERSION_PASS",
+          "ROLLBACK_PASS",
+          "READINESS_PASS",
+          "LIVE_PASS"
+        ]
+      },
+      "productGates": {
+        "runs": [
+          "46128999138"
+        ],
+        "admin": {
+          "engines": [
+            "chromium",
+            "firefox",
+            "webkit"
+          ],
+          "scenarios": 14,
+          "passed": true
+        },
+        "adminPermissions": {
+          "passed": true
+        },
+        "adminVisual": {
+          "passed": true
+        },
+        "aiWorkbenchP0": {
+          "passed": true
+        },
+        "aiWorkbenchByok": {
+          "passed": true
+        },
+        "aiWorkbenchCsp": {
+          "passed": true,
+          "checks": 5
+        }
+      }
+    },
     "notYetVerified": [
-      "the browser matrix (three engines, five consumer fixtures) has not been run on this pair",
-      "the image builds and the three deployment units have not been re-run on this pair"
+      "container functional acceptance: the image evidence records BUILD/STARTUP/HEALTH only, and FUNCTIONAL_PASS is NOT_RUN for all four products",
+      "cross-version upgrade and rollback for the three deployment units",
+      "Playground product acceptance inside a container (contract, editor, browser, sandbox, image, upgrade)",
+      "visual comparison against recovered historical references for the three GUI apps",
+      "LIVE provider calls for AI Workbench (no credentials in CI)"
     ],
     "previous": {
       "status": "validated",
       "verifiedAt": "2026-11-24",
       "note": "The 0.2.0-rc.5 / 0.1.0-beta.35 pair carried the full browser and package-manager evidence. That evidence describes those versions, not these, so it does not transfer."
-    }
+    },
+    "reason": "Published consumption is proven — every fixture installs the registry artifacts under Node 22 and 24 with npm and pnpm, and 90 browser tests pass across three engines. Container FUNCTIONAL_PASS and cross-version rollback are still NOT_RUN, so this stays candidate rather than validated."
   },
   "provenance": {
     "note": "Commits were resolved from the tags, not typed. `v0.2.0-rc.5` is an annotated tag, so its commit is the peeled object; `v0.1.0-beta.35` is lightweight and resolves directly. Both were read from the GitHub API at the time this file was written."
